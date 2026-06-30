@@ -1,0 +1,21 @@
+---
+description: IRON RULE — git/GitHub is the single source of truth for code; deploy via git only (no scp/patch)
+alwaysApply: true
+---
+
+# 🚨 IRON RULE — GIT IS THE SOURCE OF TRUTH FOR CODE (since 2026-06-24)
+
+Multiple AI agents (Cursor, Manus, Claude, Base) share this repo. To stop live⇄repo drift:
+
+## Code ships through git ONLY
+- **NEVER** scp / rsync / patch / hand-edit files directly on the server `/root/tradesnow`.
+- Every change: edit → `git add` → `git commit` → `git push origin main`.
+- Deploy: `ssh root@143.198.141.131 "/root/deploy-tradesnow.sh"` (pull --ff-only → build → pm2 restart). The script REFUSES to run if there are uncommitted tracked changes.
+- Canonical branch = **main** on `git@github.com:y0505300530-pixel/tradesnow.git`.
+- START of work: `git pull origin main`.  END of work: commit + push. Always.
+
+## Why
+On 2026-06-24 the deployed V4.5 was never committed → every agent saw a different codebase (phantom positions, contradictory edits). Old history also leaked secrets; `main` is now a clean orphan baseline.
+
+## Companion truth
+IBKR = source of truth for NUMBERS (prices/P&L/positions). git/GitHub = source of truth for CODE. Never trust the server working tree over git, nor TradeSnow computed numbers over IBKR. See DEPLOY_WORKFLOW.md.

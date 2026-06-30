@@ -1,3 +1,7 @@
+> 🚨 **IRON RULE (2026-06-24): GIT IS THE SOURCE OF TRUTH FOR CODE.** Ship via git only — edit → commit → `git push origin main` → `/root/deploy-tradesnow.sh`. NEVER scp/patch/hand-edit the server. Pull main before work, push after. See `.cursor/rules/git-source-of-truth.mdc` + `DEPLOY_WORKFLOW.md`.
+
+---
+
 # TradeSnow — Full Agent Roster (ELZA Teams)
 
 **מדריך צוותים:** `docs/superpowers/ELZA-AGENT-TEAMS.md`  
