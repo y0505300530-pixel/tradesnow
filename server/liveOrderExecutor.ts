@@ -657,6 +657,44 @@ export async function resyncOptimisticBP(_userId: number): Promise<number | null
   return _optimisticBP;
 }
 
+/**
+ * peekOptimisticBP — read the SHARED optimistic buying-power ledger (null = unsynced).
+ * Used by the Waiter (resting-LMT path) to gate against the SAME ledger the war cycle /
+ * Armed-Watcher use — one shared budget, no separate sleeve. Read-only; never mutates.
+ */
+export function peekOptimisticBP(): number | null {
+  return _optimisticBP;
+}
+
+/**
+ * reserveOptimisticBP — decrement the SHARED ledger on a resting-LMT TRANSMIT (spec §3:
+ * "a resting LMT decrements _optimisticBP the moment it's sent"). FAIL-OPEN: when the
+ * ledger is unsynced (null) it is left null (the gate never blocks on a stale ledger).
+ * Mirrors the in-cycle decrement tryLiveEntry does after a bracket transmit, so a burst
+ * of Waiter fills can't blow the shared bound. Returns the value now in effect.
+ */
+export function reserveOptimisticBP(usd: number): number | null {
+  if (_optimisticBP != null && Number.isFinite(usd) && usd > 0) {
+    _optimisticBP -= usd;
+    log.debug("LIVE_EXEC", `[OptimisticBP] Waiter reserved $${usd.toFixed(0)} → available $${_optimisticBP.toFixed(0)}`);
+  }
+  return _optimisticBP;
+}
+
+/**
+ * releaseOptimisticBP — credit the SHARED ledger back when a reserved resting LMT is
+ * CANCELLED before fill (the committed margin is returned). FAIL-OPEN on an unsynced
+ * ledger. Symmetric to reserveOptimisticBP; next cycle's resyncOptimisticBP reseeds from
+ * broker truth so this estimate never drifts.
+ */
+export function releaseOptimisticBP(usd: number): number | null {
+  if (_optimisticBP != null && Number.isFinite(usd) && usd > 0) {
+    _optimisticBP += usd;
+    log.debug("LIVE_EXEC", `[OptimisticBP] Waiter released $${usd.toFixed(0)} → available $${_optimisticBP.toFixed(0)}`);
+  }
+  return _optimisticBP;
+}
+
 /** Test-only reset of the optimistic ledger (never call from production paths). */
 export function __resetOptimisticBPForTest(): void {
   _optimisticBP = null;
