@@ -663,14 +663,28 @@ export default function PortfolioOverview() {
       value += positionValue(price, h.units);
       cost  += positionCost(h.buyPrice, h.units);
       // Skip today change based on market state:
-      // - .TA tickers: skip when TASE closed (Fri/Sat/holiday)
+      // - .TA tickers: TASE is closed during US hours (trades Sun–Thu). DON'T blanket-skip:
+      //   the session's real daily move still has a valid baseline (live.change / prior_close
+      //   prevClose / dailyBasePrice snapshot). Only skip when NO daily baseline exists at all,
+      //   otherwise the Today column wrongly shows "—"/"+0.00%" while a real move sits in prevClose.
       // - US tickers: skip when US market fully closed AND no live IBKR data
       //   (if IBKR returns valid change data from after-hours/futures, show it)
       // - Crypto (-USD): always compute (24/7)
       const isTaTicker = h.ticker.toUpperCase().endsWith('.TA');
       const isCryptoTicker = h.ticker.toUpperCase().endsWith('-USD');
       if (isTaTicker && taseClosedNow) {
-        continue;
+        // Only skip a closed-TASE position when it has GENUINELY no daily baseline —
+        // no live change, no prevClose, no DB change%, and no dailyBasePrice snapshot.
+        // If any baseline exists, fall through to computeTodayPnl (which yields the real
+        // daily change, or a legit 0.00% on a flat session).
+        const hasDailyBaseline =
+          live?.change != null
+          || (live?.prevClose != null && live.prevClose > 0)
+          || (live?.changePercent != null && live.changePercent !== 0)
+          || (h.dailyBasePrice != null && h.dailyBasePrice > 0);
+        if (!hasDailyBaseline) {
+          continue;
+        }
       }
       if (!isTaTicker && !isCryptoTicker && usClosedNow) {
         // Only skip if there's no live IBKR data for this ticker
@@ -699,6 +713,9 @@ export default function PortfolioOverview() {
         || (live?.change != null && live.change !== 0)
         || (live?.changePercent != null && live.changePercent !== 0)
         || (live?.price != null && live.prevClose != null && live.prevClose > 0)
+        // A valid daily snapshot is also a baseline (e.g. closed-TASE flat session) —
+        // mark today data present so the row renders a legit 0.00% instead of "—".
+        || (h.dailyBasePrice != null && h.dailyBasePrice > 0)
       ) {
         hasTodayData = true;
       }
