@@ -1853,4 +1853,1266 @@ function extractStopOrderId(body: any): string | null {
  * new STP FIRST and only cancel the old one AFTER the new one is broker-accepted.
  * If the new placement fails, the OLD stop is left resting untouched → still protected.
  *
- * Tighten-only is enforced by the CALLER (Stage 2 ratchet);
+ * Tighten-only is enforced by the CALLER (Stage 2 ratchet); this fn just executes the
+ * round-trip for an already-validated tighter level. Works for long (SELL stop) and
+ * short (BUY stop). Returns the new order id on success, or null (old stop kept).
+ */
+async function pushTrailStopToBroker(params: {
+  conid: number;
+  direction: "long" | "short";
+  units: number;
+  newStop: number;
+  oldOrderId: string | null;
+  ticker: string;
+}): Promise<{ ok: boolean; newOrderId: string | null }> {
+  const { conid, direction, units, newStop, oldOrderId, ticker } = params;
+  const exitSide = direction === "long" ? "SELL" : "BUY";
+
+  // 1) PLACE the new (tighter) STP first — residual is over-protected (two stops) but never naked.
+  let newOrderId: string | null = null;
+  try {
+    const placeRes = await ibindRequest("POST", "/orders/stop-loss", {
+      conid,
+      side: exitSide,
+      quantity: units,
+      stopPrice: +newStop.toFixed(2),
+      tif: "GTC",
+      outsideRth: false,
+    }, { "X-Confirm-Live-Order": "yes" });
+    if (!placeRes.ok) {
+      log.error("LIVE_EXEC", `[TrailPush] ${ticker} new STP @ $${newStop.toFixed(2)} REJECTED (HTTP ${placeRes.status}) — keeping old stop ${oldOrderId ?? "<none>"} resting (residual still protected)`);
+      return { ok: false, newOrderId: null };
+    }
+    newOrderId = extractStopOrderId(placeRes.body);
+    if (!newOrderId) {
+      // Accepted but id not parseable: do NOT cancel the old stop (would risk double-naked on a later sync).
+      log.warn("LIVE_EXEC", `[TrailPush] ${ticker} new STP accepted but order_id unparseable — keeping old stop ${oldOrderId ?? "<none>"} as well (over-protected, never naked)`);
+      return { ok: false, newOrderId: null };
+    }
+  } catch (err) {
+    log.error("LIVE_EXEC", `[TrailPush] ${ticker} place exception: ${err} — old stop ${oldOrderId ?? "<none>"} kept resting`);
+    return { ok: false, newOrderId: null };
+  }
+
+  // 2) New STP is live → now safe to cancel the OLD, looser stop. If this fails the
+  //    residual is merely double-protected (two stops) — acceptable, never naked.
+  if (oldOrderId && oldOrderId !== newOrderId) {
+    try {
+      await cancelIbkrOrder(oldOrderId);
+    } catch (err) {
+      log.warn("LIVE_EXEC", `[TrailPush] ${ticker} old stop ${oldOrderId} cancel failed: ${err} — new STP ${newOrderId} is live; residual double-protected, not naked`);
+    }
+  }
+  log.info("LIVE_EXEC", `[TrailPush] ${ticker} trail stop pushed to broker @ $${newStop.toFixed(2)} (new id ${newOrderId}, retired ${oldOrderId ?? "<none>"})`);
+  return { ok: true, newOrderId };
+}
+
+// ── Golden 5:1 SSOT live exit (TASK 2a — gated on elzaV45LiveEnabled) ────────────
+/**
+ * Drive the LIVE per-tick exit from the PROVEN backtest SSOT (`goldenExitDecision`
+ * in engine/elzaV45Master.ts) instead of the legacy 2.0R/observe-only ladder. This
+ * runs ONLY when isElzaV45LiveEnabled(config)===true; the legacy Open-Skies path
+ * stays byte-identical when the flag is 0 (the caller never reaches here).
+ *
+ * Returns `true` if it OWNED the exit decision for this tick (caller must `continue`
+ * past the legacy block), `false` if it fell back fail-closed (caller leaves the
+ * existing resting SL in place — never naked, never widened).
+ *
+ * Ladder (reconciled to the validated backtest):
+ *   PRE-scale  : SL breach → full exit (SL); +2.5R → SCALE_40 (sell 40% of ORIGINAL
+ *                units once, move stop to BREAKEVEN, persist partialTpHit/isFreeRolled).
+ *   POST-scale : 2.5×ATR chandelier ratchet on the 60% runner (tighten-only); +5R →
+ *                full exit (TP_FINAL); breakeven/trail breach → full exit.
+ *   TIME       : 60-bar pre-scale time-stop → full exit (handled here from openedAt).
+ */
+async function runGoldenSsotExit(args: {
+  db: any;
+  userId: number;
+  pos: any;
+  livePrice: number;
+  deps: PartialDeps;
+}): Promise<boolean> {
+  const { db, userId, pos, livePrice, deps } = args;
+  const isLong = pos.direction === "long";
+
+  // SHORT is BACKTEST-ONLY — the Golden SSOT view is long-only. A short position must
+  // NEVER be driven by this path; let the legacy loop manage it (fail-open to legacy).
+  if (!isLong) return false;
+
+  // ── FAIL-CLOSED view build: any non-finite input ⇒ do NOT place a garbage exit. ──
+  const entry = Number(pos.entryPrice);
+  const rValue = Number(pos.rValue);
+  const atr14 = Number(pos.atr14);
+  const initialSL = Number(pos.initialSl);
+  if (
+    !Number.isFinite(entry) || entry <= 0 ||
+    !Number.isFinite(rValue) || rValue <= 0 ||
+    !Number.isFinite(atr14) || atr14 <= 0 ||
+    !Number.isFinite(initialSL) ||
+    !Number.isFinite(livePrice) || livePrice <= 0
+  ) {
+    log.warn("LIVE_EXEC", `[GoldenExit] ${pos.ticker} fail-closed — non-finite view (entry=${pos.entryPrice} R=${pos.rValue} atr14=${pos.atr14} sl=${pos.initialSl} live=${livePrice}). Leaving resting SL in place; no exit placed.`);
+    return false;
+  }
+
+  // Per-tick degenerate bar: the live tick is high=low=close=livePrice (the same
+  // single-price breach/target semantics the legacy live loop already uses).
+  const peak = Math.max(Number(pos.peakPrice ?? entry), livePrice);
+  const scaled = (pos.partialTpHit ?? 0) === 1;
+  const priorTrail = Number.isFinite(Number(pos.currentSl)) ? Number(pos.currentSl) : entry;
+
+  let decision: ExitDecision;
+  try {
+    const view: OpenPositionView = {
+      side: "long",
+      entry,
+      initialSL,
+      rValue,
+      atr14,
+      peak,
+      scaled,
+      priorTrail,
+    };
+    const bar: ElzaBar = { date: "live", open: livePrice, high: livePrice, low: livePrice, close: livePrice };
+    decision = goldenExitDecision(view, bar);
+  } catch (err) {
+    log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} view threw — fail-closed, resting SL untouched: ${err}`);
+    return false;
+  }
+
+  // 60-bar pre-scale TIME-STOP (series-level backstop). The per-bar machine does not
+  // evaluate it, so apply it here from openedAt (1 trading bar = 1 day for daily DNA).
+  if (!scaled && decision.action === "HOLD" && pos.openedAt) {
+    const barsHeld = Math.floor((Date.now() - new Date(pos.openedAt).getTime()) / 86_400_000);
+    if (barsHeld >= 60) {
+      if (pos._isClosing) return true;
+      pos._isClosing = true;
+      try {
+        log.info("LIVE_EXEC", `[GoldenExit] ${pos.ticker} 60-bar pre-scale TIME-STOP (held ${barsHeld}) — full exit.`);
+        await executeLiveSell({ userId, positionId: pos.id, reason: "GOLDEN_TIME_STOP" });
+      } catch (err) {
+        log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} TIME exit failed: ${err}`);
+        pos._isClosing = false;
+      }
+      return true;
+    }
+  }
+
+  switch (decision.action) {
+    case "HOLD":
+      break; // fall through to the post-scale chandelier ratchet below (no terminal action).
+
+    case "STOP": {
+      // Pre-scale full SL breach (−1R).
+      if (pos._isClosing) return true;
+      pos._isClosing = true;
+      try {
+        log.warn("LIVE_EXEC", `[GoldenExit] ${pos.ticker} SL breach @ $${decision.price.toFixed(2)} (live $${livePrice.toFixed(2)}) — full exit.`);
+        await executeLiveSell({ userId, positionId: pos.id, reason: "GOLDEN_SL" });
+      } catch (err) {
+        log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} SL exit failed: ${err}`);
+        pos._isClosing = false;
+      }
+      return true;
+    }
+
+    case "SCALE_40": {
+      // Scale 40% of ORIGINAL units ONCE, then move the stop to breakeven. partialTpHit
+      // is the idempotency guard (scaled===true short-circuits before we get here next tick).
+      if (pos._isClosing) return true;
+      pos._isClosing = true;
+      try {
+        // 40% of ORIGINAL units. At the scale event units == originalUnits (full size),
+        // so 0.40 of current units == 0.40 of original; if originalUnits is recorded and
+        // differs (already pyramided/reduced), re-anchor the fraction to original.
+        const originalUnits = Number(pos.originalUnits ?? pos.units);
+        const targetQty = Math.max(1, Math.floor(originalUnits * GOLDEN_SCALE_BANK_FRAC));
+        const fraction = pos.units > 0 ? Math.min(0.99, targetQty / pos.units) : GOLDEN_SCALE_BANK_FRAC;
+
+        log.info("LIVE_EXEC", `[GoldenExit] ${pos.ticker} SCALE_40 @ +2.5R ($${decision.price.toFixed(2)}) — banking ${targetQty}/${originalUnits} original units (frac ${fraction.toFixed(3)}), moving stop → breakeven.`);
+
+        const partRes = await executeLivePartialClose(
+          { userId: pos.userId, positionId: pos.id, fraction, reason: "GOLDEN_SCALE_40" },
+          deps,
+        );
+        if (!partRes.success) {
+          log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} SCALE_40 reduce leg failed: ${partRes.reason} — NOT flipping scaled flags; resting SL untouched.`);
+          pos._isClosing = false;
+          return true;
+        }
+
+        // Move the resting stop to BREAKEVEN (entry) — tighten-only ratchet. Never below
+        // the existing resting stop (the reduce-leg's BE re-arm may already be in flight;
+        // this is an explicit, idempotent ratchet to entry).
+        const prevSl = Number.isFinite(Number(pos.currentSl)) ? Number(pos.currentSl) : initialSL;
+        const beStop = entry;
+        if (beStop - prevSl > 0.001) {
+          await ratchetStopTo(db, pos, beStop, "breakeven");
+        }
+
+        // Persist the scale flags so the next tick enters the POST-scale (runner) branch.
+        try {
+          await db.update(livePositions)
+            .set({ partialTpHit: 1, slMovedToBreakEven: 1, isFreeRolled: 1 })
+            .where(eq(livePositions.id, pos.id));
+          pos.partialTpHit = 1;
+          pos.slMovedToBreakEven = 1;
+          pos.isFreeRolled = 1;
+        } catch (err) {
+          log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} scale-flag persist failed: ${err}`);
+        }
+      } catch (err) {
+        log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} SCALE_40 failed: ${err}`);
+      } finally {
+        pos._isClosing = false;
+      }
+      return true;
+    }
+
+    case "TRAIL_EXIT": {
+      // POST-scale runner: the working stop (max(breakeven, chandelier)) was breached.
+      if (pos._isClosing) return true;
+      pos._isClosing = true;
+      try {
+        log.warn("LIVE_EXEC", `[GoldenExit] ${pos.ticker} TRAIL/BE breach @ $${decision.price.toFixed(2)} (live $${livePrice.toFixed(2)}) — full exit of runner.`);
+        await executeLiveSell({ userId, positionId: pos.id, reason: "GOLDEN_TRAIL" });
+      } catch (err) {
+        log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} TRAIL exit failed: ${err}`);
+        pos._isClosing = false;
+      }
+      return true;
+    }
+
+    case "TP_FINAL": {
+      if (pos._isClosing) return true;
+      pos._isClosing = true;
+      try {
+        log.info("LIVE_EXEC", `[GoldenExit] ${pos.ticker} TP_FINAL @ +5R ($${decision.price.toFixed(2)}) — full exit.`);
+        await executeLiveSell({ userId, positionId: pos.id, reason: "GOLDEN_TP_FINAL" });
+      } catch (err) {
+        log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} TP_FINAL exit failed: ${err}`);
+        pos._isClosing = false;
+      }
+      return true;
+    }
+  }
+
+  // After a HOLD with no terminal action and (when scaled) no breach/TP, RATCHET the
+  // chandelier on the 60% runner so the resting broker stop tracks the SSOT working
+  // stop. Tighten-only — never loosens, never below breakeven.
+  if (scaled) {
+    const chandelier = peak - 2.5 * atr14;
+    const workingStop = Math.max(entry, priorTrail, chandelier);
+    if (workingStop - priorTrail > 0.001) {
+      await ratchetStopTo(db, pos, workingStop, "chandelier");
+    }
+  }
+  return true;
+}
+
+/**
+ * Tighten-only stop ratchet (long): push a strictly-higher STP to the broker via the
+ * existing place-new-then-cancel-old primitive, then persist. NEVER loosens a stop and
+ * NEVER goes naked on a broker push failure (the old stop keeps resting). Used by the
+ * Golden SSOT exit for both the breakeven move and the chandelier trail.
+ */
+async function ratchetStopTo(db: any, pos: any, newStop: number, label: string): Promise<void> {
+  const prevSl = Number.isFinite(Number(pos.currentSl)) ? Number(pos.currentSl) : null;
+  // Long-only safety: only ratchet UP. (runGoldenSsotExit already gates to long.)
+  if (prevSl != null && newStop - prevSl <= 0.001) return;
+  let brokerOk = true;
+  try {
+    const conid = await resolveConid(pos.ticker);
+    if (conid) {
+      const push = await pushTrailStopToBroker({
+        conid,
+        direction: pos.direction,
+        units: pos.units,
+        newStop,
+        oldOrderId: pos.ibkrSlOrderId ?? null,
+        ticker: pos.ticker,
+      });
+      if (push.ok && push.newOrderId) {
+        pos.ibkrSlOrderId = push.newOrderId;
+      } else {
+        brokerOk = false;
+      }
+    } else {
+      brokerOk = false;
+      log.warn("LIVE_EXEC", `[GoldenExit] ${pos.ticker} ${label} push skipped — no conid; SL kept at $${prevSl ?? "<none>"}`);
+    }
+  } catch (err) {
+    brokerOk = false;
+    log.error("LIVE_EXEC", `[GoldenExit] ${pos.ticker} ${label} broker push failed: ${err} — old stop kept resting (never naked)`);
+  }
+  if (brokerOk) {
+    try {
+      await db.update(livePositions)
+        .set({ currentSl: +newStop.toFixed(2), ibkrSlOrderId: pos.ibkrSlOrderId ?? null })
+        .where(eq(livePositions.id, pos.id));
+      pos.currentSl = +newStop.toFixed(2);
+      log.info("LIVE_EXEC", `[GoldenExit] ${pos.ticker} ${label} stop ratcheted → $${newStop.toFixed(2)}`);
+    } catch { /* non-fatal */ }
+  }
+}
+
+// ── Software-side SL monitor ──────────────────────────────────────────────────
+/** Test-only overrides (scripts/trigger_paper_freeroll.ts). Never pass from production callers. */
+export interface SlMonitorTestOpts {
+  skipHardSync?: boolean;
+  bypassThrottle?: boolean;
+  bypassMarketHours?: boolean;
+  onlyPositionId?: number;
+}
+
+// Open Skies observe-mode: positions already logged as "would free-roll" (log once/pos).
+const _observedFreeRoll = new Set<number>();
+
+/**
+ * Public entry — QA FIX #2: acquire the shared stop-modification lock before running
+ * the monitor, which does Open Skies free-roll partial closes, Chandelier-trail stop
+ * cancel+replace, and software-SL exits — all of which mutate ibkrSlOrderId on the same
+ * rows runLiveSlTpEnforcement touches. If the lock is held (enforcement CRON mid-pass),
+ * SKIP this tick (next 5-min tick reattempts). Test callers (bypassThrottle) bypass the
+ * lock so trigger scripts run deterministically.
+ */
+export async function runLiveSlMonitor(userId: number, opts?: SlMonitorTestOpts): Promise<void> {
+  if (opts?.bypassThrottle) {
+    await _runLiveSlMonitorImpl(userId, opts);
+    return;
+  }
+  const lockRes = await withStopModLock(userId, "SL_MONITOR", () => _runLiveSlMonitorImpl(userId, opts));
+  if (!lockRes.ran) {
+    log.warn("LIVE_EXEC", `[SlMonitor] Stop-mod lock held (SL/TP enforcement active) — skipping this tick`);
+  }
+}
+
+async function _runLiveSlMonitorImpl(userId: number, opts?: SlMonitorTestOpts): Promise<void> {
+  if (!opts?.bypassMarketHours && !isLiveMarketOpen()) return;
+  if (_liveRunning && !opts?.bypassThrottle) return;
+
+  const now = Date.now();
+  if (!opts?.bypassThrottle && now - _lastLiveCycleAt < LIVE_CYCLE_GAP_MS) return;
+  _lastLiveCycleAt = now;
+  _liveRunning = true;
+
+  try {
+    const db = await getDb();
+    if (!db) return;
+
+    const openPos = await db.select().from(livePositions)
+      .where(and(eq(livePositions.userId, userId), eq(livePositions.status, "open")));
+
+    if (openPos.length === 0) return;
+
+    // Ziv Phase 5 — arm the 50%@2R free-roll LIVE close via the DB switch (OFF = observe-only, today's behavior).
+    const _exitCfg = await getLiveConfig(userId);
+    const structuralExitsEnabled = ((_exitCfg as any)?.structuralExitsEnabled ?? 0) === 1;
+
+    // ── HARD SYNC: If IBKR returns a clean 0-position response, force-close DB orphans ──
+    // Prevents zombie management: if broker closed a position (margin call / manual),
+    // we must honour that and NOT keep managing a ghost position.
+    const ibkrRes = await ibindRequest("GET", `/portfolio/${LIVE_ACCOUNT_ID}/positions/0`);
+    const ibkrPositions: any[] = ibkrRes.ok ? (ibkrRes.body as any[]) ?? [] : [];
+
+    if (!opts?.skipHardSync && ibkrRes.ok) {
+      // Build set of live IBKR tickers with non-zero qty
+      const ibkrActiveTickers = new Set(
+        ibkrPositions
+          .filter(p => Math.abs(p.position ?? 0) > 0)
+          .map(p => (p.ticker ?? p.contractDesc ?? "").toUpperCase().trim())
+      );
+      // For each DB-open position — if IBKR has zero or no entry, mark as zombie
+      for (const pos of openPos) {
+        if (!ibkrActiveTickers.has(pos.ticker.toUpperCase()) && pos.status === "open") {
+          log.warn("LIVE_EXEC", `[HardSync] ${pos.ticker} in DB as open but IBKR reports 0 qty — marking zombie (broker closed)`);
+          await db.update(livePositions)
+            .set({ status: "zombie", exitReason: "hard_sync_ibkr_zero", closedAt: new Date() })
+            .where(eq(livePositions.id, pos.id));
+        }
+      }
+    }
+
+    // Re-fetch openPos after hard sync (some may now be zombie)
+    let syncedOpenPos = await db.select().from(livePositions)
+      .where(and(eq(livePositions.userId, userId), eq(livePositions.status, "open")));
+
+    if (opts?.onlyPositionId != null) {
+      syncedOpenPos = syncedOpenPos.filter(p => p.id === opts.onlyPositionId);
+    }
+
+    const deps = await realDeps(userId);
+
+    // ── ZIV Shadow: batch bars once per cycle (observation only) ───────────────
+    const shadowTickers = [...new Set(syncedOpenPos.map((p) => p.ticker.toUpperCase()))];
+    let shadowBarsMap = new Map<string, Bar[]>();
+    let shadowSpyBars: Bar[] = [];
+    try {
+      if (shadowTickers.length > 0) {
+        shadowBarsMap = await fetchBarsBatch([...shadowTickers, "SPY"], 120);
+        shadowSpyBars = shadowBarsMap.get("SPY") ?? [];
+      }
+    } catch {
+      /* shadow monitor is best-effort — never block SL management */
+    }
+    const totalPortfolioValue = syncedOpenPos.reduce((s, p) => s + (p.allocatedCapital ?? 0), 0);
+
+    for (const pos of syncedOpenPos) {
+      const posAny = pos as typeof pos & { _isClosing?: boolean; peakPrice?: number | null };
+      const ibkrPos = ibkrPositions.find(p =>
+        p.ticker?.toUpperCase().trim() === pos.ticker.toUpperCase()
+      );
+      const monitorTick = resolveMonitorTickPrice(
+        pos.ticker,
+        ibkrPos?.mktPrice,
+        pos.currentPrice,
+        pos.entryPrice,
+      );
+      const currentTickPrice = monitorTick.price;
+      // ADR source-gate: only an IBKR-fresh tick may drive a software-SL exit
+      // decision. A stale/non-IBKR display value must NEVER fire (or suppress) a
+      // live exit — the broker-side OCA stop remains the primary protection.
+      const tickIsIbkrFresh = monitorTick.fresh && Number.isFinite(currentTickPrice) && currentTickPrice > 0;
+
+      // Update current price in DB
+      const pnl = positionUnrealizedPnl(pos.direction, pos.entryPrice, currentTickPrice, pos.units);
+      const pnlPct = pos.entryPrice > 0 ? (pnl / pos.allocatedCapital) * 100 : 0;
+
+      await db.update(livePositions)
+        .set({ currentPrice: currentTickPrice, unrealizedPnl: +pnl.toFixed(2), unrealizedPnlPct: +pnlPct.toFixed(3) })
+        .where(eq(livePositions.id, pos.id));
+
+      // ── ZIV Shadow Monitor — log only, no exit actions ─────────────────────
+      try {
+        const tk = pos.ticker.toUpperCase();
+        const bars = shadowBarsMap.get(tk) ?? shadowBarsMap.get(pos.ticker) ?? [];
+        if (bars.length >= 50 && pos.entryPrice > 0) {
+          const openedAt = pos.openedAt;
+          const minutesInTrade = openedAt
+            ? Math.floor((Date.now() - new Date(openedAt).getTime()) / 60_000)
+            : 0;
+          const daysHeld = openedAt
+            ? Math.floor((Date.now() - new Date(openedAt).getTime()) / 86_400_000)
+            : Math.floor(minutesInTrade / (60 * 24));
+          const ctx: ZivHContext = {
+            totalPortfolioValue,
+            positionValue: positionValue(currentTickPrice, pos.units),
+            daysHeld,
+            spyBars: shadowSpyBars,
+            minutesInTrade,
+            direction: pos.direction,
+            ibkrUnrealizedPnl: pnl,
+            buyScore: pos.zivScore ?? null,
+            peakPrice: posAny.peakPrice ?? pos.peakPrice ?? null,
+            graceStartTime: null,
+            spyDayStartPrice: null,
+            spyCurrentPrice: null,
+          };
+          const zivResult = calcZivHScore(
+            bars,
+            pos.entryPrice,
+            pos.currentSl,
+            pos.currentTp,
+            ctx,
+          );
+          const zivScore = zivResult.score;
+          console.log(
+            `[ZIV_SHADOW] Position ${pos.ticker} (ID: ${pos.id}): ZivScore=${zivScore} | Threshold=4.0`,
+          );
+        }
+      } catch {
+        /* non-blocking — shadow must not affect Open Skies / SL paths */
+      }
+
+      // ── Open Skies v3 — Fat-Tail two-stage exit ─────────────────────────────
+      {
+        const isLong    = pos.direction === "long";
+        const R         = pos.rValue ?? 0;
+        const atr       = pos.atr14 ?? 0;
+        const livePrice = currentTickPrice;
+
+        // ADR source-gate: Open Skies free-roll / Chandelier-trail BREACH exits
+        // are live-order decisions — only act on an IBKR-fresh tick. A stale /
+        // non-IBKR display price must not move the trail or fire a breach exit.
+        if (!tickIsIbkrFresh) continue;
+        if (!Number.isFinite(livePrice) || livePrice <= 0) continue;
+
+        // STAGE 0: Peak Tracking
+        {
+          const prevPeak = posAny.peakPrice ?? pos.entryPrice;
+          const newPeak  = isLong ? Math.max(prevPeak, livePrice) : Math.min(prevPeak, livePrice);
+
+          if (Math.abs(newPeak - prevPeak) > 1e-9) {
+            posAny.peakPrice = newPeak;
+            try {
+              await db.update(livePositions).set({ peakPrice: newPeak }).where(eq(livePositions.id, pos.id));
+            } catch (err) {
+              log.error("LIVE_EXEC", `[OPEN SKIES] Peak persist failed: ${err}`);
+            }
+          }
+        }
+
+        // ── GOLDEN 5:1 SSOT exit (TASK 2a) — gated on elzaV45LiveEnabled (default 0) ──
+        // When the flag is ON, the PROVEN backtest ladder (goldenExitDecision) OWNS the
+        // exit decision for this tick: it either handles it fully (continue past the legacy
+        // ladder AND the software-SL fallback) or fail-closes (skip the legacy 2.0R stages
+        // entirely — do NOT fire a legacy free-roll off a bad view — and fall through ONLY
+        // to the software-SL fallback so the resting protective stop still guards).
+        // When the flag is OFF (default) this branch is skipped and the legacy path runs
+        // UNCHANGED (byte-identical to today).
+        let goldenFailClosed = false;
+        if (isElzaV45LiveEnabled(_exitCfg)) {
+          const owned = await runGoldenSsotExit({ db, userId, pos: posAny, livePrice, deps });
+          if (owned) continue; // SSOT handled the tick (HOLD/scale/ratchet/exit). Skip ALL legacy.
+          goldenFailClosed = true; // non-finite view / throw / short — skip legacy stages, keep resting SL.
+        }
+
+        // STAGE 1: +2R Free-Roll
+        if (!goldenFailClosed && !pos.isFreeRolled && R > 0) {
+          const perShareGain = isLong ? (livePrice - pos.entryPrice) : (pos.entryPrice - livePrice);
+
+          if (perShareGain >= freeRollTriggerGain(R)) {
+            if (posAny._isClosing) continue;
+
+            // ELZA 2.0 — Open Skies SAFE-BY-DEFAULT (observe-only until runtime-verified).
+            // The 50%@2R live path is not yet proven (DU drill unavailable on this gateway),
+            // so by default we LOG what we WOULD do and do NOT trade. Arm with
+            // ELZA_OPEN_SKIES_EXECUTE=1 (+ restart) after 1–2 confirmed observe events.
+            // Armed when EITHER the legacy env flag OR the Ziv Phase-5 DB switch is on; else observe-only.
+            if (process.env.ELZA_OPEN_SKIES_EXECUTE !== "1" && !structuralExitsEnabled) {
+              if (!_observedFreeRoll.has(pos.id)) {
+                _observedFreeRoll.add(pos.id);
+                log.warn("LIVE_EXEC", `[OPEN SKIES] OBSERVE-ONLY — would free-roll 50% @+2R for ${pos.ticker} (gain $${perShareGain.toFixed(2)} >= trigger $${freeRollTriggerGain(R).toFixed(2)}, R=${R}). NOT executing. Arm via structuralExitsEnabled=1 or ELZA_OPEN_SKIES_EXECUTE=1.`);
+              }
+              continue;
+            }
+
+            posAny._isClosing = true;
+
+            try {
+              // P0-1b: Stage 1 (50%@2R free-roll) executes on LIVE once armed.
+              log.info("LIVE_EXEC", `[OPEN SKIES] Stage 1 free-roll @ +2R for ${pos.ticker} (acct ${pos.accountId}) — closing 50%.`);
+
+              await executeLivePartialClose(
+                { userId: pos.userId, positionId: pos.id, fraction: 0.5, reason: "FREE_ROLL_2R" },
+                deps,
+              );
+
+              // QA FIX #1 — SINGLE BE-STOP OWNER.
+              // The reduce leg above placed the 50% IOC and returned "pending fill"
+              // WITHOUT decrementing `units`. The post-partial BE stop is now armed
+              // EXCLUSIVELY by the fill poller (onPartialExitFilled → replaceStopToBreakeven),
+              // which runs AFTER applyFillTxn decrements units → the BE stop is sized to
+              // the RESIDUAL half. We deliberately DO NOT place a BE stop here anymore:
+              // the old inline push used `pos.units` (the FULL, pre-decrement size) and
+              // then the poller placed a SECOND BE stop at the correct half → oversized /
+              // duplicate resting stop. replaceStopToBreakeven is now idempotent and the
+              // sole owner; exactly one residual-sized BE stop ever rests.
+              //
+              // `executeLivePartialClose` already cancelled the original bracket SL+TP
+              // (place-before-reduce, so they can't over-sell), so no inline TP cancel is
+              // needed here either. We do NOT flip isFreeRolled here — applyFillTxn sets
+              // isFreeRolled=1 / currentTp=null / slMovedToBreakEven=1 atomically on the
+              // CONFIRMED fill, the same transaction that decrements units. Flipping it
+              // pre-fill would let the Chandelier Stage-2 block (which keys off
+              // isFreeRolled===1) start trailing a position whose reduce leg has not yet
+              // filled — and whose `units` is still the full size.
+              log.info("LIVE_EXEC", `[OPEN SKIES] ${pos.ticker} free-roll reduce leg placed — BE stop + isFreeRolled flip deferred to fill poller (single-owner, residual-sized).`);
+            } catch (err) {
+              log.error("LIVE_EXEC", `[OPEN SKIES] Stage 1 failed: ${err}`);
+            } finally {
+              posAny._isClosing = false;
+            }
+            continue;
+          }
+        }
+
+        // STAGE 2: Chandelier Ratchet
+        if (!goldenFailClosed && pos.isFreeRolled === 1 && atr > 0) {
+          if (pos.ibkrTpOrderId) {
+            try {
+              await cancelIbkrOrder(pos.ibkrTpOrderId);
+              await db.update(livePositions)
+                .set({ currentTp: null, ibkrTpOrderId: null })
+                .where(eq(livePositions.id, pos.id));
+              pos.currentTp = null;
+              pos.ibkrTpOrderId = null;
+            } catch (err) {
+              log.error("LIVE_EXEC", `[OPEN SKIES] TP cancel failed: ${err}`);
+            }
+          }
+
+          const peakRef = posAny.peakPrice ?? pos.entryPrice;
+          const chand = isLong ? (peakRef - (2.5 * atr)) : (peakRef + (2.5 * atr));
+          const prevSl = pos.currentSl ?? chand;
+          // TIGHTEN-ONLY: long stop ratchets UP, short stop ratchets DOWN. Never loosens.
+          const trail = isLong ? Math.max(prevSl, chand) : Math.min(prevSl, chand);
+
+          // A genuine tighten this cycle (guard float noise). Drives both the DB write
+          // AND the broker cancel+replace below.
+          const tightened = isLong ? (trail - prevSl > 0.001) : (prevSl - trail > 0.001);
+
+          if (tightened) {
+            // LEVER 1 — push the ratcheted stop to the broker BEFORE persisting, using a
+            // place-new-then-cancel-old round-trip so the residual is never naked. We push
+            // off the source-gated IBKR-fresh tick path only (this whole block is fenced by
+            // `tickIsIbkrFresh` above) — never a stale/Yahoo price moves a live stop.
+            let brokerOk = true;
+            try {
+              const conid = await resolveConid(pos.ticker);
+              if (conid) {
+                const push = await pushTrailStopToBroker({
+                  conid,
+                  direction: pos.direction,
+                  units: pos.units,
+                  newStop: trail,
+                  oldOrderId: pos.ibkrSlOrderId ?? null,
+                  ticker: pos.ticker,
+                });
+                if (push.ok && push.newOrderId) {
+                  pos.ibkrSlOrderId = push.newOrderId;
+                } else {
+                  // Broker push failed → keep the OLD stop level in the DB too, so we don't
+                  // advertise a tighter protective level that the broker never accepted.
+                  // (Software-SL fallback below still guards off the IBKR-fresh tick.)
+                  brokerOk = false;
+                }
+              } else {
+                brokerOk = false;
+                log.warn("LIVE_EXEC", `[OPEN SKIES] Trail push skipped — no conid for ${pos.ticker}; SL kept at $${prevSl}`);
+              }
+            } catch (err) {
+              brokerOk = false;
+              log.error("LIVE_EXEC", `[OPEN SKIES] Trail broker push failed for ${pos.ticker}: ${err}`);
+            }
+
+            if (brokerOk) {
+              try {
+                await db.update(livePositions)
+                  .set({ currentSl: trail, ibkrSlOrderId: pos.ibkrSlOrderId ?? null })
+                  .where(eq(livePositions.id, pos.id));
+                pos.currentSl = trail;
+              } catch { /* non-fatal */ }
+            }
+          }
+
+          const stopLevel = pos.currentSl ?? trail;
+          const isCrossed = isLong ? (livePrice <= stopLevel) : (livePrice >= stopLevel);
+
+          if (isCrossed) {
+            if (posAny._isClosing) continue;
+            posAny._isClosing = true;
+
+            try {
+              await executeLiveSell({ userId: pos.userId, positionId: pos.id, reason: "CHANDELIER_TRAIL_BREACH" });
+            } catch (err) {
+              log.error("LIVE_EXEC", `[OPEN SKIES] Chandelier exit failed: ${err}`);
+              posAny._isClosing = false;
+            }
+            continue;
+          }
+        }
+      }
+
+      // ── Phase 5: Software-side SL fallback when IBKR stop missing ───────────
+      const slMissing = !pos.ibkrSlOrderId;
+      const useSoftwareSl = slMissing || (pos as any).slProtection === "software";
+      // ADR source-gate: a software-SL breach MUST be evaluated off an IBKR-fresh
+      // tick. A stale/non-IBKR/0 price → treat as "no tick this cycle": do NOT
+      // force-exit off it (a 0 price would falsely read as breached for a long).
+      // The broker-side OCA stop is the primary protection meanwhile.
+      if (useSoftwareSl && pos.currentSl && tickIsIbkrFresh) {
+        const breached = pos.direction === "long"
+          ? currentTickPrice <= pos.currentSl
+          : currentTickPrice >= pos.currentSl;
+        if (breached) {
+          log.warn("LIVE_EXEC", `[SoftwareSL] ${pos.ticker} breached SL $${pos.currentSl} @ $${currentTickPrice} — force exit`);
+          await executeLiveSell({ userId, positionId: pos.id, reason: "SOFTWARE_SL" });
+          continue;
+        }
+      }
+
+      // ── IBKR-side SL: price display only (native STP handles fill) ──────────
+    }
+
+    try {
+      const { syncAllElzaHoldingsFromLivePositions } = await import("./portfolioHoldingsSync");
+      await syncAllElzaHoldingsFromLivePositions(db, userId);
+    } catch {
+      /* portfolio mirror is best-effort */
+    }
+  } finally {
+    _liveRunning = false;
+  }
+}
+
+/** Backfill atr14/rValue/initialSl for legacy opens missing GoldenExit metadata. */
+export async function backfillOpenPositionRiskMetrics(
+  db: Awaited<ReturnType<typeof getDb>>,
+  pos: {
+    id: number;
+    ticker: string;
+    direction: string;
+    entryPrice: number;
+    currentSl?: number | null;
+    initialSl?: number | null;
+    rValue?: number | null;
+    atr14?: number | null;
+  },
+): Promise<boolean> {
+  if (!db) return false;
+  const needsR = pos.rValue == null || !Number.isFinite(Number(pos.rValue)) || Number(pos.rValue) <= 0;
+  const needsAtr = pos.atr14 == null || !Number.isFinite(Number(pos.atr14)) || Number(pos.atr14) <= 0;
+  const needsInitSl = pos.initialSl == null || !Number.isFinite(Number(pos.initialSl));
+  if (!needsR && !needsAtr && !needsInitSl) return false;
+
+  try {
+    const bars = await fetchBarsForTicker(pos.ticker, 90);
+    if (!bars?.length) return false;
+    const entry = Number(pos.entryPrice);
+    if (!Number.isFinite(entry) || entry <= 0) return false;
+    const slTp = calcEntrySlTp({
+      entryPrice: entry,
+      direction: (pos.direction === "short" ? "short" : "long") as "long" | "short",
+      bars,
+      ema50: ema50FromBars(bars),
+    });
+    const updates: Record<string, number> = {};
+    if (needsAtr && slTp.atr14 != null && slTp.atr14 > 0) updates.atr14 = +slTp.atr14.toFixed(4);
+    if (needsR && slTp.rValue > 0) updates.rValue = +slTp.rValue.toFixed(4);
+    const slRef = pos.currentSl ?? slTp.stopLoss;
+    if (needsInitSl && slRef != null && Number(slRef) > 0) updates.initialSl = +Number(slRef).toFixed(4);
+    if (!Object.keys(updates).length) return false;
+    await db.update(livePositions).set(updates).where(eq(livePositions.id, pos.id));
+    log.info("LIVE_EXEC", `[RiskBackfill] ${pos.ticker} atr14=${updates.atr14 ?? "—"} rValue=${updates.rValue ?? "—"}`, { ticker: pos.ticker });
+    return true;
+  } catch (e: any) {
+    log.warn("LIVE_EXEC", `[RiskBackfill] ${pos.ticker} failed: ${e?.message ?? e}`);
+    return false;
+  }
+}
+
+// ── Execute a LIVE sell ───────────────────────────────────────────────────────
+export async function executeLiveSell(params: {
+  userId: number;
+  positionId: number;
+  reason: string;
+}): Promise<{ success: boolean; reason: string }> {
+  const { userId, positionId, reason } = params;
+  const db = await getDb();
+  if (!db) return { success: false, reason: "DB unavailable" };
+
+  const rows = await db.select().from(livePositions)
+    .where(and(eq(livePositions.id, positionId), eq(livePositions.userId, userId))).limit(1);
+  const pos = rows[0];
+  if (!pos) return { success: false, reason: "Position not found" };
+  if (pos.status !== "open" && pos.status !== "zombie") {
+    return { success: false, reason: `Already ${pos.status}` };
+  }
+
+  // Mark as pending — exitReason is set only after IBKR accepts the exit order
+  if (pos.status === "open") {
+    await db.update(livePositions).set({ status: "pending_exit", exitReason: null }).where(eq(livePositions.id, positionId));
+  }
+
+  const conid = await resolveConid(pos.ticker);
+  if (!conid) {
+    await db.update(livePositions).set({ status: "zombie" }).where(eq(livePositions.id, positionId));
+    return { success: false, reason: `No conid for ${pos.ticker}` };
+  }
+
+  // ── Cancel BOTH SL and TP bracket orders on IBKR ────────────────────────────
+  // IBKR OCA should auto-cancel, but we cancel explicitly for safety
+  const ordersToCancel = [pos.ibkrSlOrderId, pos.ibkrTpOrderId].filter(Boolean) as string[];
+  for (const ordId of ordersToCancel) {
+    const cancelRes = await ibindRequest("DELETE", `/iserver/account/${LIVE_ACCOUNT_ID}/order/${ordId}`);
+    if (cancelRes.ok) {
+      log.info("LIVE_EXEC", `[Sell] Cancelled bracket order ${ordId} for ${pos.ticker}`);
+    } else {
+      log.warn("LIVE_EXEC", `[Sell] Could not cancel order ${ordId} for ${pos.ticker}: HTTP ${cancelRes.status}`);
+    }
+  }
+
+  // ── IRON RULE: No naked Market orders — Marketable LMT with 1% max offset ──
+  // Prevents catastrophic slippage on low-liquidity / halted instruments.
+  const exitSide = pos.direction === "long" ? "SELL" : "BUY";
+  const MAX_SLIP_PCT = 0.01; // 1% max slippage tolerance
+
+  // Fetch live price for LMT offset — IBKR snapshot
+  let lmtPrice: number | null = null;
+  try {
+    // REPOINT 2026-06-25: /iserver/marketdata/snapshot 404s on the OAuth gateway.
+    // Re-price the exit LMT off the working POST /quotes pipeline (IBKR broker truth;
+    // returns a LivePrice → use .price). On failure / 0 price → lmtPrice stays null and
+    // the DB-price fallback below runs (never a naked MKT; never price off stale EOD here).
+    const priceMap = await fetchIbkrLivePricesBatch([pos.ticker], { skipCache: true });
+    const lp = priceMap.get(pos.ticker) ?? null;
+    // QA fix #2: price the exit LMT ONLY off real-time IBKR truth. A silent Yahoo/DB-cache fallback
+    // (source!=='ibkr') is treated as no live price → lmtPrice stays null and the DB-price LMT
+    // fallback below runs (never a naked MKT; never price a live exit off a delayed/stale print).
+    const live = lp?.source === 'ibkr' ? Number(lp.price ?? 0) : 0;
+    if (live > 0) {
+      // SELL: LMT at live - 1% (willing to accept up to 1% below market)
+      // BUY (short cover): LMT at live + 1% (willing to pay up to 1% above market)
+      lmtPrice = exitSide === "SELL"
+        ? +(live * (1 - MAX_SLIP_PCT)).toFixed(2)
+        : +(live * (1 + MAX_SLIP_PCT)).toFixed(2);
+      log.info("LIVE_EXEC", `[Sell] Marketable LMT exit ${pos.ticker} ${exitSide} @ $${lmtPrice} (live=$${live} offset=${MAX_SLIP_PCT*100}%)`);
+    }
+  } catch {}
+
+  // If live quote failed/0 — still use LMT based on DB price (not raw MKT)
+  if (!lmtPrice) {
+    const fallbackPrice = pos.currentPrice ?? pos.entryPrice;
+    lmtPrice = exitSide === "SELL"
+      ? +(fallbackPrice * (1 - MAX_SLIP_PCT)).toFixed(2)
+      : +(fallbackPrice * (1 + MAX_SLIP_PCT)).toFixed(2);
+    log.warn("LIVE_EXEC", `[Sell] Live quote unavailable for ${pos.ticker} — Marketable LMT fallback @ $${lmtPrice} (DB price=$${fallbackPrice})`);
+  }
+
+  const sellBody = {
+    account_id: LIVE_ACCOUNT_ID,
+    conid,
+    side: exitSide,
+    quantity: Math.abs(pos.units),
+    orderType: "LMT",
+    limitPrice: lmtPrice,
+    outsideRth: false,
+    tif: "IOC",   // Immediate-or-Cancel: fill at limit or cancel; no resting order risk
+    orderRef: `ELZA_EXIT_${pos.ticker}_${Date.now()}`,
+  };
+
+  // ENDPOINT FIX 2026-06-29: /orders/limit 405s on the gateway; route exit through /orders/close-position.
+  const res = await ibindRequest("POST", "/orders/close-position", sellBody, { "X-Confirm-Live-Order": "yes" });
+  // If IOC LMT didn't fill, retry once as DAY LMT (wider window)
+  let retryRes: typeof res | null = null;
+  if (!res.ok || (res.body as any)?.filled === false) {
+    log.warn("LIVE_EXEC", `[Sell] IOC LMT ${pos.ticker} not filled — retrying as DAY LMT`);
+    retryRes = await ibindRequest("POST", "/orders/close-position", { ...sellBody, tif: "DAY" }, { "X-Confirm-Live-Order": "yes" });
+  }
+  const finalRes = retryRes ?? res;
+  if (!finalRes.ok) {
+    const errMsg = ((finalRes.body as any)?.message ?? `HTTP ${finalRes.status}`).toString();
+
+    // ── V2.00 Feature 4: LULD Halt Detection ──────────────────────────────
+    // IBKR error codes / messages that indicate a trading halt:
+    //   Error 1100: "Connectivity between IB and exchange lost"
+    //   Error 162: "Historical Market Data Service error"
+    //   Message contains "halt" / "luld" / "limit up" / "limit down" / "suspended"
+    const isHaltError = /halt|luld|limit.?up|limit.?down|suspended|1100|trading.*stopped/i.test(errMsg)
+      || finalRes.status === 1100;
+
+    if (isHaltError) {
+      const exitSideHalt = pos.direction === "long" ? "SELL" : "BUY";
+      log.warn("LIVE_EXEC",
+        `[Sell] 🛑 LULD HALT detected for ${pos.ticker} — marking PENDING_HALT. Will retry when halt lifts.`,
+        { ticker: pos.ticker, error: errMsg }
+      );
+      try {
+        const { markPositionPendingHalt } = await import("./partialFillMonitor");
+        await markPositionPendingHalt(positionId, exitSideHalt as "BUY" | "SELL");
+      } catch (haltErr: any) {
+        log.warn("LIVE_EXEC", `[Sell] markPositionPendingHalt failed: ${haltErr.message}`);
+      }
+      // Also send Telegram alert
+      try {
+        await sendTelegramMessage(
+          `🛑 *TRADING HALT DETECTED*
+` +
+          `${pos.ticker} exit order REJECTED — halt in progress.
+` +
+          `Position marked PENDING_HALT. Recovery monitor will re-send when halt lifts.
+` +
+          `Error: ${errMsg.slice(0, 120)}`
+        );
+      } catch {}
+      return { success: false, reason: `LULD halt: ${errMsg}` };
+    }
+
+    log.error("LIVE_EXEC", `[Sell] FAILED ${pos.ticker}: ${errMsg}`);
+    // BUILD 1: loud structured alert + consecutive-failure tracking (gateway-stale hint).
+    // This is the exact silent-405 outage path ("[Sell] FAILED … HTTP 405").
+    reportOrderFailure({ ticker: pos.ticker, action: exitSide, status: finalRes.status, endpoint: "/orders/close-position", errMsg });
+    const newRetryCount = (pos.exitRetryCount ?? 0) + 1;
+    if (newRetryCount >= 3) {
+      await db.update(livePositions)
+        .set({ status: "zombie", exitRetryCount: newRetryCount, exitReason: null })
+        .where(eq(livePositions.id, positionId));
+    } else {
+      await db.update(livePositions)
+        .set({ status: "open", exitReason: null, exitRetryCount: newRetryCount })
+        .where(eq(livePositions.id, positionId));
+    }
+    return { success: false, reason: errMsg };
+  }
+  // Exit placement accepted by the gateway — reset the consecutive-failure streak.
+  noteOrderSuccess();
+
+  const exitOrderId = (finalRes.body as any)?.order_id?.toString() ?? null;
+
+  // War Room manual close: return fast — popup polls getExitProgress until IBKR + DB clear
+  if (reason === "MANUAL_CLOSE" && exitOrderId) {
+    await db.update(livePositions).set({ ibkrExitOrderId: exitOrderId, exitReason: reason }).where(eq(livePositions.id, positionId));
+    log.info("LIVE_EXEC", `[Sell] MANUAL_CLOSE ${pos.ticker} order sent — defer finalize`, { exitOrderId });
+    return {
+      success: true,
+      reason: "פקודת מכירה נשלחה — ממתין לביצוע",
+      orderId: exitOrderId,
+      orderType: "LMT",
+      quantity: Math.abs(pos.units),
+      ticker: pos.ticker,
+      side: exitSide as "BUY" | "SELL",
+    };
+  }
+
+  let exitPrice = toPriceNumber(pos.currentPrice, toPriceNumber(pos.entryPrice, 0));
+  if (exitOrderId) {
+    const { resolveOrderFill } = await import("./liveMarketOrder");
+    const exitFill = await resolveOrderFill(exitOrderId, Math.abs(pos.units));
+    if (exitFill.avgPrice && exitFill.avgPrice > 0) exitPrice = exitFill.avgPrice;
+  }
+  const realizedPnl = positionRealizedPnl(pos.direction, pos.entryPrice, exitPrice, pos.units);
+
+  await db.update(livePositions).set({
+    status: "closed",
+    exitPrice,
+    realizedPnl: +realizedPnl.toFixed(2),
+    exitReason: reason,
+    ibkrExitOrderId: exitOrderId,
+    closedAt: new Date(),
+  }).where(eq(livePositions.id, positionId));
+
+  await db.delete(liveEntryLock).where(and(eq(liveEntryLock.userId, userId), eq(liveEntryLock.ticker, pos.ticker.toUpperCase())));
+
+  await db.insert(liveTrades).values({
+    userId,
+    positionId,
+    ticker: pos.ticker,
+    side: exitSide,
+    units: Math.abs(pos.units),
+    price: exitPrice,
+    reason,
+    ibkrOrderId: exitOrderId ?? undefined,
+    status: "filled",
+  });
+
+  const emoji = realizedPnl >= 0 ? "✅" : "🔴";
+  await sendTelegramMessage(
+    `${emoji} <b>ELZA LIVE EXIT</b>\n` +
+    `<b>${pos.ticker}</b> closed @ $${fmtPrice(exitPrice)}\n` +
+    `P&L: ${realizedPnl >= 0 ? "+" : ""}$${fmtPrice(realizedPnl)} | Reason: ${reason}`
+  );
+
+  return {
+    success: true,
+    reason: `Closed at $${fmtPrice(exitPrice)}`,
+    orderId: exitOrderId,
+    orderType: "LMT",
+    quantity: Math.abs(pos.units),
+    ticker: pos.ticker,
+    side: exitSide as "BUY" | "SELL",
+    exitPrice,
+  };
+}
+
+/** Finalize a pending_exit row after IBKR position qty hits 0 (War Room poll path). */
+export async function finalizePendingExit(params: {
+  userId: number;
+  ticker: string;
+  avgPrice?: number | null;
+}): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  const ticker = params.ticker.toUpperCase().trim();
+  const rows = await db.select().from(livePositions)
+    .where(and(
+      eq(livePositions.userId, params.userId),
+      eq(livePositions.ticker, ticker),
+      eq(livePositions.status, "pending_exit"),
+    ))
+    .limit(1);
+  const pos = rows[0];
+  if (!pos) return false;
+
+  const exitSide = pos.direction === "long" ? "SELL" : "BUY";
+  const exitPrice = params.avgPrice && params.avgPrice > 0
+    ? params.avgPrice
+    : toPriceNumber(pos.currentPrice, toPriceNumber(pos.entryPrice, 0));
+  const realizedPnl = positionRealizedPnl(pos.direction, pos.entryPrice, exitPrice, pos.units);
+  const reason = pos.exitReason ?? "MANUAL_CLOSE";
+
+  await db.update(livePositions).set({
+    status: "closed",
+    exitPrice,
+    realizedPnl: +realizedPnl.toFixed(2),
+    exitReason: reason,
+    closedAt: new Date(),
+  }).where(eq(livePositions.id, pos.id));
+
+  await db.delete(liveEntryLock).where(and(eq(liveEntryLock.userId, params.userId), eq(liveEntryLock.ticker, ticker)));
+
+  await db.insert(liveTrades).values({
+    userId: params.userId,
+    positionId: pos.id,
+    ticker: pos.ticker,
+    side: exitSide,
+    units: Math.abs(pos.units),
+    price: exitPrice,
+    reason,
+    ibkrOrderId: pos.ibkrExitOrderId ?? undefined,
+    status: "filled",
+  });
+
+  log.info("LIVE_EXEC", `[Sell] Finalized pending_exit ${ticker} @ $${fmtPrice(exitPrice)}`);
+  return true;
+}
+
+
+// ─── EOD Deleverage Sweep (22:45 Israel time) ────────────────────────────────
+/**
+ * runDeleveragingCycle — called at 22:45 Israel time.
+ *
+ * Strategy for selecting positions to close:
+ *   1. First close LOSERS (negative P&L) — clean the dead weight
+ *   2. Then close WINNERS (positive P&L) — lock in profits if still over limit
+ *
+ * Rationale: Overnight losses compound (margin interest + gap risk).
+ *            Keeping winners overnight has asymmetric upside vs margin cost.
+ *            If we must choose — clear losers first, then lock winners.
+ */
+export async function runDeleveragingCycle(
+  userId: number = 1,
+  opts: { excludeFreeRolled?: boolean } = {},
+): Promise<{
+  trimmed: number;
+  failed: number;
+  uvBeforeUsd: number;
+  uvAfterUsd: number;
+}> {
+  const db = await getDb();
+  if (!db) return { trimmed: 0, failed: 0, uvBeforeUsd: 0, uvAfterUsd: 0 };
+
+  const config = await getLiveConfig(userId);
+  if (!config) return { trimmed: 0, failed: 0, uvBeforeUsd: 0, uvAfterUsd: 0 };
+
+  const { overnightCap: staticOvernightCap, cashBudget } = computeLiveCapital(config);
+
+  const openPos = await db.select().from(livePositions)
+    .where(and(eq(livePositions.userId, userId), eq(livePositions.status, "open")));
+
+  const totalDeployed = openPos.reduce((s, p) => s + (p.allocatedCapital ?? 0), 0);
+
+  // ── REQ 2 — EOD-TRIM: wire overnightGrossCap (VIX-aware) — INERT unless flag=1 ──
+  // When elzaV45LiveEnabled=0 the static 1.9× overnightCap (today's behavior) is used
+  // unchanged. When armed, compute the gross-exposure leverage multiple (Σ notional /
+  // NLV) and the VIX-aware overnight target via the PURE overnightGrossCap(); a high
+  // VIX tightens the target further (1.0× / 0.5× overnight) so we never carry 4×
+  // overnight on an elevated-vol close. We translate the leverage-multiple target back
+  // to a USD cap (targetGrossPct × cashBudget) and feed it into the EXISTING loser-first
+  // trim loop below (reuses executeLiveSell + the cron's verify/alert path).
+  let overnightCap = staticOvernightCap;
+  if (isElzaV45LiveEnabled(config)) {
+    // EOD-3 FIX — the gross-leverage denominator MUST be LIVE NLV, never the static,
+    // UI-refreshed config.totalNlv (which can be hours/days stale and silently loosens
+    // the overnight cap). Pull NLV from the SAME fail-closed broker read the circuit
+    // breaker uses. On a failed read we DROP the dynamic VIX-aware tightening entirely
+    // and fall back to ONLY the static 1.9× cap below — i.e. fail to the existing static
+    // behavior, NEVER to a looser cap.
+    const liveNlvRead = await fetchLiveNlvAndDayPnl(userId);
+    if (!liveNlvRead.ok) {
+      log.warn("LIVE_MONITOR", `[Deleverage-EOD][Elza] live NLV read FAILED (${liveNlvRead.reason}) — skipping VIX-aware tightening, using static 1.9× cap only.`);
+    } else {
+    const nlv = liveNlvRead.nlvNow > 0 ? liveNlvRead.nlvNow : Math.max(totalDeployed, 1);
+    const currentGrossPct = totalDeployed / nlv; // gross exposure as a leverage multiple
+    // No real ^VIX feed on this gateway — reuse the SPY realized-vol proxy (vixProxy)
+    // that runtimeIntelligence already computes for the regime gate. On any failure the
+    // PURE overnightGrossCap FAILS CLOSED (non-finite VIX → most-defensive 0.5×).
+    let vix = NaN;
+    try {
+      const { getMarketRegime } = await import("./runtimeIntelligence");
+      const regime = await getMarketRegime();
+      // EOD-1 FIX: a DEGRADED/fallback regime (SPY fetch failed / insufficient data /
+      // throw) carries a PLACEHOLDER vixProxy=20, NOT a real measurement. Treat it as a
+      // BAD VIX read → vix=NaN so overnightGrossCap takes the 0.5× fail-closed branch.
+      vix = regime.degraded === true ? NaN : regime.vixProxy;
+      if (regime.degraded === true) {
+        log.warn("LIVE_MONITOR", `[Deleverage-EOD][Elza] regime DEGRADED (${regime.regimeReason}) — VIX untrustworthy → overnightGrossCap fails-closed (0.5×)`);
+      }
+    } catch (e: any) {
+      log.warn("LIVE_MONITOR", `[Deleverage-EOD][Elza] VIX proxy read failed: ${e?.message ?? e} — overnightGrossCap will fail-closed (0.5×)`);
+    }
+    const cap = overnightGrossCap(vix, currentGrossPct, ELZA_V45_CFG);
+    if (cap.trimNeededPct > 0) {
+      const elzaCapUsd = cap.targetGrossPct * cashBudget;
+      // Use the MORE defensive of the static 1.9× cap and the Elza VIX-aware target.
+      overnightCap = Math.min(staticOvernightCap, elzaCapUsd);
+      log.warn("LIVE_MONITOR",
+        `[Deleverage-EOD][Elza] ${cap.reason} | gross ${currentGrossPct.toFixed(2)}× → target ${cap.targetGrossPct.toFixed(2)}× ($${elzaCapUsd.toFixed(0)}); effective overnight cap $${overnightCap.toFixed(0)} (static was $${staticOvernightCap.toFixed(0)})`,
+        { vix, currentGrossPct, targetGrossPct: cap.targetGrossPct, elzaCapUsd, staticOvernightCap }
+      );
+    } else {
+      log.info("LIVE_MONITOR", `[Deleverage-EOD][Elza] ${cap.reason} — no extra Elza trim needed (gross ${currentGrossPct.toFixed(2)}×)`);
+    }
+    } // end else (live NLV read ok)
+  }
+
+  log.warn("LIVE_MONITOR",
+    `[Deleverage-EOD] Sweep triggered. Total deployed: $${totalDeployed.toFixed(0)} vs overnight cap: $${overnightCap.toFixed(0)} (cash base: $${cashBudget.toFixed(0)} × 1.9x)`,
+    { totalDeployed, overnightCap, cashBudget, openCount: openPos.length }
+  );
+
+  if (totalDeployed <= overnightCap) {
+    log.info("LIVE_MONITOR",
+      `[Deleverage-EOD] ✅ Portfolio within overnight cap ($${totalDeployed.toFixed(0)} <= $${overnightCap.toFixed(0)}). No action needed.`,
+      { totalDeployed, overnightCap }
+    );
+    return { trimmed: 0, failed: 0, uvBeforeUsd: totalDeployed, uvAfterUsd: totalDeployed };
+  }
+
+  const excess = totalDeployed - overnightCap;
+  log.warn("LIVE_MONITOR",
+    `[Deleverage-EOD] ⚠️ Over overnight cap by $${excess.toFixed(0)}. Trimming weakest positions...`,
+    { excess, overnightCap, totalDeployed }
+  );
+
+  // ── Free-Roll immunity (manual EOD-Trim only) ────────────────────────────────
+  // A free-rolled position has already shed 50% and trails on a breakeven stop — it
+  // carries ZERO downside risk overnight, so the manual owner trim must never flatten
+  // it. INERT for the cron: opts.excludeFreeRolled is undefined on the scheduled call
+  // (cron passes no opts), so trimCandidates === openPos and behavior is byte-identical.
+  const trimCandidates = opts.excludeFreeRolled
+    ? openPos.filter((p) => p.isFreeRolled !== 1)
+    : openPos;
+
+  // ── Sort: LOSERS first (ascending unrealized P&L), winners last ──────────────
+  const sorted = [...trimCandidates].sort((a, b) => {
+    // Use unrealizedPnlUsd if stored, otherwise compute from currentPrice
+    const unrealA = a.direction === "long"
+      ? ((a.currentPrice ?? a.entryPrice) - a.entryPrice) * a.units
+      : (a.entryPrice - (a.currentPrice ?? a.entryPrice)) * a.units;
+    const unrealB = b.direction === "long"
+      ? ((b.currentPrice ?? b.entryPrice) - b.entryPrice) * b.units
+      : (b.entryPrice - (b.currentPrice ?? b.entryPrice)) * b.units;
+    return unrealA - unrealB; // losers first (most negative P&L → closed first)
+  });
+
+  let trimmed = 0;
+  let failed  = 0;
+  let remainingExcess = excess;
+  const uvBeforeUsd = totalDeployed;
+
+  for (const pos of sorted) {
+    if (remainingExcess <= 0) break;
+
+    const posCapital = pos.allocatedCapital ?? (pos.entryPrice * pos.units);
+    const pnlUsd = (pos.currentPrice ?? pos.entryPrice) - pos.entryPrice;
+    const pnlPct = (pnlUsd / pos.entryPrice) * 100;
+
+    log.warn("LIVE_MONITOR",
+      `[Deleverage-EOD] Trimming ${pos.ticker} (P&L: ${pnlPct >= 0 ? "+" : ""}${pnlPct.toFixed(1)}%, Capital: $${posCapital.toFixed(0)}) to meet overnight margin compliance.`,
+      { ticker: pos.ticker, posCapital, pnlPct: +pnlPct.toFixed(2), remainingExcess }
+    );
+
+    const result = await executeLiveSell({
+      userId,
+      positionId: pos.id,
+      reason: `DELEVERAGE_EOD — overnight margin compliance (excess $${excess.toFixed(0)})`,
+    });
+
+    // EOD-2 FIX: executeLiveSell returning success means the exit order was ACCEPTED,
+    // NOT necessarily FILLED. Before counting the trim, VERIFY the broker position
+    // actually went to ~0. If it is still held by the bell → the excess carries
+    // overnight: do NOT count trimmed++/decrement remainingExcess, and fire an alert.
+    let trimVerified = false;
+    if (result.success && isElzaV45LiveEnabled(config)) {
+      const conid = await resolveConid(pos.ticker).catch(() => null);
+      let brokerHeld = await readBrokerPositionQty(conid, pos.ticker);
+      // One short re-poll — the fill may land a beat after the accept.
+      if (brokerHeld > 0) {
+        await new Promise((r) => setTimeout(r, 800));
+        brokerHeld = await readBrokerPositionQty(conid, pos.ticker);
+      }
+      trimVerified = brokerHeld <= 0;
+      if (!trimVerified) {
+        log.error("LIVE_MONITOR",
+          `[Deleverage-EOD] ⚠️ ${pos.ticker} exit accepted but STILL HELD (${brokerHeld}) at the broker — NOT counting as trimmed (excess carries overnight).`,
+          { ticker: pos.ticker, brokerHeld });
+        try {
+          void sendTelegramMessage(
+            `🚨 <b>EOD-TRIM FAILED (UNFILLED)</b>\n` +
+            `<b>${pos.ticker}</b> exit ACCEPTED but still held ${brokerHeld} at the bell — excess carries overnight. MANUAL flatten required.`
+          ).catch(() => {});
+        } catch { /* best-effort */ }
+      }
+    } else if (result.success) {
+      // Flag OFF (DEFAULT) → preserve today's behavior: accept = counted.
+      trimVerified = true;
+    }
+
+    if (result.success && trimVerified) {
+      // Cancel orphaned bracket orders
+      await cancelBracketOrders({
+        ticker: pos.ticker,
+        ibkrSlOrderId: (pos as any).ibkrSlOrderId,
+        ibkrTpOrderId: pos.ibkrTpOrderId,
+      });
+
+      trimmed++;
+      remainingExcess -= posCapital;
+      log.info("LIVE_MONITOR",
+        `[Deleverage-EOD] ✅ Closed ${pos.ticker} @ ~$${(pos.currentPrice ?? pos.entryPrice).toFixed(2)}. Remaining excess: $${Math.max(0, remainingExcess).toFixed(0)}`,
+        { ticker: pos.ticker, trimmedCount: trimmed, remainingExcess }
+      );
+    } else if (result.success && !trimVerified) {
+      // Accepted-but-unfilled: count as a failure, do NOT decrement remainingExcess.
+      failed++;
+    } else {
+      failed++;
+      log.error("LIVE_MONITOR",
+        `[Deleverage-EOD] ❌ Failed to close ${pos.ticker}: ${result.reason}`,
+        { ticker: pos.ticker, reason: result.reason }
+      );
+      // ── REQ 2 — a trim that fails to fill before the bell carries excess overnight.
+      // Fire a War-Room alert (reuse the same Telegram path the cron uses) so the owner
+      // can manually flatten. INERT unless armed: only fans out when the flag is ON, so
+      // default behavior (the cron's end-of-sweep summary) is unchanged.
+      if (isElzaV45LiveEnabled(config)) {
+        try {
+          void sendTelegramMessage(
+            `🚨 <b>EOD-TRIM FAILED</b>\n` +
+            `<b>${pos.ticker}</b> did NOT close before the bell — ${result.reason}\n` +
+            `Excess may carry overnight. MANUAL flatten required.`
+          ).catch(() => {});
+        } catch { /* best-effort */ }
+      }
+    }
+  }
+
+  const uvAfterUsd = Math.max(0, uvBeforeUsd - (trimmed > 0 ? excess - Math.max(0, remainingExcess) : 0));
+  log.info("LIVE_MONITOR",
+    `[Deleverage-EOD] Sweep complete. Trimmed: ${trimmed} | Failed: ${failed} | Deployed: $${uvBeforeUsd.toFixed(0)} → ~$${uvAfterUsd.toFixed(0)} | Overnight cap: $${overnightCap.toFixed(0)}`,
+    { trimmed, failed, uvBeforeUsd, uvAfterUsd, overnightCap }
+  );
+
+  return { trimmed, failed, uvBeforeUsd, uvAfterUsd };
+}
+
+// ── Emergency exit all positions ─────────────────────────────────────────────
+export async function emergencyExitAll(userId: number): Promise<{ closed: number; failed: number }> {
+  const db = await getDb();
+  if (!db) return { closed: 0, failed: 0 };
+
+  const openPos = await db.select({ id: livePositions.id })
+    .from(livePositions)
+    .where(and(eq(livePositions.userId, userId), eq(livePositions.status, "open")));
+
+  let closed = 0, failed = 0;
+  for (const pos of openPos) {
+    const result = await executeLiveSell({ userId, positionId: pos.id, reason: "EMERGENCY_EXIT" });
+    result.success ? closed++ : failed++;
+  }
+
+  log.info("LIVE_EXEC", `[EmergencyExit] closed=${closed} failed=${failed}`);
+  return { closed, failed };
+}
