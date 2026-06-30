@@ -18,7 +18,7 @@ import {
   isWaiterEnabled,
   computeAmbushLimit,
   computeRetestStop,
-  isNearRetestZone,
+  retestEligible,
   freeRetestSlots,
   retestSleeveUsed,
   subCapAllows,
@@ -30,6 +30,8 @@ import {
   confirmStpAbsentForFlatten,
   reconcileWaiterPositions,
   RETEST_AMBUSH_ABOVE_PCT,
+  RETEST_FOMO_ABOVE_PCT,
+  RETEST_MAX_DIST_PCT,
   RETEST_STOP_BELOW_PCT,
   RETEST_TOP_N,
   REQUOTE_DRIFT,
@@ -78,51 +80,81 @@ describe("Waiter INERT invariant (flag=0 ⇒ byte-identical)", () => {
   });
 });
 
-// ── (1) §2 ambush level — the SSOT evaluateRetestV2.limitPrice (FOMO-aligned anti-chase) ──
-//    computeAmbushLimit(limitPrice, structLevel, livePrice): consumes the THREADED
-//    evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped); applies penny + pullback +
-//    FOMO-cap guards. NO ×1.02 re-derivation. The §2-old +2% assertions are dropped.
-describe("Waiter §2 ambush level (evaluateRetestV2.limitPrice SSOT)", () => {
-  it("LMT = the threaded limitPrice (level×1.0075), placed when live > LMT AND live ≤ level×1.015", () => {
-    expect(RETEST_AMBUSH_ABOVE_PCT).toBe(0.0075);     // aligned to LIMIT_ABOVE_PCT/100
-    // structural level 100 → limitPrice 100.75 (level×1.0075). live 101 → above LMT (pullback)
-    // AND ≤ FOMO cap 101.50 → valid. LMT = the threaded limitPrice exactly (no re-derive).
-    const r = computeAmbushLimit(100.75, 100, 101);
+// ── (1) §2 ambush level — WAITER-ZIV-SSOT: LMT = retestLevel × 1.0075 (single SSOT) ──
+//    computeAmbushLimit(retestLevel, livePrice): derives the LMT from the threaded structural
+//    retestLevel (×1.0075). Only the FOMO cap (live>level×1.015) and the penny guard reject —
+//    a LMT ≥ live is ALLOWED (the ambush waits for the bounce above the level).
+describe("Waiter §2 ambush level (retestLevel × 1.0075 SSOT)", () => {
+  it("LMT === retestLevel × 1.0075 (single SSOT)", () => {
+    expect(RETEST_AMBUSH_ABOVE_PCT).toBe(0.0075);
+    expect(RETEST_FOMO_ABOVE_PCT).toBe(0.015);
+    // level 100 → LMT 100.75. live 101 ≤ FOMO cap 101.50 → valid.
+    const r = computeAmbushLimit(100, 101);
+    expect(r.limit).toBeCloseTo(100.75, 2);   // exactly level × 1.0075
+  });
+
+  it("REJECTS a null/absent retestLevel — NO EMA20 fallback (caller skips)", () => {
+    expect(computeAmbushLimit(null, 101).limit).toBe(0);
+    expect(computeAmbushLimit(undefined, 101).limit).toBe(0);
+    expect(computeAmbushLimit(0, 101).limit).toBe(0);
+    expect(computeAmbushLimit(100, 0).limit).toBe(0);   // no live price
+  });
+
+  it("ALLOWS a LMT ≥ live (ambush waits for the bounce — only FOMO + penny reject)", () => {
+    // level 100 → LMT 100.75; live 100.5 < LMT → still ALLOWED (≤ FOMO cap 101.50).
+    const r = computeAmbushLimit(100, 100.5);
     expect(r.limit).toBeCloseTo(100.75, 2);
-  });
-
-  it("REJECTS a null/absent limitPrice or structLevel — NO EMA20 fallback (caller skips)", () => {
-    expect(computeAmbushLimit(null, 100, 101).limit).toBe(0);
-    expect(computeAmbushLimit(undefined, 100, 101).limit).toBe(0);
-    expect(computeAmbushLimit(0, 100, 101).limit).toBe(0);
-    expect(computeAmbushLimit(100.75, null, 101).limit).toBe(0);
-    expect(computeAmbushLimit(100.75, 0, 101).limit).toBe(0);
-  });
-
-  it("REJECTS a LMT at/above the live price (anti-chase floor — price not yet pulled back)", () => {
-    // limitPrice 100.75; live 100.5 → LMT ≥ live → reject (not a pullback yet)
-    expect(computeAmbushLimit(100.75, 100, 100.5).limit).toBe(0);
+    // live exactly AT the level: LMT 100.75 ≥ live 100 → still ALLOWED.
+    expect(computeAmbushLimit(100, 100).limit).toBeCloseTo(100.75, 2);
   });
 
   it("REJECTS when live > level × 1.015 (FOMO anti-chase ceiling — too extended)", () => {
-    // structural level 100 → FOMO cap 101.50; live 102 > cap → reject (chasing an extended move)
-    expect(computeAmbushLimit(100.75, 100, 102).limit).toBe(0);
+    // level 100 → FOMO cap 101.50; live 102 > cap → reject (chasing an extended move)
+    expect(computeAmbushLimit(100, 102).limit).toBe(0);
   });
 
   it("REJECTS a sub-$2 LMT (penny guard)", () => {
-    expect(computeAmbushLimit(1.5, 1.49, 1.8).limit).toBe(0);
+    // level 1.5 → LMT 1.51 < $2 → reject.
+    expect(computeAmbushLimit(1.5, 1.51).limit).toBe(0);
   });
+});
 
-  it("zone requires price > retestLevel AND price > EMA50 (uptrend), within band", () => {
-    expect(isNearRetestZone({ livePrice: 102, retestLevel: 100, ema50: 95 }).near).toBe(true);
-    // below EMA50 → uptrend invalid
-    expect(isNearRetestZone({ livePrice: 94, retestLevel: 100, ema50: 95 }).near).toBe(false);
-    // below the retest support (broke through, not approaching from above)
-    expect(isNearRetestZone({ livePrice: 99, retestLevel: 100, ema50: 95 }).near).toBe(false);
-    // too far above support (>8%)
-    expect(isNearRetestZone({ livePrice: 110, retestLevel: 100, ema50: 95 }).near).toBe(false);
-    // null retestLevel → fail-closed
-    expect(isNearRetestZone({ livePrice: 102, retestLevel: null, ema50: 95 }).near).toBe(false);
+// ── (1a) §2 WAITER-ZIV-SSOT eligibility (the 8 conditions — the SAME gate War uses) ──────
+describe("Waiter §2 eligibility (retestEligible — Ziv SSOT, no evaluateRetestV2)", () => {
+  const base = { tier: "Gold Retest" as const, retestLevel: 100, weeklyBullish: true, live: 101, ema50: 95 };
+  it("ELIGIBLE: Gold Retest + WK-L + live>ema50 + distPct≤2% + live≥level×0.98 + not FOMO", () => {
+    expect(RETEST_MAX_DIST_PCT).toBe(2.0);
+    // live 101 → distPct 1.0% ≤ 2%, gap +1.0% ≤ 1.5% FOMO, live≥98 → eligible.
+    expect(retestEligible(base).eligible).toBe(true);
+  });
+  it("REJECTS tier ≠ Gold Retest", () => {
+    expect(retestEligible({ ...base, tier: "Gold Breakout" as any }).eligible).toBe(false);
+  });
+  it("REJECTS null retestLevel (no priorBreakoutLevel)", () => {
+    expect(retestEligible({ ...base, retestLevel: null as any }).eligible).toBe(false);
+  });
+  it("REJECTS weeklyBullish !== true (no WK-L)", () => {
+    expect(retestEligible({ ...base, weeklyBullish: false }).eligible).toBe(false);
+  });
+  it("REJECTS live ≤ ema50 (RT-08 daily uptrend invalid)", () => {
+    expect(retestEligible({ ...base, live: 94, ema50: 95 }).eligible).toBe(false);
+  });
+  it("REJECTS distPct > 2% (RT-03 not at the zone)", () => {
+    // live 103 → distPct 3% > 2% → reject.
+    expect(retestEligible({ ...base, live: 103 }).eligible).toBe(false);
+  });
+  it("REJECTS live < retestLevel × 0.98 (RT-04 broke below the floor)", () => {
+    // live 97.5 < 98 floor → reject (also distPct 2.5% > 2%, both fail; floor is binding intent).
+    expect(retestEligible({ ...base, live: 97.5 }).eligible).toBe(false);
+  });
+  it("ALLOWS live just below the level (pullback) within the floor + band", () => {
+    // live 99 → distPct 1.0% ≤ 2%, ≥ floor 98, gap −1.0% (not FOMO) → eligible.
+    expect(retestEligible({ ...base, live: 99 }).eligible).toBe(true);
+  });
+  it("REJECTS gapGuard FOMO: live > retestLevel × 1.015 (gap > 1.5%)", () => {
+    // To isolate FOMO from distPct, the gap>1.5% case (live 101.6) also exceeds distPct 2%? no:
+    // distPct 1.6% ≤ 2% but gap +1.6% > 1.5% → FOMO reject.
+    expect(retestEligible({ ...base, live: 101.6 }).eligible).toBe(false);
   });
 });
 
@@ -199,8 +231,8 @@ describe("Waiter §3b per-ticker maxPositionUsd cap (concentration BLOCKER)", ()
     // Reproduce the bug window: high NLV + tight retest stop (perShareRisk ≈ 1.7%).
     // entry = evaluateRetestV2.limitPrice = level × 1.0075, structStop = level × 0.99.
     const retestLevel = 100, nlv = 200_000, vix = 18;
-    // SSOT limitPrice for level 100 = 100.75; live 101 → above LMT, ≤ FOMO cap 101.5.
-    const entry = computeAmbushLimit(100.75, retestLevel, 101).limit;     // 100.75
+    // SSOT LMT for level 100 = 100.75 (level×1.0075); live 101 ≤ FOMO cap 101.5.
+    const entry = computeAmbushLimit(retestLevel, 101).limit;     // 100.75
     const stop = computeRetestStop({ retestLevel, entry, ema50: 95 }).stop; // 99.00 (struct, tighter)
     const sized = vixRiskSize({ nlv, entry, stop, vix });
     // Uncapped 1%-risk sizing at $200k NLV with ~3% per-share risk ⇒ notional far over $50k.
@@ -405,8 +437,8 @@ describe("Waiter R2 re-quote on EMA drift", () => {
 describe("Waiter parity (risk stays 1%, stop stays wideLungSL-bounded)", () => {
   it("retest ambush + structural-stop (wideLungSL-bounded) + vixRiskSize → 1%-risk floored qty", () => {
     const retestLevel = 100, ema50 = 98, nlv = 100_000, vix = 18;
-    // SSOT limitPrice for level 100 = 100.75; live 101 → pullback, ≤ FOMO cap 101.5.
-    const ambush = computeAmbushLimit(100.75, retestLevel, 101);     // 100.75 (evaluateRetestV2.limitPrice)
+    // SSOT LMT for level 100 = 100.75 (level×1.0075); live 101 ≤ FOMO cap 101.5.
+    const ambush = computeAmbushLimit(retestLevel, 101);     // 100.75 (retestLevel×1.0075)
     expect(ambush.limit).toBeCloseTo(100.75, 2);
     // structural stop just below support, bounded by wideLungSL (never wider than parity).
     const stopRes = computeRetestStop({ retestLevel, entry: ambush.limit, ema50 });

@@ -159,18 +159,15 @@ export interface WarEngineScan {
    */
   donchian20High?: number | null;
   /**
-   * THE RETEST FIX (2026-06-30 owner-ratified) — the SSOT evaluateRetestV2 outputs for a
-   * Gold-Retest candidate, threaded to the persisted `war_upcoming_signals` item so the
-   * Waiter consumes ONE retest reference (not a duplicated ×1.02 path):
-   *   • retestValid       = evaluateRetestV2(...).valid (the execution-window ARM gate).
-   *   • retestLimitPrice  = evaluateRetestV2(...).limitPrice (level×1.0075, FOMO-capped).
-   *   • retestStructLevel = the structural `level` evaluateRetestV2 used (FOMO-cap basis).
-   * Computed from the SAME `bars`+`zones` already loaded — NO extra fetch. Null/false when
-   * not a Gold-Retest setup or no qualifying zone. Waiter/display-only — never gates here.
+   * WAITER-ZIV-SSOT (2026-06-30 owner-ratified — DR_WAITER_ZIV_SSOT.md) — the weekly
+   * uptrend flag the Waiter eligibility gate reads (condition 3: `weeklyBullish === true`).
+   * = (classifyWeeklyTrend(bars).structure === "WK-L") — the SAME WK-L the war weekly gate
+   * uses. Threaded to the persisted item so the Waiter never recomputes weekly structure.
+   * The invented evaluateRetestV2 (retestValid/retestLimitPrice/retestStructLevel) persist
+   * is REMOVED — the Waiter is the SAME gate War uses (Ziv detectTrueRetest / GAP_02), not a
+   * third gate. The Waiter now derives its LMT from the threaded `retestLevel` (×1.0075).
    */
-  retestValid?: boolean;
-  retestLimitPrice?: number | null;
-  retestStructLevel?: number | null;
+  weeklyBullish?: boolean;
 }
 
 /**
@@ -937,25 +934,6 @@ export async function runWarEngineCycle(
         if (regime.longOk) {
           const ziv     = calcZivEngineScore(bars);
 
-          // ── THE RETEST FIX (SSOT) — evaluateRetestV2 once, for Gold-Retest names ──────
-          // The Waiter consumes ONE retest reference: evaluateRetestV2(...).limitPrice (NOT
-          // a duplicated ×1.02 ambush). Compute it HERE (zones + bars already in scope, NO
-          // extra fetch) for a Gold-Retest candidate and thread .valid / .limitPrice / .level
-          // onto the persisted item. Mirrors the gate's own evaluateRetestV2 call (~L1099):
-          // proximal zone via evaluateZoneGate, role-reversal override = ziv.retestLevel.
-          let _retestV2: { valid: boolean; limitPrice: number; level: number } | null = null;
-          if (ziv.tier === "Gold Retest") {
-            try {
-              const _zg = evaluateZoneGate(zones, bars[bars.length - 1].close, "long");
-              if (_zg.zone != null) {
-                const _rt = evaluateRetestV2(
-                  { zone: _zg.zone, direction: "long", priceAtSignal: bars[bars.length - 1].close, isFirstRetest: true },
-                  bars, ziv.retestLevel ?? null,
-                );
-                _retestV2 = { valid: _rt.valid, limitPrice: _rt.limitPrice, level: _rt.level };
-              }
-            } catch { _retestV2 = null; }
-          }
           // Phase 1: pull confidence score from most recent analysis for this ticker
           const tickerAssetConf = assets.find(a => a.ticker.toUpperCase() === ticker) as any;
           const confScore: number | undefined = tickerAssetConf?.score ?? undefined;
@@ -997,11 +975,9 @@ export async function runWarEngineCycle(
             // breakLevel = donchian20High × 1.005 is read off this in the entry loop.
             // Same Math.max-of-last-20-highs the v45 candidate cache surfaces (_d20High).
             donchian20High: bars.length ? Math.max(...bars.slice(-20).map(b => b.high)) : null,
-            // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs for the Waiter (null/false
-            // when not a Gold-Retest setup / no qualifying zone). Threaded → persisted item.
-            retestValid: _retestV2?.valid ?? false,
-            retestLimitPrice: _retestV2 && _retestV2.limitPrice > 0 ? +_retestV2.limitPrice.toFixed(2) : null,
-            retestStructLevel: _retestV2 && _retestV2.level > 0 ? +_retestV2.level.toFixed(2) : null,
+            // WAITER-ZIV-SSOT — the weekly uptrend flag the Waiter gate reads (condition 3).
+            // = WK-L (the SAME weekly structure the war weekly gate uses). No evaluateRetestV2.
+            weeklyBullish: wt.structure === "WK-L",
             // Ziv Phase 1 — surface weekly-state + zone-status for the candidates table.
             weeklyState: wt.structure,
             zoneStatus: evaluateZoneGate(zones, bars[bars.length - 1].close, "long").inZone ? "in" : "out",
@@ -2292,16 +2268,13 @@ export async function runWarEngineCycle(
             // THE WAITER (retest resting-LMT): the STRUCTURAL retest level (broken
             // resistance now acting as support — True Retest priorBreakoutLevel, else
             // Role-Reversal level) the resting LMT rests at, + the EMA-50 stop floor.
-            // The Waiter ambushes at retestLevel (NOT EMA20×1.005); null ⇒ no Waiter LMT.
+            // The Waiter ambushes at retestLevel×1.0075 (WAITER-ZIV-SSOT); null ⇒ no LMT.
             retestLevel: (c as any).invalidationLevel ?? null,
             ema50: (c as any).ema50 ?? null,
-            // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs the Waiter consumes:
-            // retestValid = the execution-window ARM gate; retestLimitPrice = the resting
-            // LMT price (level×1.0075, FOMO-capped); retestStructLevel = the structural
-            // level the limitPrice was derived from (anti-chase FOMO-cap basis).
-            retestValid: (c as any).retestValid ?? false,
-            retestLimitPrice: (c as any).retestLimitPrice ?? null,
-            retestStructLevel: (c as any).retestStructLevel ?? null,
+            // WAITER-ZIV-SSOT — the weekly uptrend flag (condition 3: weeklyBullish===true).
+            // = WK-L. The Waiter's gate is now the SAME one War uses (Ziv detectTrueRetest /
+            // GAP_02), not the invented evaluateRetestV2 third gate (removed).
+            weeklyBullish: (c as any).weeklyBullish ?? false,
             // DISPLAY-ONLY: signed daily % change ("שינוי יומי %" column). From the
             // scan's daily bars (no fetch); null ⇒ client renders "—".
             changePercent: (c as any).changePercent ?? null,
