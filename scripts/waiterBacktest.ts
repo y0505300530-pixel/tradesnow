@@ -1,19 +1,19 @@
 /**
  * waiterBacktest.ts — THE WAITER (retest resting-LMT entry model) backtest.
  *
- * REALIGNED 2026-06-30 to the CURRENT live Waiter engine (THE RETEST FIX). The retest
- * is a STRUCTURAL event, not EMA proximity. For each "Gold Retest" candidate this now
- * mirrors the live pipeline EXACTLY:
+ * REALIGNED 2026-06-30 to WAITER-ZIV-SSOT (DR_WAITER_ZIV_SSOT.md). The Waiter uses the
+ * SAME gate the War cycle uses to enter retests (Ziv detectTrueRetest / GAP_02), NOT the
+ * invented evaluateRetestV2 third gate (removed). For each "Gold Retest" candidate:
  *   1. Read the STRUCTURAL retestLevel DIRECTLY from calcZivEngineScore (ziv.retestLevel) —
  *      the SAME field the live war cycle threads to the Waiter. zivEngine sets it ONLY when
- *      the setup is a CONFIRMED structural retest (detectTrueRetest.isRetest > detectRoleReversal
- *      .isReversal), else null. NOT EMA20, NOT a raw base-high. No level → SKIP.
- *   2. Eligibility = evaluateRetestV2(zone, bars).valid — the SSOT execution window
- *      (in-band ±0.5×ATR + 5-close hold + not-FOMO). NOT the tier label. (Owner-ratified
- *      2026-06-30 — DR_WAITER_RETEST_ELIGIBILITY.md.)
- *   3. LMT = computeAmbushLimit(limitPrice, structLevel, livePrice).limit =
- *      evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped level×1.015). Anti-chase:
- *      place only when live > limitPrice AND live ≤ level×1.015. Penny guard inside.
+ *      the setup is a CONFIRMED structural retest (detectTrueRetest.isRetest > role-reversal),
+ *      else null. NOT EMA20, NOT a raw base-high. No level → SKIP.
+ *   2. Eligibility = retestEligible(...) — the 8 Ziv conditions: tier=Gold Retest,
+ *      retestLevel!=null, weeklyBullish (WK-L via classifyWeeklyTrend), live>ema50, distPct≤2%,
+ *      live≥level×0.98, gapGuard FOMO≤1.5% vs retestLevel, distPct≤5%. NO evaluateRetestV2,
+ *      NO detectZones, NO isNearRetestZone.
+ *   3. LMT = computeAmbushLimit(retestLevel, livePrice).limit = retestLevel × 1.0075 (single
+ *      SSOT, FOMO-capped at level×1.015). A LMT ≥ live is ALLOWED (ambush waits for the bounce).
  *   4. Stop = computeRetestStop({ retestLevel, entry: ambush, ema50 }).stop — structural
  *      (retestLevel × 0.99) bounded by wideLungSL. size = vixRiskSize (1% risk). Then
  *      capSharesToMaxPosition(maxPositionUsd) + the 30% retest-sleeve sub-cap.
@@ -44,9 +44,12 @@ import {
   computeAmbushLimit,
   computeRetestStop,
   capSharesToMaxPosition,
+  retestEligible,
+  RETEST_AMBUSH_ABOVE_PCT,
+  RETEST_FLOOR_BELOW_PCT,
 } from "../server/waiterEngine";
-import { evaluateRetestV2 } from "../server/trueRetestEngine";
-import { detectZones, evaluateZoneGate } from "../server/zonesEngine";
+import { isGapChase, GAP_GUARD_PCT } from "../server/gapGuard";
+import { classifyWeeklyTrend } from "../server/weeklyTrend";
 import { vixRiskSize } from "../server/engine/elzaV45Master";
 import { liveEngineConfig } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -113,7 +116,7 @@ interface RestingOrder {
   ticker: string;
   sector: string;
   placedDate: string;
-  restingLimit: number;     // evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped)
+  restingLimit: number;     // retestLevel × 1.0075 (single SSOT, FOMO-capped)
   stop: number;             // computeRetestStop (structural, wideLungSL-bounded)
   units: number;
   entryScore: number;
@@ -339,6 +342,11 @@ async function main() {
   const elza = buildElzaConfig(liveCfg);
   const STARTING_CAPITAL = elza.cashBudget;
 
+  if (process.env.WAITER_BT_TOUCH === "1") {
+    console.log("MODE: WAITER_BT_TOUCH=1 — daily-bar INTRADAY-TOUCH sanity (Stage A.2, NOT G2): eligibility gated on the daily bar RANGE (zone touched intraday), FOMO on the close.");
+  } else {
+    console.log("MODE: daily-CLOSE eligibility (canonical WAITER-ZIV-SSOT). Set WAITER_BT_TOUCH=1 for the intraday-touch sanity pass.");
+  }
   console.log(`Period: ${BACKTEST_START} → ${BACKTEST_END}`);
   console.log(`NLV: $${elza.totalNlv.toLocaleString()} | Cash budget: $${elza.cashBudget.toLocaleString()}`);
   console.log(`Retest sleeve: max ${elza.maxRetestSlots} slots | ${(elza.waiterNlvPct * 100).toFixed(0)}% NLV sub-cap | maxPos $${elza.maxPositionUsd.toLocaleString()}`);
@@ -375,21 +383,54 @@ async function main() {
   let restingCancelledInvalid = 0;               // setup invalidated while resting (live < EMA50)
   const fillDelays: number[] = [];               // bars from placement to fill
 
-  // ── Retest-funnel diagnostics: where do Gold-Retest candidates drop before a LMT rests? ──
+  // ── Retest-funnel diagnostics (WAITER-ZIV-SSOT): where do Gold-Retest candidates drop? ──
+  // STAGE A (funnel honesty): EVERY Gold-Retest tier hit MUST land in EXACTLY ONE bucket so the
+  // "7 passed but 0 placed" mystery is named. The eligibility drops are now split out of the
+  // single `notTier` bucket into the specific Ziv condition that rejected (notWeeklyBullish /
+  // belowEma50 / distPctBlocked / distTooFar / fomoBlocked / belowFloor), mapped off the SSOT
+  // retestEligible.reason markers (no formula duplication). `placed` is the terminal success.
   const funnel = {
-    goldRetestTier: 0,      // reached the Gold-Retest branch
-    noStructLevel: 0,       // (legacy) no structural retest level — now folded into notValid
-    notValid: 0,            // evaluateRetestV2.valid === false OR missing SSOT limitPrice/level
+    goldRetestTier: 0,      // reached the Gold-Retest branch (denominator)
+    // ── Eligibility drops (retestEligible / pre-floor) — the WHERE-the-9-hits-die buckets ──
+    notTier: 0,             // tier ≠ Gold Retest / retestLevel==null / bad live|ema50 (structural prereq)
+    notWeeklyBullish: 0,    // weeklyBullish !== true (no WK-L)
+    belowEma50: 0,          // live ≤ ema50 (RT-08 uptrend invalid)
+    distPctBlocked: 0,      // distPct > 2% (RT-03 not at the zone) — THE prime daily-close suspect
+    belowFloor: 0,          // live < retestLevel × 0.98 (RT-04 broke below the floor)
+    fomoBlocked: 0,         // gap > 1.5% vs level (EX-03) OR computeAmbushLimit FOMO/penny (ambushNull subset)
+    distTooFar: 0,          // distPct > 5% (EX-07 too far from the zone)
+    ambushNull: 0,          // computeAmbushLimit.limit ≤ 0 (penny guard / FOMO cap) AFTER eligible
+    // ── Post-eligibility caps (already named) ──
     slotFull: 0,            // maxRetestSlots used
-    zoneFail: 0,            // (legacy) isNearRetestZone — no longer the gate (kept = 0)
-    ambushNull: 0,          // computeAmbushLimit.limit <= 0 (anti-chase floor/FOMO-cap/penny)
     stopFail: 0,            // computeRetestStop.stop <= 0
     sizedOut: 0,            // vixRiskSize skip / 0 shares
     maxPosCap: 0,           // capSharesToMaxPosition < 1
     subCapBlock: 0,         // 30% sleeve sub-cap
     bpBlock: 0,             // allocatedCapital buying-power
-    placed: 0,
+    placed: 0,              // resting LMT actually placed (the G2 numerator)
   };
+
+  // STAGE A.2 — daily-bar intraday-touch SANITY (WAITER_BT_TOUCH=1). NOT G2. Gate eligibility on
+  // the daily bar's intraday RANGE (the ±2% zone was TOUCHED intraday) instead of the daily CLOSE,
+  // with FOMO still measured on the close. Cheap signal check: does the touch happen intraday even
+  // when the close is extended? Same downstream caps; reports placed under this mode.
+  const TOUCH_MODE = process.env.WAITER_BT_TOUCH === "1";
+
+  // STAGE B universe handoff: the set of tickers that EVER reached the Gold-Retest tier over the
+  // window. The 5m backtest (waiterBacktest5m.ts) runs ONLY these names (NOT the full 214 universe)
+  // to avoid Yahoo rate-limits — dumped at the end as a comma list + JSON.
+  const goldRetestTickers = new Set<string>();
+
+  // Map a retestEligible rejection to the specific funnel bucket via the SSOT reason markers.
+  function bucketEligDrop(reason: string) {
+    if (reason.includes("no WK-L")) { funnel.notWeeklyBullish++; return; }
+    if (reason.includes("RT-08")) { funnel.belowEma50++; return; }
+    if (reason.includes("RT-03")) { funnel.distPctBlocked++; return; }
+    if (reason.includes("RT-04")) { funnel.belowFloor++; return; }
+    if (reason.includes("EX-03")) { funnel.fomoBlocked++; return; }
+    if (reason.includes("EX-07")) { funnel.distTooFar++; return; }
+    funnel.notTier++;  // structural prereq: wrong tier / no retestLevel / bad live|ema50
+  }
 
   const sectorOf = (t: string) => assetMeta.find(a => a.ticker === t)?.sector ?? "Unknown";
   const dayIndex = new Map<string, number>();
@@ -583,8 +624,8 @@ async function main() {
     interface Cand {
       ticker: string; tier: "Gold Retest" | "Gold Breakout"; finalScore: number; bars: Bar[];
       ema20: number; ema50: number; retestLevel: number | null;
-      // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs (mirror the live war cycle).
-      retestValid: boolean; retestLimitPrice: number | null; retestStructLevel: number | null;
+      // WAITER-ZIV-SSOT — weeklyBullish (WK-L) threaded like the live war cycle.
+      weeklyBullish: boolean;
     }
     const candidates: Cand[] = [];
 
@@ -633,32 +674,12 @@ async function main() {
       // isReversal), else null. NOT EMA20, NOT a raw base-high.
       const retestLevel = (ziv as any).retestLevel ?? null;
 
-      // THE RETEST FIX (SSOT) — mirror the live war cycle EXACTLY: for a Gold-Retest name,
-      // run evaluateRetestV2 over the proximal demand zone (detectZones → evaluateZoneGate),
-      // role-reversal override = ziv.retestLevel. The Waiter ARMS only when .valid; the LMT
-      // price = .limitPrice (level×1.0075, FOMO-capped); the FOMO-cap basis = .level.
-      let retestValid = false;
-      let retestLimitPrice: number | null = null;
-      let retestStructLevel: number | null = null;
-      if (ziv.tier === "Gold Retest") {
-        try {
-          const zones = detectZones(histBars as any, { trend: "up" });
-          const zg = evaluateZoneGate(zones, histBars[histBars.length - 1].close, "long");
-          if (zg.zone != null) {
-            const rt = evaluateRetestV2(
-              { zone: zg.zone, direction: "long", priceAtSignal: histBars[histBars.length - 1].close, isFirstRetest: true },
-              histBars as any, retestLevel,
-            );
-            retestValid = rt.valid;
-            retestLimitPrice = rt.limitPrice > 0 ? +rt.limitPrice.toFixed(2) : null;
-            retestStructLevel = rt.level > 0 ? +rt.level.toFixed(2) : null;
-          }
-        } catch { /* no qualifying zone → not valid */ }
-      }
+      // WAITER-ZIV-SSOT — weeklyBullish = WK-L (the SAME classifyWeeklyTrend the war cycle uses).
+      const weeklyBullish = classifyWeeklyTrend(histBars as any).structure === "WK-L";
 
       candidates.push({
         ticker: t, tier: ziv.tier, finalScore: ziv.score, bars: histBars, ema20, ema50, retestLevel,
-        retestValid, retestLimitPrice, retestStructLevel,
+        weeklyBullish,
       });
     }
 
@@ -671,25 +692,50 @@ async function main() {
       const livePrice = bar.close;   // backtest "live price" = current bar close (no intraday quote)
 
       if (c.tier === "Gold Retest") {
-        // ── RESTING LMT path (THE WAITER — live-parity retest pipeline) ─────────────
+        // ── RESTING LMT path (THE WAITER — WAITER-ZIV-SSOT retest pipeline) ─────────────
         funnel.goldRetestTier++;
-        // OPTION-2 ELIGIBILITY (DR_WAITER_RETEST_ELIGIBILITY.md): ARM only when the SSOT
-        // evaluateRetestV2.valid === true (the in-band ±0.5×ATR + 5-close-hold + not-FOMO
-        // execution window) — NOT the tier label. No valid SSOT outputs → SKIP (no EMA20
-        // fallback). Byte-identical gating to placeNewRestingLimits.
-        if (c.retestValid !== true) { funnel.notValid++; continue; }
-        if (!(Number(c.retestLimitPrice) > 0) || !(Number(c.retestStructLevel) > 0)) { funnel.notValid++; continue; }
-        const retestLevel = c.retestStructLevel as number;
+        goldRetestTickers.add(c.ticker);   // STAGE B universe = the names that ever hit Gold-Retest tier
+        // WAITER-ZIV-SSOT eligibility (the SAME gate War uses — Ziv detectTrueRetest / GAP_02).
+        // ALL 8 conditions in retestEligible. STAGE A: each rejection is bucketed to the SPECIFIC
+        // Ziv condition (bucketEligDrop) so every tier hit lands in EXACTLY ONE bucket — no more
+        // unnamed "passed but 0 placed". Byte-identical gating to placeNewRestingLimits — NO
+        // evaluateRetestV2, NO detectZones, NO isNearRetestZone.
+        const retestLevel = c.retestLevel as number;
+
+        if (TOUCH_MODE) {
+          // ── STAGE A.2 — daily-bar intraday-touch SANITY (NOT G2) ───────────────────────
+          // Eligibility gated on the daily bar's intraday RANGE: the ±2% zone was TOUCHED intraday
+          // iff bar.low ≤ level×1.0075 AND bar.high ≥ level×0.98. Structural prereqs (tier / level /
+          // WK-L / live>ema50) still required; FOMO measured on the CLOSE (gapGuard via close-derived
+          // eligibility is too strict here, so we apply the structural + WK-L + ema50 + intraday-touch
+          // + close-FOMO gate explicitly, NOT the distPct-on-close gate that kills the daily pass).
+          if (!(Number(retestLevel) > 0)) { funnel.notTier++; continue; }
+          if (c.weeklyBullish !== true) { funnel.notWeeklyBullish++; continue; }
+          if (!(livePrice > c.ema50)) { funnel.belowEma50++; continue; }
+          const touchLow = retestLevel * (1 + RETEST_AMBUSH_ABOVE_PCT);   // level × 1.0075
+          const touchHigh = retestLevel * (1 - RETEST_FLOOR_BELOW_PCT);   // level × 0.98
+          const touched = bar.low <= touchLow && bar.high >= touchHigh;
+          if (!touched) { funnel.distPctBlocked++; continue; }            // zone not touched intraday
+          // FOMO on the close: skip when the close gapped > 1.5% above the level (still chasing).
+          if (isGapChase("long", retestLevel, livePrice, GAP_GUARD_PCT)) { funnel.fomoBlocked++; continue; }
+        } else {
+          // ── DAILY-CLOSE eligibility (the canonical WAITER-ZIV-SSOT gate) ───────────────
+          if (Number(retestLevel) > 0 && livePrice < (retestLevel as number) * 0.98) { funnel.belowFloor++; continue; }
+          const elig = retestEligible({
+            tier: c.tier, retestLevel: c.retestLevel, weeklyBullish: c.weeklyBullish, live: livePrice, ema50: c.ema50,
+          });
+          if (!elig.eligible) { bucketEligDrop(elig.reason); continue; }
+        }
 
         // Slot guard: open retests + resting LMTs < maxRetestSlots.
         const usedSlots = positions.filter(p => p.sleeve === "retest").length + resting.length;
         if (usedSlots >= elza.maxRetestSlots) { funnel.slotFull++; continue; }
 
-        // LMT price = the SSOT evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped).
-        // Anti-chase (FOMO-aligned): place only when live > limitPrice (a pullback) AND
-        // live ≤ level×1.015 (FOMO cap). Penny guard inside. NO ×1.02 re-derivation.
-        const ambush = computeAmbushLimit(c.retestLimitPrice, c.retestStructLevel, livePrice);
-        if (!(ambush.limit > 0)) { funnel.ambushNull++; continue; }
+        // LMT price = retestLevel × 1.0075 (single SSOT). Anti-chase: SKIP only on the FOMO
+        // cap (live > level×1.015) or the penny guard. A LMT ≥ live is ALLOWED (ambush waits
+        // for the bounce above the broken level).
+        const ambush = computeAmbushLimit(c.retestLevel, livePrice);
+        if (!(ambush.limit > 0)) { funnel.ambushNull++; continue; }   // penny guard / FOMO cap on the LMT
 
         // Structural stop = retestLevel × 0.99 bounded by wideLungSL (the SAME stop the
         // live resting bracket pairs). FAIL-CLOSED — skip on a non-positive stop.
@@ -838,13 +884,13 @@ async function main() {
   const results = {
     meta: {
       generatedAt: new Date().toISOString(),
-      model: "The Waiter — SSOT retest RESTING-LMT entry (evaluateRetestV2.valid gate, limitPrice=level×1.0075 FOMO-capped) vs Gold-Breakout market entry (elza-backtest exit ladder)",
+      model: "The Waiter — WAITER-ZIV-SSOT retest RESTING-LMT entry (same Ziv detectTrueRetest/GAP_02 gate War uses; LMT=retestLevel×1.0075 FOMO-capped) vs Gold-Breakout market entry (elza-backtest exit ladder)",
       period: { start: BACKTEST_START, end: BACKTEST_END, lookbackFrom: LOOKBACK_START },
       universe: { catalogueUsa: usaAssets.length, withData: activeTickers.length },
       waiterConfig: {
-        limitAbovePct: 0.0075,                    // limitPrice = level × 1.0075 (evaluateRetestV2.LIMIT_ABOVE_PCT)
-        fomoCapPct: 0.015,                         // anti-chase ceiling = level × 1.015 (FOMO_PCT)
-        eligibility: "evaluateRetestV2.valid",    // SSOT execution-window gate (NOT tier label)
+        limitAbovePct: 0.0075,                    // LMT = retestLevel × 1.0075 (single SSOT)
+        fomoCapPct: 0.015,                         // anti-chase ceiling = retestLevel × 1.015
+        eligibility: "WAITER-ZIV-SSOT (Gold Retest + WK-L + live>ema50 + distPct≤2% + live≥level×0.98 + gapGuard≤1.5%)",
         stopBelowPct: 0.01,                       // retestLevel × 0.99, wideLungSL-bounded
         maxRetestSlots: elza.maxRetestSlots,
         waiterNlvPct: elza.waiterNlvPct,
@@ -858,8 +904,8 @@ async function main() {
         perPositionUsd: elza.perPositionUsd,
       },
       assumptions: [
-        "RETEST eligibility = evaluateRetestV2(zone,bars).valid (SSOT execution window: in-band ±0.5×ATR + 5-close hold + not-FOMO); NOT tier label; false → SKIP",
-        "RETEST: resting LMT = evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped level×1.015); anti-chase: live>limitPrice AND live≤level×1.015",
+        "RETEST eligibility = WAITER-ZIV-SSOT (the SAME Ziv detectTrueRetest/GAP_02 gate War uses): Gold Retest + retestLevel!=null + WK-L weeklyBullish + live>ema50 + distPct≤2% + live≥level×0.98 + gapGuard FOMO≤1.5% + distPct≤5%; NO evaluateRetestV2/detectZones/isNearRetestZone",
+        "RETEST: resting LMT = retestLevel×1.0075 (single SSOT, FOMO-capped level×1.015); anti-chase: SKIP only on FOMO cap or penny; LMT≥live is ALLOWED (ambush waits for the bounce)",
         "FILL = first subsequent bar where low ≤ restingLimit; fill price = limit (passive pullback)",
         "Never pulled back / EOD-of-data → cancelled, NO trade",
         "RETEST size = vixRiskSize (1% NLV risk); stop = computeRetestStop (retestLevel×0.99, wideLungSL-bounded); capSharesToMaxPosition(maxPositionUsd)",
@@ -877,7 +923,10 @@ async function main() {
       fillRatePct: Math.round(fillRatePct * 10) / 10,
       avgFillDelayBars: Math.round(avgFillDelayBars * 100) / 100,
     },
+    mode: TOUCH_MODE ? "intraday-touch-sanity (A.2)" : "daily-close (canonical)",
     retestFunnel: funnel,
+    // STAGE B handoff — the names that EVER hit the Gold-Retest tier (the 5m-backtest universe).
+    goldRetestUniverse: [...goldRetestTickers].sort(),
     retestSleeve: retest,
     breakoutSleeve: breakout,
     sideBySide: {
@@ -903,11 +952,16 @@ async function main() {
   console.log(`Placed: ${restingPlaced} | Filled: ${restingFilled} | Expired(no-pullback/EOD): ${restingExpired} | Cancelled(invalid): ${restingCancelledInvalid}`);
   console.log(`Fill-rate: ${results.fillModel.fillRatePct}% | Avg fill-delay: ${results.fillModel.avgFillDelayBars} bars`);
 
-  console.log("\n=== RETEST FUNNEL (where Gold-Retest candidates drop) ===");
+  console.log(`\n=== RETEST FUNNEL (where Gold-Retest candidates drop — WAITER-ZIV-SSOT${TOUCH_MODE ? " | TOUCH-MODE (A.2 sanity, NOT G2)" : ""}) ===`);
   console.log(`GoldRetest tier hits: ${funnel.goldRetestTier}`);
-  console.log(`  ↓ notValid (evaluateRetestV2.valid=false / no SSOT): ${funnel.notValid} | slot full: ${funnel.slotFull} | ambush null (anti-chase/FOMO/penny): ${funnel.ambushNull}`);
-  console.log(`  ↓ stop fail: ${funnel.stopFail} | sized-out: ${funnel.sizedOut} | maxPos cap: ${funnel.maxPosCap} | 30%-cap: ${funnel.subCapBlock} | BP: ${funnel.bpBlock}`);
+  console.log(`  ↓ ELIGIBILITY drops: notTier(struct) ${funnel.notTier} | notWeeklyBullish ${funnel.notWeeklyBullish} | belowEma50 ${funnel.belowEma50} | distPctBlocked(>2%) ${funnel.distPctBlocked} | belowFloor(<level×0.98) ${funnel.belowFloor} | fomoBlocked(>1.5%) ${funnel.fomoBlocked} | distTooFar(>5%) ${funnel.distTooFar}`);
+  console.log(`  ↓ LMT/CAP drops: ambushNull(penny/FOMO-cap) ${funnel.ambushNull} | slotFull ${funnel.slotFull} | stopFail ${funnel.stopFail} | sizedOut ${funnel.sizedOut} | maxPosCap ${funnel.maxPosCap} | 30%-cap ${funnel.subCapBlock} | BP ${funnel.bpBlock}`);
   console.log(`  → LMTs placed: ${funnel.placed}`);
+  // Bucket-conservation assert: every tier hit lands in EXACTLY one bucket (funnel honesty).
+  const bucketSum = funnel.notTier + funnel.notWeeklyBullish + funnel.belowEma50 + funnel.distPctBlocked +
+    funnel.belowFloor + funnel.fomoBlocked + funnel.distTooFar + funnel.ambushNull + funnel.slotFull +
+    funnel.stopFail + funnel.sizedOut + funnel.maxPosCap + funnel.subCapBlock + funnel.bpBlock + funnel.placed;
+  console.log(`  Σ buckets = ${bucketSum} ${bucketSum === funnel.goldRetestTier ? "✓ (= tier hits)" : `✗ MISMATCH (tier hits ${funnel.goldRetestTier})`}`);
 
   console.log("\n=== RETEST SLEEVE (THE WAITER — the G2 gate) ===");
   console.log(`Round trips: ${retest.roundTrips} | Win-rate: ${retest.winRatePct}% | AvgR/Expectancy: ${retest.expectancyR}R/trade`);
@@ -941,6 +995,12 @@ async function main() {
     maxDrawdownPct: results.portfolio.maxDrawdownPct, verdict: go ? "GO" : "NO-GO",
   };
   console.log(`\n=== G2 GO/NO-GO (AvgR ≥ 0 = GO) ===\n${verdict}`);
+
+  // ── STAGE B HANDOFF: the Gold-Retest universe for the focused 5m backtest ──────────
+  const grList = [...goldRetestTickers].sort();
+  console.log(`\n=== GOLD-RETEST UNIVERSE (Stage B 5m-backtest input — ${grList.length} names) ===`);
+  console.log(grList.length ? grList.join(",") : "(none — no Gold-Retest tier hits in window)");
+  console.log("Run the 5m pass with:  WAITER_BT5M_TICKERS=\"" + grList.join(",") + "\" node --import tsx --env-file=.env scripts/waiterBacktest5m.ts");
   fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
   console.log(`\nWritten to ${outPath}`);
   process.exit(0);

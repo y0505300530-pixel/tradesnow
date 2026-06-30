@@ -32,6 +32,11 @@ import { runPyramidEngine }    from "./pyramidEngine";
 import { calcBearScore } from "./shortEngine";
 import { calcEntrySlTp, ema50FromBars, recommendedPositionSize } from "./slCalculator";
 import { calcMentorBoost, invalidateMentorPatternCache } from "./mentorScoreBoost";
+// ── SELECTED_TEAM rank priority (SORT-ONLY; owner-ratified 2026-06-30). The +0.4
+// boost feeds ONLY the derived ranking score — NEVER a gate, size, route, FOMO/anti-
+// chase, gapGuard, combinedGate, zivStructural floor, or the sector cap. See
+// server/selectedTeam.ts for the SSOT + invariant. ──
+import { getSelectedTeamSet, effectiveSortScore, SELECTED_TEAM_BOOST } from "./selectedTeam";
 import { getMarketRegime, getTickerIntelligence, calcCorrelation } from "./runtimeIntelligence";
 import { log } from "./logger";
 import { tryLiveEntry, getLiveConfig, isLiveMarketOpen, computeLiveCapital, resyncOptimisticBP } from "./liveOrderExecutor";
@@ -112,6 +117,13 @@ export interface WarEngineScan {
   baseScore:     number;
   mentorBonus:   number;
   finalScore:    number;
+  /**
+   * SELECTED_TEAM rank-priority bonus (0 or SELECTED_TEAM_BOOST=+0.4). SORT/RANK ONLY.
+   * NEVER added to finalScore/combined/zivStructural — those feed gates, sizing, and
+   * routing and MUST stay untouched. Consumed only via effectiveSortScore() at the
+   * candidate-sort and top-N sites. Display: surfaced in the `[team=+0.4]` log tag.
+   */
+  teamBonus?:    number;
   /** Structural component = min(ziv/bear + mentor, zivStructuralCap≤7.5). */
   zivStructural?: number;
   /** Kronos conviction addon 0..2.5 (0 when OFF/stale/miss/mismatch). */
@@ -159,18 +171,15 @@ export interface WarEngineScan {
    */
   donchian20High?: number | null;
   /**
-   * THE RETEST FIX (2026-06-30 owner-ratified) — the SSOT evaluateRetestV2 outputs for a
-   * Gold-Retest candidate, threaded to the persisted `war_upcoming_signals` item so the
-   * Waiter consumes ONE retest reference (not a duplicated ×1.02 path):
-   *   • retestValid       = evaluateRetestV2(...).valid (the execution-window ARM gate).
-   *   • retestLimitPrice  = evaluateRetestV2(...).limitPrice (level×1.0075, FOMO-capped).
-   *   • retestStructLevel = the structural `level` evaluateRetestV2 used (FOMO-cap basis).
-   * Computed from the SAME `bars`+`zones` already loaded — NO extra fetch. Null/false when
-   * not a Gold-Retest setup or no qualifying zone. Waiter/display-only — never gates here.
+   * WAITER-ZIV-SSOT (2026-06-30 owner-ratified — DR_WAITER_ZIV_SSOT.md) — the weekly
+   * uptrend flag the Waiter eligibility gate reads (condition 3: `weeklyBullish === true`).
+   * = (classifyWeeklyTrend(bars).structure === "WK-L") — the SAME WK-L the war weekly gate
+   * uses. Threaded to the persisted item so the Waiter never recomputes weekly structure.
+   * The invented evaluateRetestV2 (retestValid/retestLimitPrice/retestStructLevel) persist
+   * is REMOVED — the Waiter is the SAME gate War uses (Ziv detectTrueRetest / GAP_02), not a
+   * third gate. The Waiter now derives its LMT from the threaded `retestLevel` (×1.0075).
    */
-  retestValid?: boolean;
-  retestLimitPrice?: number | null;
-  retestStructLevel?: number | null;
+  weeklyBullish?: boolean;
 }
 
 /**
@@ -658,6 +667,10 @@ export async function runWarEngineCycle(
     // cfgKv carries the 7 tunable knobs. kronosOn=false ⇒ pure-ZIV mode (kill-switch:
     // addon forced 0, gate falls back to zivOnlyFloor — clean total bypass).
     const cfgKv = await getLiveConfig(userId);
+    // ── SELECTED_TEAM rank-priority set (read once per cycle; cached). SORT-ONLY. ──
+    // Members get a +0.4 RANKING bonus (effectiveSortScore) — NEVER a gate/size/route
+    // input. A non-team scan is byte-identical. Fails open to DEFAULT/empty, never throws.
+    const selectedTeam = await getSelectedTeamSet();
     // Match the read-helper threshold (kronosConvictionJob.ts: weight<0.5 snaps to 0).
     // Using >0 here would set kronosOn for a weight in (0,0.5) while the addon is hard-
     // zeroed → combined can never reach the 8.0 gate → the funnel silently freezes.
@@ -937,25 +950,6 @@ export async function runWarEngineCycle(
         if (regime.longOk) {
           const ziv     = calcZivEngineScore(bars);
 
-          // ── THE RETEST FIX (SSOT) — evaluateRetestV2 once, for Gold-Retest names ──────
-          // The Waiter consumes ONE retest reference: evaluateRetestV2(...).limitPrice (NOT
-          // a duplicated ×1.02 ambush). Compute it HERE (zones + bars already in scope, NO
-          // extra fetch) for a Gold-Retest candidate and thread .valid / .limitPrice / .level
-          // onto the persisted item. Mirrors the gate's own evaluateRetestV2 call (~L1099):
-          // proximal zone via evaluateZoneGate, role-reversal override = ziv.retestLevel.
-          let _retestV2: { valid: boolean; limitPrice: number; level: number } | null = null;
-          if (ziv.tier === "Gold Retest") {
-            try {
-              const _zg = evaluateZoneGate(zones, bars[bars.length - 1].close, "long");
-              if (_zg.zone != null) {
-                const _rt = evaluateRetestV2(
-                  { zone: _zg.zone, direction: "long", priceAtSignal: bars[bars.length - 1].close, isFirstRetest: true },
-                  bars, ziv.retestLevel ?? null,
-                );
-                _retestV2 = { valid: _rt.valid, limitPrice: _rt.limitPrice, level: _rt.level };
-              }
-            } catch { _retestV2 = null; }
-          }
           // Phase 1: pull confidence score from most recent analysis for this ticker
           const tickerAssetConf = assets.find(a => a.ticker.toUpperCase() === ticker) as any;
           const confScore: number | undefined = tickerAssetConf?.score ?? undefined;
@@ -982,6 +976,8 @@ export async function runWarEngineCycle(
           const longScan: WarEngineScan = {
             ticker, direction: "long",
             baseScore: ziv.score, mentorBonus: boost.bonus, finalScore: final,
+            // SORT-ONLY rank priority (never enters finalScore/combined/gates/sizing).
+            teamBonus: selectedTeam.has(ticker.toUpperCase()) ? SELECTED_TEAM_BOOST : 0,
             zivStructural, convictionAddon, combined, kronosStale: kAddon.stale,
             confluence: intel.confluenceScore, liquidity: intel.liquidityScore,
             regime: regime.regime, mentorReasons: boost.reasons,
@@ -997,11 +993,9 @@ export async function runWarEngineCycle(
             // breakLevel = donchian20High × 1.005 is read off this in the entry loop.
             // Same Math.max-of-last-20-highs the v45 candidate cache surfaces (_d20High).
             donchian20High: bars.length ? Math.max(...bars.slice(-20).map(b => b.high)) : null,
-            // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs for the Waiter (null/false
-            // when not a Gold-Retest setup / no qualifying zone). Threaded → persisted item.
-            retestValid: _retestV2?.valid ?? false,
-            retestLimitPrice: _retestV2 && _retestV2.limitPrice > 0 ? +_retestV2.limitPrice.toFixed(2) : null,
-            retestStructLevel: _retestV2 && _retestV2.level > 0 ? +_retestV2.level.toFixed(2) : null,
+            // WAITER-ZIV-SSOT — the weekly uptrend flag the Waiter gate reads (condition 3).
+            // = WK-L (the SAME weekly structure the war weekly gate uses). No evaluateRetestV2.
+            weeklyBullish: wt.structure === "WK-L",
             // Ziv Phase 1 — surface weekly-state + zone-status for the candidates table.
             weeklyState: wt.structure,
             zoneStatus: evaluateZoneGate(zones, bars[bars.length - 1].close, "long").inZone ? "in" : "out",
@@ -1212,6 +1206,8 @@ export async function runWarEngineCycle(
           const shortScan: WarEngineScan = {
             ticker, direction: "short",
             baseScore: bear.score, mentorBonus: boost.bonus, finalScore: final,
+            // SORT-ONLY rank priority (never enters finalScore/combined/gates/sizing).
+            teamBonus: selectedTeam.has(ticker.toUpperCase()) ? SELECTED_TEAM_BOOST : 0,
             zivStructural: zivStructuralS, convictionAddon: convictionAddonS, combined: combinedS, kronosStale: kAddonS.stale,
             confluence: intel.confluenceScore, liquidity: intel.liquidityScore,
             regime: regime.regime, mentorReasons: boost.reasons,
@@ -1302,9 +1298,17 @@ export async function runWarEngineCycle(
     }
 
     // ── 5. Execute entries — sorted by finalScore desc ───────────────────────
+    // SORT-ONLY rank priority: selected-team names rank higher via effectiveSortScore
+    // (finalScore + teamBonus, capped 10). This re-orders WHICH ENTERs are attempted
+    // first — it does NOT bypass any gate (the filter above already admitted only
+    // ENTERs), nor the per-direction slot caps, sector cap, budget, or sizing below,
+    // all of which still bind in iteration order. effectiveSortScore reads finalScore,
+    // never mutating it, so sizing/routing downstream are untouched.
     const candidates = allScans
       .filter(s => s.action === "ENTER")
-      .sort((a, b) => b.finalScore - a.finalScore);
+      .sort((a, b) =>
+        effectiveSortScore(b.finalScore, b.ticker, selectedTeam) -
+        effectiveSortScore(a.finalScore, a.ticker, selectedTeam));
 
     const warLiveConfig = await getLiveConfig(userId);
     const dynamicMaxPos      = warLiveConfig?.maxPositions      ?? MAX_WAR_POSITIONS;
@@ -2050,7 +2054,8 @@ export async function runWarEngineCycle(
             }
             dbLog("info", "SYSTEM",
               `[WarEngine] ✅ LONG ${c.ticker} @ $${currentPrice.toFixed(2)} score=${c.finalScore.toFixed(2)} ` +
-              `[base=${c.baseScore.toFixed(1)} mentor=+${c.mentorBonus.toFixed(2)}] LIVE Elza ` +
+              `[base=${c.baseScore.toFixed(1)} mentor=+${c.mentorBonus.toFixed(2)}` +
+              ((c.teamBonus ?? 0) > 0 ? ` team=+${(c.teamBonus ?? 0).toFixed(2)}` : "") + `] LIVE Elza ` +
               (c.mentorReasons.length ? `Patterns: ${c.mentorReasons.join(" | ")}` : "")
             );
           } else {
@@ -2126,7 +2131,8 @@ export async function runWarEngineCycle(
               if (_secS) _openSectorCounts.set(_secS, (_openSectorCounts.get(_secS) ?? 0) + 1);
             }
             dbLog("info", "SYSTEM",
-              `[WarEngine] 🩳 SHORT ${c.ticker} @ $${currentPrice.toFixed(2)} score=${c.finalScore.toFixed(2)} LIVE Elza ` +
+              `[WarEngine] 🩳 SHORT ${c.ticker} @ $${currentPrice.toFixed(2)} score=${c.finalScore.toFixed(2)}` +
+              ((c.teamBonus ?? 0) > 0 ? ` [team=+${(c.teamBonus ?? 0).toFixed(2)}]` : "") + ` LIVE Elza ` +
               (c.mentorReasons.length ? `Patterns: ${c.mentorReasons.join(" | ")}` : "")
             );
           } else {
@@ -2209,7 +2215,12 @@ export async function runWarEngineCycle(
     const topCandidates = filterOpenFromUpcoming(
       allScans
         .filter(s => s.finalScore >= 6)
-        .sort((a, b) => b.finalScore - a.finalScore),
+        // SORT-ONLY rank priority: team names rank higher in the candidate list AND in
+        // the persisted war_upcoming_signals (which feeds the Armed-Watcher top-N). The
+        // ≥6 admission filter above is UNCHANGED — teamBonus never lifts a sub-6 name in.
+        .sort((a, b) =>
+          effectiveSortScore(b.finalScore, b.ticker, selectedTeam) -
+          effectiveSortScore(a.finalScore, a.ticker, selectedTeam)),
       { heldLong: heldLongForPreview, heldShort: heldShortForPreview },
     ).slice(0, 20);   // owner 2026-06-30: candidate list 10→20
 
@@ -2292,16 +2303,13 @@ export async function runWarEngineCycle(
             // THE WAITER (retest resting-LMT): the STRUCTURAL retest level (broken
             // resistance now acting as support — True Retest priorBreakoutLevel, else
             // Role-Reversal level) the resting LMT rests at, + the EMA-50 stop floor.
-            // The Waiter ambushes at retestLevel (NOT EMA20×1.005); null ⇒ no Waiter LMT.
+            // The Waiter ambushes at retestLevel×1.0075 (WAITER-ZIV-SSOT); null ⇒ no LMT.
             retestLevel: (c as any).invalidationLevel ?? null,
             ema50: (c as any).ema50 ?? null,
-            // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs the Waiter consumes:
-            // retestValid = the execution-window ARM gate; retestLimitPrice = the resting
-            // LMT price (level×1.0075, FOMO-capped); retestStructLevel = the structural
-            // level the limitPrice was derived from (anti-chase FOMO-cap basis).
-            retestValid: (c as any).retestValid ?? false,
-            retestLimitPrice: (c as any).retestLimitPrice ?? null,
-            retestStructLevel: (c as any).retestStructLevel ?? null,
+            // WAITER-ZIV-SSOT — the weekly uptrend flag (condition 3: weeklyBullish===true).
+            // = WK-L. The Waiter's gate is now the SAME one War uses (Ziv detectTrueRetest /
+            // GAP_02), not the invented evaluateRetestV2 third gate (removed).
+            weeklyBullish: (c as any).weeklyBullish ?? false,
             // DISPLAY-ONLY: signed daily % change ("שינוי יומי %" column). From the
             // scan's daily bars (no fetch); null ⇒ client renders "—".
             changePercent: (c as any).changePercent ?? null,

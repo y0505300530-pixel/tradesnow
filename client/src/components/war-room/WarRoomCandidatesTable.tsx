@@ -20,7 +20,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, BellOff, CheckCircle2, ChevronLeft, CornerDownLeft, Radar, Rocket, ShieldAlert } from "lucide-react";
+import { AlertTriangle, BellOff, CheckCircle2, ChevronLeft, CornerDownLeft, Radar, Rocket, ShieldAlert, Star } from "lucide-react";
 
 // Authoritative live watcher map + open-position tickers come from getStatus():
 //   data.summary.watcherStatus  →  Record<ticker, "ARMED"|"CROSSED"|"HELD_5M"|"BLOCKED"|...>
@@ -79,6 +79,12 @@ export type WarRoomCandidatesTableProps = {
    * Optional — accepts an array or a Set; absent ⇒ rung 6 relies on watcherStatus only.
    */
   openPositionTickers?: string[] | Set<string> | null;
+  /**
+   * Owner's "נבחרת" (Selected Team) — the priority tickers from getStatus().selectedTeam.
+   * Optional — absent ⇒ no ⭐ chip renders (auto-lights-up once backhand lands the field).
+   * Accepts an array of tickers (case-insensitive).
+   */
+  selectedTeam?: string[] | null;
   className?: string;
 };
 
@@ -156,6 +162,22 @@ function SignalTypeBadge({ candidate, compact }: { candidate: WarRoomCandidate; 
     >
       {m.icon}
       {m.label}
+    </Badge>
+  );
+}
+
+// ── ⭐ נבחרת (Selected Team) chip — owner's priority ticker ─────────────────────
+// Gold/amber, icon + text (never color-alone), ≥11px, wraps cleanly at 375px.
+// Renders nothing unless the ticker is in the owner's selectedTeam set.
+function SelectedTeamChip() {
+  return (
+    <Badge
+      title="נבחרת — טיקר עדיפות של הבעלים"
+      aria-label="נבחרת — טיקר עדיפות של הבעלים"
+      className="px-1.5 py-0.5 min-h-[20px] text-[11px] font-bold tracking-wide gap-1 whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-100"
+    >
+      <Star className="w-3 h-3 shrink-0 fill-amber-500 text-amber-500" aria-hidden />
+      נבחרת
     </Badge>
   );
 }
@@ -448,8 +470,22 @@ export function WarRoomCandidatesTable({
   headerExtra,
   watcherStatusMap,
   openPositionTickers,
+  selectedTeam,
   className,
 }: WarRoomCandidatesTableProps) {
+  // Owner's "נבחרת" priority set — uppercase, defensive. Falls back to a `selectedTeam`
+  // field threaded onto the candidates payload, so the ⭐ chip auto-lights-up whether
+  // backhand surfaces it as a top-level prop or rides it on the rows. Empty ⇒ no chip.
+  const selectedTeamSet = new Set(
+    (selectedTeam ?? (candidates as any)?.selectedTeam ?? [])
+      .filter((t: any) => t != null)
+      .map((t: any) => String(t).toUpperCase()),
+  );
+  const inSelectedTeam = (c: WarRoomCandidate): boolean =>
+    selectedTeamSet.has(String(c?.ticker ?? "").toUpperCase()) ||
+    (c as any)?.inSelectedTeam === true ||
+    (c as any)?.selectedTeam === true;
+
   // Normalise open-position tickers → uppercase Set (accepts array | Set | null).
   const openTickers = new Set(
     (Array.isArray(openPositionTickers)
@@ -544,9 +580,10 @@ export function WarRoomCandidatesTable({
                     >
                       <TableCell className="py-3 px-3 text-sm font-mono text-slate-400">{i + 1}</TableCell>
                       <TableCell className="py-3 px-3">
-                        <span className="inline-flex items-center gap-1.5 font-mono font-bold text-base text-slate-900 group-hover:text-blue-700 group-hover:underline">
+                        <span className="inline-flex items-center gap-1.5 flex-wrap font-mono font-bold text-base text-slate-900 group-hover:text-blue-700 group-hover:underline">
                           {c.ticker}
                           <ChevronLeft className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
+                          {inSelectedTeam(c) ? <SelectedTeamChip /> : null}
                         </span>
                         {c.tier ? (
                           <span className="block text-[11px] text-slate-400 font-medium mt-0.5">{c.tier}</span>
@@ -637,10 +674,11 @@ export function WarRoomCandidatesTable({
                 >
                   {/* Row 1 — ticker (+tier) ............ score + block badge */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                       <span className="text-[11px] font-mono text-slate-400 shrink-0">{i + 1}</span>
                       <span className="font-mono font-bold text-base text-slate-900 shrink-0">{c.ticker}</span>
                       <ChevronLeft className="w-4 h-4 text-slate-300 shrink-0" />
+                      {inSelectedTeam(c) ? <span className="shrink-0"><SelectedTeamChip /></span> : null}
                       <span className="shrink-0"><SignalTypeBadge candidate={c} compact /></span>
                       {c.tier ? <span className="text-[11px] text-slate-400 truncate">{c.tier}</span> : null}
                     </div>

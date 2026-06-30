@@ -879,6 +879,16 @@ export const liveEngineRouter = {
       }
     } catch { /* regime is display-only — never break getStatus on a parse error */ }
 
+    // ── SELECTED_TEAM rank-priority list (DISPLAY-ONLY — for the ⭐ candidate tag) ──
+    // The owner-editable selected_team set drives a SORT-ONLY ranking bonus in the War
+    // Engine + Armed-Watcher; here we merely surface the membership list so the client
+    // can render a star. NEVER gates/sizes/orders. Empty array on any read fault.
+    let selectedTeam: string[] = [];
+    try {
+      const { getSelectedTeamSet } = await import("../selectedTeam");
+      selectedTeam = [...(await getSelectedTeamSet())];
+    } catch { /* display-only — never break getStatus */ }
+
     // ── Leverage (long/short-aware), computed server-side each poll ──
     // Exposure = |currentPrice × units| — the SAME basis the War Room rows and the War Engine
     // budget use (gross deployed), so the leverage shown matches them. (The IBKR /pnl `mv` field
@@ -887,6 +897,43 @@ export const liveEngineRouter = {
     const _longExp  = positions.reduce((s: number, p: any) => s + (p.direction === "short" ? 0 : _expOf(p)), 0);
     const _shortExp = positions.reduce((s: number, p: any) => s + (p.direction === "short" ? _expOf(p) : 0), 0);
     const _nlvLev   = liveNlv > 0 ? liveNlv : 1;
+
+    // ── THE WAITER — read-only state for the War Room (resting orders + 30%-sleeve $) ──
+    // DISPLAY-ONLY. When waiterEnabled=0 no Waiter rows exist → empty/zeroed (never gates,
+    // never sizes, never orders). Resting = isWaiterEntry pending_entry LMTs; managed =
+    // isWaiterEntry open positions. sleeveUsed = committed retest notional (the 30% sub-cap).
+    let _waiter: {
+      enabled: boolean; maxRetestSlots: number; waiterNlvPct: number;
+      restingCount: number; managedCount: number; freeSlots: number;
+      sleeveUsedUsd: number; sleeveCapUsd: number;
+      resting: Array<{ ticker: string; limit: number; qty: number; stop: number; notionalUsd: number }>;
+    } = {
+      enabled: ((config as any)?.waiterEnabled ?? 0) === 1,
+      maxRetestSlots: Number((config as any)?.maxRetestSlots ?? 8),
+      waiterNlvPct: Number((config as any)?.waiterNlvPct ?? 0.30),
+      restingCount: 0, managedCount: 0, freeSlots: 0,
+      sleeveUsedUsd: 0, sleeveCapUsd: 0, resting: [],
+    };
+    try {
+      const { freeRetestSlots, retestSleeveUsed } = await import("../waiterEngine");
+      const _wRows = await db.select().from(livePositions)
+        .where(and(eq(livePositions.userId, ctx.user.id),
+          inArray(livePositions.status, ["open", "pending_entry"] as any)));
+      const _waiterRows = (_wRows as any[]).filter((r) => (r.isWaiterEntry ?? 0) === 1);
+      const _resting = _waiterRows.filter((r) => r.status === "pending_entry");
+      _waiter.restingCount = _resting.length;
+      _waiter.managedCount = _waiterRows.filter((r) => r.status === "open").length;
+      _waiter.freeSlots = freeRetestSlots(_waiterRows as any, _waiter.maxRetestSlots);
+      _waiter.sleeveUsedUsd = +retestSleeveUsed(_waiterRows as any).toFixed(0);
+      _waiter.sleeveCapUsd = +(liveNlv * _waiter.waiterNlvPct).toFixed(0);
+      _waiter.resting = _resting.map((r) => ({
+        ticker: String(r.ticker).toUpperCase(),
+        limit: +Number(r.entryPrice ?? 0).toFixed(2),
+        qty: Math.abs(Number(r.requestedQty ?? r.units ?? 0)),
+        stop: +Number(r.initialSl ?? 0).toFixed(2),
+        notionalUsd: +Number(r.allocatedCapital ?? 0).toFixed(0),
+      }));
+    } catch { /* Waiter state is display-only — never break getStatus */ }
 
     const { countSlotsFromPositions } = await import("../slotCounter");
     const _slotSummary = countSlotsFromPositions(
@@ -911,9 +958,11 @@ export const liveEngineRouter = {
       upcomingSignals,
       upcomingSignalsTs,
       regime,
+      selectedTeam,   // owner-picked rank-priority tickers (DISPLAY: ⭐ tag; SORT-only boost server-side)
       summary: {
         openPositions: positions.length,
         slotSummary: _slotSummary,
+        waiter: _waiter,   // THE WAITER read-only state (resting orders, 30%-sleeve used $)
         entriesToday,
         maxDailyOrders: (config as any).maxDailyOrders ?? 50,
         leverage: {

@@ -609,9 +609,13 @@ async function runDailyBasePriceSnapshot() {
 }
 
 /**
- * Fetch the official RTH close (regularMarketPrice) from Yahoo Finance for a batch of tickers.
- * This is the 16:00 ET closing price — the same baseline IBKR App uses for CHG%.
- * Returns a Map<ticker, rthCloseInUSD>.
+ * Fetch the PRIOR-session RTH close from Yahoo Finance for a batch of tickers.
+ * This is the baseline against which "today's change" is measured (current − priorClose).
+ * Uses the second-to-last non-null daily bar close (chart.result[0].indicators.quote[0].close),
+ * NOT meta.regularMarketPrice (which is the LATEST/today's close → would yield +0.00% for a
+ * .TA ticker snapshotted at 23:30 IL after TASE close). Falls back to regularMarketPrice only
+ * when fewer than 2 daily bars are available (no prior day — never fabricate).
+ * Returns a Map<ticker, priorCloseInUSD>.
  *
  * For .TA tickers: Yahoo returns price in ILA (Agorot), converted to USD via ILS rate.
  * Rate limiting: 5 tickers per parallel batch, 300ms delay between batches.
@@ -662,10 +666,29 @@ async function fetchYahooRthCloses(tickers: string[]): Promise<Map<string, numbe
         if (!text.trimStart().startsWith("{")) return { ticker, price: null };
         const data = JSON.parse(text);
 
-        const meta = data?.chart?.result?.[0]?.meta;
-        if (!meta?.regularMarketPrice) return { ticker, price: null };
+        const result0 = data?.chart?.result?.[0];
+        const meta = result0?.meta;
+        if (!meta) return { ticker, price: null };
 
-        const rawPrice: number = meta.regularMarketPrice;
+        // ── dailyBasePrice MUST be the PRIOR-session close (the baseline for "today's change"). ──
+        // Yahoo's meta.regularMarketPrice is the LATEST session close — for a .TA ticker fetched
+        // at 23:30 IL (after TASE close ~17:25 IL) that is TODAY's close, so current−base = 0.
+        // Instead take the second-to-last non-null daily close from the chart bars = yesterday's
+        // RTH close. This is the correct start-of-day baseline for ALL tickers (US + .TA alike):
+        // the displayed "today's change" is always (current − prior-session close).
+        const closes: Array<number | null> | undefined =
+          result0?.indicators?.quote?.[0]?.close;
+        const nonNullCloses = Array.isArray(closes)
+          ? closes.filter((c): c is number => typeof c === "number" && c > 0)
+          : [];
+        // Need at least 2 sessions to know the PRIOR close. With only 1 (or 0) bar there is no
+        // prior day → fall back to meta.regularMarketPrice (preserve old behavior, never fabricate).
+        const priorClose: number | null =
+          nonNullCloses.length >= 2 ? nonNullCloses[nonNullCloses.length - 2] : null;
+
+        if (priorClose == null && !meta.regularMarketPrice) return { ticker, price: null };
+
+        const rawPrice: number = priorClose ?? meta.regularMarketPrice;
         const currency: string = meta.currency ?? "USD";
 
         // Convert to USD: ILA (agorot) → ÷100÷rate; ILS (shekel) → ÷rate; USD → passthrough
@@ -1747,6 +1770,35 @@ async function _startAlertPollerAsync() {
   };
   setTimeout(tickPhoenixWatcher, 25_000);
   setInterval(tickPhoenixWatcher, 60_000);
+
+  // ── THE WAITER — retest resting-LMT tick — 75s (INERT until waiterEnabled=1) ──────
+  // The flag is read at the TOP of runWaiterTick — flag=0 ⇒ it returns IMMEDIATELY before
+  // ANY candidate load / order / DB write / extra fetch, so this interval is byte-identical
+  // to a no-op today. When ON it (1) MANAGES the resting/filled Waiter book first (never-
+  // naked / falling-knife / EOD / R2 re-quote), then (2) places new resting LMTs for fresh
+  // GOLD_RETEST_WAR candidates under the shared entrySlotLock (atomic slot + 30% sub-cap +
+  // shared optimistic-BP). Market-open guarded + a reentrancy latch so a 75s tick never
+  // stacks on a slow predecessor. Mirrors tickArmedWatcher / tickPhoenixWatcher exactly.
+  let _waiterWatcherRunning = false;
+  const WAITER_TICK_MS = 75_000;
+  const tickWaiter = async () => {
+    try {
+      if (!isIbkrSyncMarketOpen()) return;
+      if (_waiterWatcherRunning) return;
+      _waiterWatcherRunning = true;
+      try {
+        const { runWaiterTick } = await import("./waiterEngine");
+        await runWaiterTick(1);                 // flag=0 ⇒ early-returns (inert)
+      } finally {
+        _waiterWatcherRunning = false;
+      }
+    } catch (e) {
+      _waiterWatcherRunning = false;
+      console.warn("[Waiter] tick error:", e);
+    }
+  };
+  setTimeout(tickWaiter, 30_000);
+  setInterval(tickWaiter, WAITER_TICK_MS);
 
   // ── SL/TP Enforcement CRON (every 5 min, market hours) — full sync ───────
   // Same logic as War Room "סנכרן SL/TP" button (orphans + qty fix + place missing)

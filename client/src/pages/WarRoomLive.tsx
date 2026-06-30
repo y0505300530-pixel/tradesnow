@@ -1688,6 +1688,7 @@ export default function WarRoomLive() {
                       onTickerClick={(t) => setV45Ticker(t)}
                       onSnooze={(t) => snoozeTicker(t)}
                       watcherStatusMap={(data as any)?.summary?.watcherStatus}
+                      selectedTeam={(data as any)?.selectedTeam}
                       openPositionTickers={((data as any)?.positions ?? []).map((p: any) => p?.ticker)}
                       headerExtra={
                         <>

@@ -30,8 +30,8 @@
  * fail-closed in warEngine.ts.
  *
  * State machine (design §7):
- *   ARMED ─(live ≥ breakLevel)─▶ CROSSED ─(5m close ≥ level & RVOL≥1.5)─▶ HELD_5M ─▶ ENTER
- *     └─(live > breakLevel×1.025)──────────────────────────────────────▶ BLOCKED (anti-chase)
+ *   ARMED ─(live ≥ breakLevel)─▶ CROSSED ─(5m close ≥ level & RVOL≥1.2)─▶ HELD_5M ─▶ ENTER
+ *     └─(live > breakLevel×1.035)──────────────────────────────────────▶ BLOCKED (anti-chase)
  *     └─(confirm data unavailable)── stays CROSSED, retry next tick (FAIL-CLOSED)
  */
 
@@ -40,6 +40,9 @@ import { fetchIbkrLivePricesBatch } from "./marketData";
 import { fetchIntradayBarsForTicker, filterRegularSession, type IntradayBar } from "./intradayMarketData";
 import { getDb } from "./db";
 import { dbLog } from "./persistentLogger";
+// SELECTED_TEAM rank priority (SORT-ONLY) — favors team names into the watcher top-N.
+// Never touches the state machine, ARM_PROXIMITY, or anti-chase. See server/selectedTeam.ts.
+import { getSelectedTeamSet } from "./selectedTeam";
 
 // ── Constants (design Appendix §7 — pinned, backtestable) ────────────────────────
 /** breakLevel = donchian20High × BREAK_MULT (the breakout line). */
@@ -74,9 +77,9 @@ export function breakLevelFor(donchian20High: number): number {
 
 /**
  * classifyCrossState — PURE state classifier from the LIVE cross alone.
- *   live > breakLevel×1.025  → BLOCKED (anti-chase; chased breakout, no entry today)
+ *   live > breakLevel×1.035  → BLOCKED (anti-chase; chased breakout, no entry today)
  *   live ≥ breakLevel        → CROSSED (awaits the 5m-hold + RVOL confirm)
- *   live ≥ breakLevel×(1−1%) → ARMED   (within 1% below the line)
+ *   live ≥ breakLevel×(1−4%) → ARMED   (within ARM_PROXIMITY below the line)
  *   otherwise                → null    (not yet armed — not watched)
  * donchian≤0 ⇒ null (cannot define a breakLevel → never armed, never blocked).
  */
@@ -166,6 +169,7 @@ export function is5mHoldConfirmed(
 export function buildArmList(
   candidates: WatcherCandidate[],
   livePriceByTicker: Map<string, number>,
+  selectedTeam: Set<string> = new Set<string>(),
 ): Array<{ ticker: string; state: WatcherState; livePrice: number; breakLevel: number; readinessPct: number }> {
   const out: Array<{ ticker: string; state: WatcherState; livePrice: number; breakLevel: number; readinessPct: number }> = [];
   for (const c of candidates) {
@@ -181,8 +185,16 @@ export function buildArmList(
     });
   }
   // Imminence rank: readiness desc, then closeness to breakLevel (smaller gap first).
+  // SELECTED_TEAM rank priority is SORT-ONLY: a team membership outranks a non-team
+  // peer of equal readiness, favoring team names into the top-N. It NEVER changes
+  // classifyCrossState (the ARM/CROSS/BLOCKED state machine), ARM_PROXIMITY, or anti-
+  // chase — a team name that is BLOCKED stays BLOCKED and never confirms/enters.
+  const isTeam = (t: string) => selectedTeam.has(t.toUpperCase());
   out.sort((a, b) => {
     if (b.readinessPct !== a.readinessPct) return b.readinessPct - a.readinessPct;
+    const ta = isTeam(a.ticker) ? 1 : 0;
+    const tb = isTeam(b.ticker) ? 1 : 0;
+    if (tb !== ta) return tb - ta;   // team-member tiebreak (rank-priority, sort-only)
     const gapA = a.breakLevel > 0 ? Math.abs(a.livePrice - a.breakLevel) / a.breakLevel : Infinity;
     const gapB = b.breakLevel > 0 ? Math.abs(b.livePrice - b.breakLevel) / b.breakLevel : Infinity;
     return gapA - gapB;
@@ -314,7 +326,11 @@ export async function runArmedWatcherTick(userId: number): Promise<void> {
       if (px > 0) livePriceByTicker.set(c.ticker.toUpperCase(), px);
     }
 
-    const armed = buildArmList(candidates, livePriceByTicker);
+    // SORT-ONLY rank priority: bias selected-team names into the watched top-N. Read
+    // is best-effort (fails open to empty → byte-identical ordering) and never throws.
+    let _team = new Set<string>();
+    try { _team = await getSelectedTeamSet(); } catch { /* sort hint only */ }
+    const armed = buildArmList(candidates, livePriceByTicker, _team);
     console.log(`[AW-HB] cands=${candidates.length} priced=${livePriceByTicker.size} armed=${armed.length} states=[${armed.map(a => a.ticker + ":" + a.state).join(",")}]`);
 
     // Refresh the DISPLAY status map (ARMED/CROSSED/HELD_5M/BLOCKED). HOT_LIST is a
