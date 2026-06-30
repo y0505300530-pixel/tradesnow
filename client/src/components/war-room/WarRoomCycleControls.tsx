@@ -16,6 +16,7 @@
  * Every overlay has an ALWAYS-VISIBLE sticky ✕ (≥44px) at the top-end on 375px + desktop.
  */
 import React, { useEffect, useMemo } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ import { toast } from "sonner";
 import {
   Loader2, RefreshCw, Radar, X, AlertTriangle, CheckCircle2, Zap,
   ShieldAlert, ShieldCheck, Gauge, TrendingUp, TrendingDown, Activity, Ban,
+  Microscope,
 } from "lucide-react";
 
 /** Typed-escape: bind to backhand's procedures at runtime; compile standalone now. */
@@ -324,12 +326,22 @@ export function DeepAnalysisV45Modal({
   open: boolean;
   onClose: () => void;
 }) {
+  const [, navigate] = useLocation();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
+  // Navigate to the existing standalone Deep Analysis page for the SAME ticker.
+  // Route + nav convention mirror TickerLink.tsx: /deep-analysis/:ticker (wouter).
+  const openDeepAnalysis = () => {
+    if (!ticker) return;
+    onClose();
+    navigate(`/deep-analysis/${encodeURIComponent(ticker)}`);
+  };
 
   const q = anyLE().deepAnalysisV45.useQuery(
     { ticker: ticker ?? "" },
@@ -504,9 +516,18 @@ export function DeepAnalysisV45Modal({
           )}
         </div>
 
-        {/* Sticky footer close — guarantees a reachable dismiss on long content / 375px */}
-        <footer className="sticky bottom-0 z-10 p-3 bg-white border-t border-gray-200 shrink-0">
-          <Button onClick={onClose} className="w-full min-h-[44px] h-11 rounded-full bg-slate-800 hover:bg-slate-900 text-white font-bold gap-1.5">
+        {/* Sticky footer — primary DEEP ANALYSIS (distinct indigo) + reachable close.
+            Stacked full-width on 375px; ≥44px touch targets; icon+TEXT (never color-alone). */}
+        <footer className="sticky bottom-0 z-10 p-3 bg-white border-t border-gray-200 shrink-0 flex flex-col sm:flex-row-reverse gap-2">
+          <Button
+            onClick={openDeepAnalysis}
+            disabled={!ticker}
+            title={`ניתוח מעמיק עבור ${ticker ?? ""} — דף ניתוח מלא`}
+            className="w-full sm:flex-1 min-h-[48px] h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-1.5 border-2 border-indigo-700"
+          >
+            <Microscope className="w-4 h-4" /> ניתוח מעמיק (DEEP ANALYSIS)
+          </Button>
+          <Button onClick={onClose} className="w-full sm:flex-1 min-h-[44px] h-11 rounded-full bg-slate-800 hover:bg-slate-900 text-white font-bold gap-1.5">
             <X className="w-4 h-4" /> סגור
           </Button>
         </footer>
