@@ -1,0 +1,1 @@
+ALTER TABLE `labSimulations` DROP COLUMN `checkpointDayIdx`;

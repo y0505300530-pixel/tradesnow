@@ -1,0 +1,1 @@
+ALTER TABLE `paperPositions` ADD `exchange` varchar(8) DEFAULT 'US' NOT NULL;

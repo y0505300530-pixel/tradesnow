@@ -1,0 +1,66 @@
+{
+  "query": "SELECT id, ticker, zivHScore, zivScore, status FROM paperPositions WHERE status='open' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, ticker, zivHScore, zivScore, status FROM paperPositions WHERE status='open' LIMIT 10;",
+  "rows": [
+    {
+      "id": "60001",
+      "ticker": "ACCL.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.52",
+      "status": "open"
+    },
+    {
+      "id": "60002",
+      "ticker": "HIPR.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.57",
+      "status": "open"
+    },
+    {
+      "id": "60003",
+      "ticker": "TRX.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.72",
+      "status": "open"
+    },
+    {
+      "id": "60004",
+      "ticker": "NVPT.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.84",
+      "status": "open"
+    },
+    {
+      "id": "60005",
+      "ticker": "FOX.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.85",
+      "status": "open"
+    },
+    {
+      "id": "60006",
+      "ticker": "KRDI.TA",
+      "zivHScore": "NULL",
+      "zivScore": "9.99",
+      "status": "open"
+    },
+    {
+      "id": "60007",
+      "ticker": "SLARL.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.87",
+      "status": "open"
+    },
+    {
+      "id": "60008",
+      "ticker": "FIBI.TA",
+      "zivHScore": "NULL",
+      "zivScore": "7.51",
+      "status": "open"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tticker\tzivHScore\tzivScore\tstatus\n60001\tACCL.TA\tNULL\t7.52\topen\n60002\tHIPR.TA\tNULL\t7.57\topen\n60003\tTRX.TA\tNULL\t7.72\topen\n60004\tNVPT.TA\tNULL\t7.84\topen\n60005\tFOX.TA\tNULL\t7.85\topen\n60006\tKRDI.TA\tNULL\t9.99\topen\n60007\tSLARL.TA\tNULL\t7.87\topen\n60008\tFIBI.TA\tNULL\t7.51\topen\n",
+  "stderr": "",
+  "execution_time_ms": 1744
+}

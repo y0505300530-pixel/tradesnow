@@ -1,0 +1,1 @@
+ALTER TABLE `labSimulations` ADD `checkpointDayIdx` int DEFAULT 0;

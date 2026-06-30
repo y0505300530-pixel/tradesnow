@@ -1,0 +1,73 @@
+{
+  "query": "SELECT id, openId, name, email, role FROM users ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, openId, name, email, role FROM users ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "name": "Yehuda Ashash",
+      "email": "y0505300530@gmail.com",
+      "role": "admin"
+    },
+    {
+      "id": "480303",
+      "openId": "HefhzHJfEwKvDJ5Y3jZCFn",
+      "name": "Sia Ltd",
+      "email": "kmzw5f5gwh@privaterelay.appleid.com",
+      "role": "user"
+    },
+    {
+      "id": "692216",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "name": "Nayan Ray",
+      "email": "wpnayanray@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "1230170",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "name": "siaholdingsltd",
+      "email": "siaholdingsltd@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "1680140",
+      "openId": "bQT8iBA4qzxXNCQW7WeT6V",
+      "name": "Noam Cohen",
+      "email": "noamco555@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "1740142",
+      "openId": "c6hYtDH9VFQ4zHJDjEqSsp",
+      "name": "Alon Cohen",
+      "email": "alonco555@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "1980365",
+      "openId": "7ytiFWcWqk7M2cq2REx7w4",
+      "name": "avi koren",
+      "email": "koren123@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "2071394",
+      "openId": "bQKLQ5Jiqeq9A5CxqiFrCX",
+      "name": "Shlomi Ashash",
+      "email": "shlomi.ashash@gmail.com",
+      "role": "user"
+    },
+    {
+      "id": "3180001",
+      "openId": "HGRbGYbYMk9AcgdmHymVyk",
+      "name": "שירן אשש",
+      "email": "shiranjan@gmail.com",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\n1\tjaDEMUoCJyxDvKw6XvdrrS\tYehuda Ashash\ty0505300530@gmail.com\tadmin\n480303\tHefhzHJfEwKvDJ5Y3jZCFn\tSia Ltd\tkmzw5f5gwh@privaterelay.appleid.com\tuser\n692216\tmwA83WP3SVX8SfP5jZ8bWL\tNayan Ray\twpnayanray@gmail.com\tuser\n1230170\tS4sZ6Fy9AjAvTVGeWQVZ4N\tsiaholdingsltd\tsiaholdingsltd@gmail.com\tuser\n1680140\tbQT8iBA4qzxXNCQW7WeT6V\tNoam Cohen\tnoamco555@gmail.com\tuser\n1740142\tc6hYtDH9VFQ4zHJDjEqSsp\tAlon Cohen\talonco555@gmail.com\tuser\n1980365\t7ytiFWcWqk7M2cq2REx7w4\tavi koren\tkoren123@gmail.com\tuser\n2071394\tbQKLQ5Jiqeq9A5CxqiFrCX\tShlomi Ashash\tshlomi.ashash@gmail.com\tuser\n3180001\tHGRbGYbYMk9AcgdmHymVyk\tשירן אשש\tshiranjan@gmail.com\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 5221
+}

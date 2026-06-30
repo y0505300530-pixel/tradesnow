@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Fix the MTAV.TA trade: correct exitPrice, realizedPnl, realizedPnlPct\nUPDATE paperTrades \nSET \n  exitPrice = 43.7340,\n  realizedPnl = -947.93,\n  realizedPnlPct = -19.09\nWHERE id = 30002;\n\n-- Fix availableCash: correct value is $5,971.04\nUPDATE paperLedger SET availableCash = 5971.04 WHERE userId = 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \n-- Fix the MTAV.TA trade: correct exitPrice, realizedPnl, realizedPnlPct\nUPDATE paperTrades \nSET \n  exitPrice = 43.7340,\n  realizedPnl = -947.93,\n  realizedPnlPct = -19.09\nWHERE id = 30002;\n\n-- Fix availableCash: correct value is $5,971.04\nUPDATE paperLedger SET availableCash = 5971.04 WHERE userId = 1;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2019
+}

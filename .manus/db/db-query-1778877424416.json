@@ -1,0 +1,59 @@
+{
+  "query": "SELECT ticker, outcome, COUNT(*) as trades, ROUND(AVG(CAST(roiPct AS DECIMAL(10,2))),2) as avgRoi, ROUND(SUM(CAST(profitLoss AS DECIMAL(12,2))),0) as totalPnl FROM labTrades WHERE simulationId = 810001 GROUP BY ticker, outcome ORDER BY totalPnl DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, outcome, COUNT(*) as trades, ROUND(AVG(CAST(roiPct AS DECIMAL(10,2))),2) as avgRoi, ROUND(SUM(CAST(profitLoss AS DECIMAL(12,2))),0) as totalPnl FROM labTrades WHERE simulationId = 810001 GROUP BY ticker, outcome ORDER BY totalPnl DESC LIMIT 20;",
+  "rows": [
+    {
+      "ticker": "LAHAV.TA",
+      "outcome": "win",
+      "trades": "1",
+      "avgRoi": "16.90",
+      "totalPnl": "14197"
+    },
+    {
+      "ticker": "HWM",
+      "outcome": "win",
+      "trades": "1",
+      "avgRoi": "12.67",
+      "totalPnl": "9009"
+    },
+    {
+      "ticker": "ETN",
+      "outcome": "win",
+      "trades": "1",
+      "avgRoi": "0.95",
+      "totalPnl": "378"
+    },
+    {
+      "ticker": "AAPL",
+      "outcome": "win",
+      "trades": "1",
+      "avgRoi": "3.27",
+      "totalPnl": "82"
+    },
+    {
+      "ticker": "GM",
+      "outcome": "loss",
+      "trades": "1",
+      "avgRoi": "-15.40",
+      "totalPnl": "-96"
+    },
+    {
+      "ticker": "LMT",
+      "outcome": "loss",
+      "trades": "1",
+      "avgRoi": "-10.72",
+      "totalPnl": "-1192"
+    },
+    {
+      "ticker": "POET",
+      "outcome": "loss",
+      "trades": "1",
+      "avgRoi": "-3.60",
+      "totalPnl": "-1978"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\toutcome\ttrades\tavgRoi\ttotalPnl\nLAHAV.TA\twin\t1\t16.90\t14197\nHWM\twin\t1\t12.67\t9009\nETN\twin\t1\t0.95\t378\nAAPL\twin\t1\t3.27\t82\nGM\tloss\t1\t-15.40\t-96\nLMT\tloss\t1\t-10.72\t-1192\nPOET\tloss\t1\t-3.60\t-1978\n",
+  "stderr": "",
+  "execution_time_ms": 1733
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `liveEngineConfig` ADD `goldBreakoutEnabled` tinyint DEFAULT 0 NOT NULL;

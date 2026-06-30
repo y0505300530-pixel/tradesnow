@@ -1,0 +1,17 @@
+{
+  "query": "SELECT * FROM systemLogs WHERE level != 'info' OR category IN ('SCAN', 'SIM', 'SIMULATION') ORDER BY id DESC LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT * FROM systemLogs WHERE level != 'info' OR category IN ('SCAN', 'SIM', 'SIMULATION') ORDER BY id DESC LIMIT 10",
+  "rows": [],
+  "messages": [
+    "16\terror\tALERTS\tAlertPoller DB lock check failed: Failed query: SELECT instanceId, heartbeatAt FROM paperEnginelock WHERE id = 1 LIMIT 1",
+    "params: \tError: Failed query: SELECT instanceId, heartbeatAt FROM paperEnginelock WHERE id = 1 LIMIT 1",
+    "params: ",
+    "    at MySql2PreparedQuery.queryWithCache (file:///usr/src/app/node_modules/.pnpm/drizzle-orm@0.44.6_mysql2@3.15.1/node_modules/drizzle-orm/mysql-core/session.js:25:15)",
+    "    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+    "    at async MySql2PreparedQuery.execute (file:///usr/src/app/node_modules/.pnpm/drizzle-orm@0.44.6_mysql2@3.15.1/node_modules/drizzle-orm/mysql2/session.js:52:19)",
+    "    at async _startAlertPollerAsync (file:///usr/src/app/dist/index.js:26539:24)\tNULL\tmp9i9t8g-gvzo1d\t2026-05-17 08:21:12"
+  ],
+  "stdout": "id\tlevel\tcategory\tmessage\tstack\tcontext\tinstanceId\tcreatedAt\n16\terror\tALERTS\tAlertPoller DB lock check failed: Failed query: SELECT instanceId, heartbeatAt FROM paperEnginelock WHERE id = 1 LIMIT 1\nparams: \tError: Failed query: SELECT instanceId, heartbeatAt FROM paperEnginelock WHERE id = 1 LIMIT 1\nparams: \n    at MySql2PreparedQuery.queryWithCache (file:///usr/src/app/node_modules/.pnpm/drizzle-orm@0.44.6_mysql2@3.15.1/node_modules/drizzle-orm/mysql-core/session.js:25:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async MySql2PreparedQuery.execute (file:///usr/src/app/node_modules/.pnpm/drizzle-orm@0.44.6_mysql2@3.15.1/node_modules/drizzle-orm/mysql2/session.js:52:19)\n    at async _startAlertPollerAsync (file:///usr/src/app/dist/index.js:26539:24)\tNULL\tmp9i9t8g-gvzo1d\t2026-05-17 08:21:12\n",
+  "stderr": "",
+  "execution_time_ms": 1736
+}

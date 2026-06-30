@@ -1,0 +1,8 @@
+{
+  "query": "\nSELECT \n  ticker,\n  signal,\n  units,\n  ROUND(entryPrice, 4) as entry_price,\n  ROUND(currentPrice, 4) as current_price,\n  ROUND(currentSl, 4) as stop_loss,\n  ROUND(currentTp, 4) as take_profit,\n  ROUND(unrealizedPnl, 2) as open_pnl,\n  ROUND(unrealizedPnlPct, 2) as open_pnl_pct,\n  ROUND(zivScore, 1) as ziv_entry,\n  ROUND(zivHScore, 1) as ziv_h_now,\n  ROUND(allocatedCapital, 0) as allocated,\n  openedAt,\n  updatedAt\nFROM paperPositions\nWHERE status = 'open'\nORDER BY unrealizedPnl DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT \n  ticker,\n  signal,\n  units,\n  ROUND(entryPrice, 4) as entry_price,\n  ROUND(currentPrice, 4) as current_price,\n  ROUND(currentSl, 4) as stop_loss,\n  ROUND(currentTp, 4) as take_profit,\n  ROUND(unrealizedPnl, 2) as open_pnl,\n  ROUND(unrealizedPnlPct, 2) as open_pnl_pct,\n  ROUND(zivScore, 1) as ziv_entry,\n  ROUND(zivHScore, 1) as ziv_h_now,\n  ROUND(allocatedCapital, 0) as allocated,\n  openedAt,\n  updatedAt\nFROM paperPositions\nWHERE status = 'open'\nORDER BY unrealizedPnl DESC;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 2: Unknown column 'updatedat' in 'field list'"
+  ]
+}

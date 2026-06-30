@@ -1,0 +1,201 @@
+================================================================================
+אלזה 2 — דוח לוגים (שעה אחרונה)
+================================================================================
+תאריך: 24.06.2026
+חלון: 17:06–18:06 UTC (~20:06–21:06 שעון ישראל)
+מקורות: tradesnow-app (PM2), ibind-oauth (journalctl)
+
+================================================================================
+סטטוס כללי
+================================================================================
+
+מדד                    | ערך
+-----------------------|------------------------------------------
+PM2 uptime (בסוף חלון) | ~16 דק' (restart אחרון ~17:50 UTC)
+פוזיציות DB            | 2–3 (TSM, NVMI, NET)
+פוזיציות IBKR          | 9 (כולל shorts / pending)
+הוראות פתוחות IBKR     | 131
+SL/TP Enforcement      | Orphans=0 מאז restart ~17:50
+War Engine מחזורים     | 2 (17:00, 18:00)
+
+================================================================================
+תקלות קריטיות (P0)
+================================================================================
+
+--- #1 Adopt pass crash: livePositions is not defined ---
+
+מתי:     17:26–17:30 (חוזר כל דקה)
+לוג:     [Adopt] pass failed: livePositions is not defined
+מיקום:   ibkrSync.ts — adopt pass
+השפעה:   פוזיציות IBKR (NET, NVMI) לא נכנסות ל-livePositions
+           → War Room / SL badges שבורים
+תיקון:   הוסף import חסר של livePositions ב-adopt pass
+
+--- #2 NET insert failed (חוזר) ---
+
+מתי:     17:31–17:34
+לוג:     [Adopt] NET insert failed: Failed query: insert into livePositions...
+           במקביל: [Adopt] NET long 133u adopted — סתירה
+שורש:    insert נכשל (duplicate / constraint) אבל log אומר "adopted"
+תיקון:   upsert במקום insert; בדוק אם NET כבר קיים כ-closed/open
+
+--- #3 INTC — לולאת סגירה תקועה (~10 דקות) ---
+
+17:00:   Iron Rule 1 — OVER BUDGET ($202,923 > $201,004)
+         → Active Downsizing סגר INTC ב-market ($38,878)
+17:01–17:11: כל דקה:
+         [FillDetect] INTC NOT found in IBKR → marking CLOSED
+         [INTC] No valid exit price — skipping close update
+השפעה:   INTC נשאר open ב-DB; SL/TP orders בוטלו כיתומים (17:01)
+תיקון:   אחרי downsizing market close — שמור exitPrice מ-fill
+           או force-close ב-DB
+
+--- #4 GLW נסגר עם P&L=0 ---
+
+מתי:     17:26
+לוג:     [GLW] gone from IBKR, no valid exit price — marking CLOSED with P&L=0
+השפעה:   realized P&L שגוי ב-DB / War Room
+תיקון:   שלוף exit price מ-order history / last trade
+
+--- #5 131 הוראות פתוחות vs 2–3 פוזיציות ---
+
+מתי:     כל השעה (dbCount=2, ibkrOrdCount=131)
+השפעה:   רעש ב-IBKR, עומס API, בלבול ב-UI (9 pending ב-mobile)
+תיקון:   ניקוי brackets ישנים / pending_entry stale; audit script
+
+================================================================================
+בעיות תפעוליות (P1)
+================================================================================
+
+--- #6 NFLX/ACHR — entry lock (18:00) ---
+
+לוג:
+  ❌ SHORT NFLX rejected: entry lock held by concurrent request
+  ❌ SHORT ACHR rejected: entry lock held by concurrent request
+שורש:   lock לא שוחרר מניסיון קודם (17:00)
+תיקון:  TTL ל-liveEntryLock (למשל 30 דק'); stale lock cleanup ב-cron
+
+--- #7 NFLX/ACHR — orphan cancel (17:01, לפני restart) ---
+
+8 הוראות בוטלו: NFLX+ACHR brackets + INTC SL/TP
+  Orphan order: NFLX orderId=1648064743 type=Limit → CANCEL
+  Orphan order: ACHR orderId=1648064746 type=Limit → CANCEL
+  ... (סה"כ 8)
+סטטוס:  תוקן ב-restart ~17:50 (isBracketLeg) — מאז Orphans=0
+
+--- #8 IBKR snapshot unavailable ל-shorts (17:00) ---
+
+  [LivePrice-SHORT] NFLX IBKR snapshot unavailable — using EOD $71.79
+  [LivePrice-SHORT] ACHR IBKR snapshot unavailable — using EOD $5.57
+השפעה:  entry price לא מדויק → bracket LMT לא מתמלא
+תיקון:  אל תשלח short entry בלי live price
+
+--- #9 Iron Rule 1 — OVER BUDGET + downsizing ---
+
+17:00:  deployed $202,923 > cap $201,004 → סגר INTC
+17:40:  BUDGET FULL ($114,515/$114,664) — entries נעצרו
+הערה:   downsizing תקין אבל יצר את בעיית INTC (#3)
+
+--- #10 TSM units drift ---
+
+17:11:  [UnitsReconcile] TSM: DB units 67 → IBKR 100 (entry→$441.17)
+סטטוס:  תוקן ב-reconcile; portfolioHoldings sync בקוד (ממתין deploy)
+
+--- #11 IBIND Task queue depth ---
+
+WARNING: Task queue depth is 1–2 (חוזר ב-journal)
+שיפור: debounce quotes, batch requests, rate limit client polls
+
+--- #12 AAPL no_market_data (18:04) ---
+
+  DEBUG_RAW_FIELDS: AAPL error=no_market_data
+חומרה: נמוכה — fallback ל-Yahoo
+
+================================================================================
+מה עובד טוב (אחרי restart ~17:50)
+================================================================================
+
+- SL/TP Enforcement: Orphans=0, OK=3, Failed=0 (כל 5 דק')
+- IBKR Sync: 2 synced, 0 errors (אחרי 17:35)
+- אין Orphan cancel על NFLX/ACHR אחרי restart
+- Daily P&L מ-/pnl: -$5,900 (17:07) — תואם IBKR mobile
+
+================================================================================
+ציר זמן מרכזי
+================================================================================
+
+17:00  War Engine cycle
+       OVER BUDGET → Active Downsizing סגר INTC ב-market ($38,878)
+       שליחת brackets SHORT: NFLX (415u @ $72.15), ACHR (3616u @ $5.60)
+       fill=0 לשניהם → "entry pending — no fill confirmed yet"
+
+17:01  SL_TP_ENFORCEMENT ביטל 8 orphans:
+       NFLX (entry+SL+TP), ACHR (entry+SL+TP), INTC (SL+TP)
+       → Orphans=8 (באג isBracketLeg — לפני fix)
+
+17:01–17:11  INTC תקוע ב-DB:
+       כל דקה: NOT found in IBKR + No valid exit price
+
+17:07  getPnl: dailyPnl=-5900, NLV=106000
+
+17:11  TSM units reconcile: 67 → 100
+
+17:26  GLW gone from IBKR → CLOSED with P&L=0
+
+17:26–17:30  [Adopt] pass failed: livePositions is not defined (חוזר)
+
+17:31–17:34  [Adopt] NET insert failed (חוזר) + "adopted" log
+
+17:40  War Engine: BUDGET FULL ($114,515/$114,664) — entries stopped
+
+~17:50  PM2 restart (תיקון isBracketLeg / isOrphanProtectiveOrder)
+
+18:00  War Engine cycle
+       NFLX/ACHR rejected: entry lock held by concurrent request
+       Budget: $114,528 / $177,007 — entries open
+
+18:04+  SL/TP נקי (Orphans=0), IBKR sync יציב
+
+================================================================================
+רשימת שיפורים מומלצת
+================================================================================
+
+#  | עדיפות | משימה                              | קובץ
+---|--------|-------------------------------------|---------------------------
+1  | P0     | תקן livePositions is not defined   | ibkrSync.ts
+2  | P0     | INTC force-close עם exitPrice       | ibkrSync.ts / warEngine.ts
+3  | P0     | NET adopt → upsert במקום insert    | ibkrSync.ts
+4  | P0     | GLW/כל close — exitPrice מ-fills    | ibkrSync.ts
+5  | P1     | ניקוי 131 הוראות יתומות             | script + cron
+6  | P1     | liveEntryLock TTL + stale cleanup   | liveOrderExecutor.ts
+7  | P1     | block short entry בלי live price    | warEngine.ts
+8  | P1     | deploy תיקוני P&L (build עבר)       | pm2 restart
+9  | P2     | הפחתת IBIND queue depth             | ibkrCache.ts
+10 | P2     | התראה DB≠IBKR position count        | War Room UI
+
+================================================================================
+קשר לבאגים שתוקנו היום (לא בלוגים האחרונים)
+================================================================================
+
+NFLX/ACHR Order Cancelled loop:
+  שורש: SL_TP_ENFORCEMENT ביטל bracket entries כיתומים
+  תיקון: isBracketLeg / isOrphanProtectiveOrder (deployed ~17:50)
+  אחרי restart: Orphans=0 — אין ביטולים חוזרים
+
+P&L mismatches (IBKR vs H1 vs War Room):
+  דוח מלא: docs/pnl-price-audit-2026-06-24.txt
+  תיקון בקוד: בוצע build; ממתין pm2 restart
+
+================================================================================
+שורה תחתונה
+================================================================================
+
+המערכת יציבה יחסית אחרי restart (~17:50): SL/TP נקי, sync עובד.
+בעיות פתוחות עיקריות:
+  1) adopt pass crash (livePositions undefined)
+  2) INTC/GLW close בלי exit price → DB שגוי
+  3) 131 הוראות יתומות ב-IBKR
+  4) entry lock תקוע על NFLX/ACHR
+  5) תיקוני P&L לא deployed
+
+================================================================================

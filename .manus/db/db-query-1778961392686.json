@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, status, errorMessage, createdAt, updatedAt FROM labSimulations ORDER BY id DESC LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, status, errorMessage, createdAt, updatedAt FROM labSimulations ORDER BY id DESC LIMIT 10",
+  "rows": [
+    {
+      "id": "840007",
+      "status": "error",
+      "errorMessage": "Simulation was interrupted by a server restart. Please run it again.",
+      "createdAt": "2026-05-16 19:52:59",
+      "updatedAt": "2026-05-16 19:55:20"
+    },
+    {
+      "id": "780001",
+      "status": "pending",
+      "errorMessage": "NULL",
+      "createdAt": "2026-04-30 12:13:16",
+      "updatedAt": "2026-04-30 12:13:28"
+    },
+    {
+      "id": "750007",
+      "status": "done",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:40:42",
+      "updatedAt": "2026-03-16 07:43:19"
+    },
+    {
+      "id": "750006",
+      "status": "done",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:37:26",
+      "updatedAt": "2026-03-16 07:37:51"
+    },
+    {
+      "id": "750005",
+      "status": "done",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:36:07",
+      "updatedAt": "2026-03-16 07:36:11"
+    },
+    {
+      "id": "750004",
+      "status": "done",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:36:06",
+      "updatedAt": "2026-03-16 07:36:11"
+    },
+    {
+      "id": "750003",
+      "status": "done",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:36:06",
+      "updatedAt": "2026-03-16 07:36:11"
+    },
+    {
+      "id": "750002",
+      "status": "pending",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:36:04",
+      "updatedAt": "2026-03-16 07:36:05"
+    },
+    {
+      "id": "750001",
+      "status": "pending",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:35:48",
+      "updatedAt": "2026-03-16 07:35:58"
+    },
+    {
+      "id": "720001",
+      "status": "pending",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-15 16:22:17",
+      "updatedAt": "2026-03-15 16:22:25"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tstatus\terrorMessage\tcreatedAt\tupdatedAt\n840007\terror\tSimulation was interrupted by a server restart. Please run it again.\t2026-05-16 19:52:59\t2026-05-16 19:55:20\n780001\tpending\tNULL\t2026-04-30 12:13:16\t2026-04-30 12:13:28\n750007\tdone\tNULL\t2026-03-16 07:40:42\t2026-03-16 07:43:19\n750006\tdone\tNULL\t2026-03-16 07:37:26\t2026-03-16 07:37:51\n750005\tdone\tNULL\t2026-03-16 07:36:07\t2026-03-16 07:36:11\n750004\tdone\tNULL\t2026-03-16 07:36:06\t2026-03-16 07:36:11\n750003\tdone\tNULL\t2026-03-16 07:36:06\t2026-03-16 07:36:11\n750002\tpending\tNULL\t2026-03-16 07:36:04\t2026-03-16 07:36:05\n750001\tpending\tNULL\t2026-03-16 07:35:48\t2026-03-16 07:35:58\n720001\tpending\tNULL\t2026-03-15 16:22:17\t2026-03-15 16:22:25\n",
+  "stderr": "",
+  "execution_time_ms": 1742
+}

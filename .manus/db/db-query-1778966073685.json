@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as total_rows, COUNT(DISTINCT ticker) as tickers FROM priceCache;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT COUNT(*) as total_rows, COUNT(DISTINCT ticker) as tickers FROM priceCache;",
+  "rows": [
+    {
+      "total_rows": "319617",
+      "tickers": "210"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_rows\ttickers\n319617\t210\n",
+  "stderr": "",
+  "execution_time_ms": 2063
+}

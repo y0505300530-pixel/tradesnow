@@ -1,0 +1,24 @@
+{
+  "query": "\nSELECT \n  us.userId,\n  us.telegramChatId,\n  us.telegramEnabled,\n  u.name,\n  u.role\nFROM userSettings us\nJOIN users u ON u.id = us.userId\nWHERE us.telegramEnabled = 1\n  AND us.telegramChatId IS NOT NULL\n  AND us.telegramChatId != ''\n  AND us.userId != 1\nORDER BY us.userId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT \n  us.userId,\n  us.telegramChatId,\n  us.telegramEnabled,\n  u.name,\n  u.role\nFROM userSettings us\nJOIN users u ON u.id = us.userId\nWHERE us.telegramEnabled = 1\n  AND us.telegramChatId IS NOT NULL\n  AND us.telegramChatId != ''\n  AND us.userId != 1\nORDER BY us.userId;\n",
+  "rows": [
+    {
+      "userId": "1980365",
+      "telegramChatId": "5742603430",
+      "telegramEnabled": "1",
+      "name": "avi koren",
+      "role": "user"
+    },
+    {
+      "userId": "7620254",
+      "telegramChatId": "5026888792",
+      "telegramEnabled": "1",
+      "name": "Dror",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\ttelegramChatId\ttelegramEnabled\tname\trole\n1980365\t5742603430\t1\tavi koren\tuser\n7620254\t5026888792\t1\tDror\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 1783
+}

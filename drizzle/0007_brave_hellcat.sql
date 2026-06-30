@@ -1,0 +1,20 @@
+CREATE TABLE `tradePositions` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`userId` int NOT NULL,
+	`ticker` varchar(16) NOT NULL,
+	`company` text,
+	`aiEntry` text,
+	`aiStopLoss` text,
+	`aiTakeProfit` text,
+	`aiLogic` text,
+	`aiLogicDetail` text,
+	`aiConfidence` varchar(16),
+	`userEntry` text,
+	`userStopLoss` text,
+	`userTakeProfit` text,
+	`userNotes` text,
+	`status` enum('watching','active','closed') NOT NULL DEFAULT 'watching',
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `tradePositions_id` PRIMARY KEY(`id`)
+);

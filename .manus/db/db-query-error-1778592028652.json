@@ -1,0 +1,8 @@
+{
+  "query": "\n-- Step 1: Delete all open and closed positions\nDELETE FROM paperPositions;\n\n-- Step 2: Delete all trade history\nDELETE FROM paperTrades;\n\n-- Step 3: Delete all equity snapshots\nDELETE FROM paperEquitySnapshots;\n\n-- Step 4: Reset the ledger to $100,000 clean slate\nUPDATE paperLedger\nSET availableCash = 100000.00,\n    totalDeposited = 100000.00,\n    totalWithdrawn = 0.00,\n    realizedPnl = 0.00,\n    totalCommissions = 0.00,\n    updatedAt = NOW()\nWHERE id > 0;\n\n-- Step 5: Verify the reset\nSELECT id, userId, availableCash, totalDeposited, realizedPnl, totalCommissions FROM paperLedger LIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \n-- Step 1: Delete all open and closed positions\nDELETE FROM paperPositions;\n\n-- Step 2: Delete all trade history\nDELETE FROM paperTrades;\n\n-- Step 3: Delete all equity snapshots\nDELETE FROM paperEquitySnapshots;\n\n-- Step 4: Reset the ledger to $100,000 clean slate\nUPDATE paperLedger\nSET availableCash = 100000.00,\n    totalDeposited = 100000.00,\n    totalWithdrawn = 0.00,\n    realizedPnl = 0.00,\n    totalCommissions = 0.00,\n    updatedAt = NOW()\nWHERE id > 0;\n\n-- Step 5: Verify the reset\nSELECT id, userId, availableCash, totalDeposited, realizedPnl, totalCommissions FROM paperLedger LIMIT 5;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 12: Unknown column 'totalDeposited' in 'field list'"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "query": "SELECT ticker, allocatedCapital, positionSizeUsd, entryPrice, units, status, openedAt\nFROM paperPositions \nWHERE userId = 1 AND sessionId = 20 AND status = 'open'\nORDER BY openedAt DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, allocatedCapital, positionSizeUsd, entryPrice, units, status, openedAt\nFROM paperPositions \nWHERE userId = 1 AND sessionId = 20 AND status = 'open'\nORDER BY openedAt DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "ticker": "TRX.TA",
+      "allocatedCapital": "4997.982630691399",
+      "positionSizeUsd": "5000",
+      "entryPrice": "2.5802698145025293",
+      "units": "1937",
+      "status": "open",
+      "openedAt": "2026-05-14 14:17:25"
+    },
+    {
+      "ticker": "CLS",
+      "allocatedCapital": "4889.895009999999",
+      "positionSizeUsd": "5000",
+      "entryPrice": "376.1457699999999",
+      "units": "13",
+      "status": "open",
+      "openedAt": "2026-05-14 14:17:24"
+    },
+    {
+      "ticker": "FIBI.TA",
+      "allocatedCapital": "4960.732353649722",
+      "positionSizeUsd": "5000",
+      "entryPrice": "82.67887256082871",
+      "units": "60",
+      "status": "open",
+      "openedAt": "2026-05-14 14:17:22"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "allocatedCapital": "4997.813827993254",
+      "positionSizeUsd": "5000",
+      "entryPrice": "3.534521801975427",
+      "units": "1414",
+      "status": "open",
+      "openedAt": "2026-05-14 14:17:22"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "allocatedCapital": "4996.087906528546",
+      "positionSizeUsd": "5000",
+      "entryPrice": "8.71917610214406",
+      "units": "573",
+      "status": "open",
+      "openedAt": "2026-05-14 14:17:21"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tallocatedCapital\tpositionSizeUsd\tentryPrice\tunits\tstatus\topenedAt\nTRX.TA\t4997.982630691399\t5000\t2.5802698145025293\t1937\topen\t2026-05-14 14:17:25\nCLS\t4889.895009999999\t5000\t376.1457699999999\t13\topen\t2026-05-14 14:17:24\nFIBI.TA\t4960.732353649722\t5000\t82.67887256082871\t60\topen\t2026-05-14 14:17:22\nSLARL.TA\t4997.813827993254\t5000\t3.534521801975427\t1414\topen\t2026-05-14 14:17:22\nHIPR.TA\t4996.087906528546\t5000\t8.71917610214406\t573\topen\t2026-05-14 14:17:21\n",
+  "stderr": "",
+  "execution_time_ms": 1831
+}

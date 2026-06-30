@@ -1,0 +1,8 @@
+{
+  "query": "\nINSERT INTO paperLedger (userId, availableCash, initialCapital, updatedAt)\nSELECT id, 100000.00, 100000.00, NOW()\nFROM user\nWHERE openId = (SELECT OWNER_OPEN_ID FROM (SELECT @ownerOpenId AS OWNER_OPEN_ID) t)\nLIMIT 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nINSERT INTO paperLedger (userId, availableCash, initialCapital, updatedAt)\nSELECT id, 100000.00, 100000.00, NOW()\nFROM user\nWHERE openId = (SELECT OWNER_OPEN_ID FROM (SELECT @ownerOpenId AS OWNER_OPEN_ID) t)\nLIMIT 1;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 2: Table 'mmwmjbh77myyxtzazvypbm.user' doesn't exist"
+  ]
+}

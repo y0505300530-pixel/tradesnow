@@ -1,0 +1,1 @@
+ALTER TABLE `labSimulations` ADD `minZivScore` int DEFAULT 4;

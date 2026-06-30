@@ -1,0 +1,19 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'paperPositions' AND ORDINAL_POSITION > 20 ORDER BY ORDINAL_POSITION;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'paperPositions' AND ORDINAL_POSITION > 20 ORDER BY ORDINAL_POSITION;",
+  "rows": [
+    {
+      "COLUMN_NAME": "closedAt"
+    },
+    {
+      "COLUMN_NAME": "slHitCount"
+    },
+    {
+      "COLUMN_NAME": "positionSizeUsd"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nclosedAt\nslHitCount\npositionSizeUsd\n",
+  "stderr": "",
+  "execution_time_ms": 1856
+}

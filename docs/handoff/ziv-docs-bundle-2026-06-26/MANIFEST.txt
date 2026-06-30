@@ -1,0 +1,12 @@
+Ziv YouTube research docs — on droplet IBRK (143.198.141.131 / trade-snow2.vip)
+Bundle created: 2026-06-26
+Bundle refreshed: 2026-06-26 11:12 UTC (P0/P2 catalog + GAPS + gap scan + batch log)
+Canonical repo root: /root/tradesnow
+
+Primary paths (live on droplet):
+  /root/tradesnow/docs/ziv-engine-spec/
+  /root/tradesnow/docs/superpowers/specs/2026-06-24-ziv-methodology-research.md
+  /root/tradesnow/docs/superpowers/specs/2026-06-19-elza-ziv-alignment-guidelines.md
+  /root/tradesnow/docs/lesson-12/
+
+Included in tarball: full docs/ziv-engine-spec/ (incl. YOUTUBE_CHANNEL_GAP_SCAN.md, gaps/).

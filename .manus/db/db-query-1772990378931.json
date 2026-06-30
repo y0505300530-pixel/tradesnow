@@ -1,0 +1,76 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "analyses"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "bulkSessionAnalyses"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "bulkSessions"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "capitalEvents"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "channelVideos"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "knowledgeBase"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "labDailyLogs"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "labSimulations"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "labTrades"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "llmScanCache"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "masterKnowledge"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "parkingLotConfig"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "portfolioAccounts"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "portfolioAnalysis"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "portfolioHoldings"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "priceCache"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "proficiencyMatrix"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "tradePositions"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "userAssets"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "userSettings"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_MmWmJbH77mYYXTZazVYpbM\n__drizzle_migrations\nanalyses\nbulkSessionAnalyses\nbulkSessions\ncapitalEvents\nchannelVideos\nknowledgeBase\nlabDailyLogs\nlabSimulations\nlabTrades\nllmScanCache\nmasterKnowledge\nparkingLotConfig\nportfolioAccounts\nportfolioAnalysis\nportfolioHoldings\npriceCache\nproficiencyMatrix\ntradePositions\nuserAssets\nuserSettings\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 1568
+}

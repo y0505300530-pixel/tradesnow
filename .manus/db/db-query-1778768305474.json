@@ -1,0 +1,45 @@
+{
+  "query": "SELECT sessionId, COUNT(*) as tradeCount, SUM(realizedPnl) as totalPnl, MIN(closedAt) as earliest, MAX(closedAt) as latest\nFROM paperTrades \nWHERE userId = 1\nGROUP BY sessionId\nORDER BY sessionId DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT sessionId, COUNT(*) as tradeCount, SUM(realizedPnl) as totalPnl, MIN(closedAt) as earliest, MAX(closedAt) as latest\nFROM paperTrades \nWHERE userId = 1\nGROUP BY sessionId\nORDER BY sessionId DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "sessionId": "19",
+      "tradeCount": "26",
+      "totalPnl": "20823066932.10378",
+      "earliest": "2026-05-14 13:30:15",
+      "latest": "2026-05-14 14:03:27"
+    },
+    {
+      "sessionId": "18",
+      "tradeCount": "8",
+      "totalPnl": "-896.2341352304765",
+      "earliest": "2026-05-14 10:17:58",
+      "latest": "2026-05-14 10:17:58"
+    },
+    {
+      "sessionId": "17",
+      "tradeCount": "72",
+      "totalPnl": "-608.5734024327169",
+      "earliest": "2026-05-13 17:54:52",
+      "latest": "2026-05-13 21:40:05"
+    },
+    {
+      "sessionId": "16",
+      "tradeCount": "41",
+      "totalPnl": "-291.8661747225268",
+      "earliest": "2026-05-13 15:59:47",
+      "latest": "2026-05-13 17:50:58"
+    },
+    {
+      "sessionId": "15",
+      "tradeCount": "26",
+      "totalPnl": "-321.14695201171",
+      "earliest": "2026-05-13 15:40:01",
+      "latest": "2026-05-13 15:57:57"
+    }
+  ],
+  "messages": [],
+  "stdout": "sessionId\ttradeCount\ttotalPnl\tearliest\tlatest\n19\t26\t20823066932.10378\t2026-05-14 13:30:15\t2026-05-14 14:03:27\n18\t8\t-896.2341352304765\t2026-05-14 10:17:58\t2026-05-14 10:17:58\n17\t72\t-608.5734024327169\t2026-05-13 17:54:52\t2026-05-13 21:40:05\n16\t41\t-291.8661747225268\t2026-05-13 15:59:47\t2026-05-13 17:50:58\n15\t26\t-321.14695201171\t2026-05-13 15:40:01\t2026-05-13 15:57:57\n",
+  "stderr": "",
+  "execution_time_ms": 1730
+}

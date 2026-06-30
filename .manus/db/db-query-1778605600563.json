@@ -1,0 +1,100 @@
+{
+  "query": "\nSELECT ticker, allocatedCapital, openedAt, status FROM paperPositions WHERE userId=1 AND status='open' ORDER BY openedAt DESC LIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT ticker, allocatedCapital, openedAt, status FROM paperPositions WHERE userId=1 AND status='open' ORDER BY openedAt DESC LIMIT 20;\n",
+  "rows": [
+    {
+      "ticker": "GOOGL",
+      "allocatedCapital": "7221.614180053712",
+      "openedAt": "2026-05-12 17:06:40",
+      "status": "open"
+    },
+    {
+      "ticker": "GD",
+      "allocatedCapital": "5550.024460449218",
+      "openedAt": "2026-05-12 16:57:52",
+      "status": "open"
+    },
+    {
+      "ticker": "SNDK",
+      "allocatedCapital": "4691.706917358399",
+      "openedAt": "2026-05-12 16:47:51",
+      "status": "open"
+    },
+    {
+      "ticker": "BKR",
+      "allocatedCapital": "5691.896155624389",
+      "openedAt": "2026-05-12 16:45:40",
+      "status": "open"
+    },
+    {
+      "ticker": "KO",
+      "allocatedCapital": "5651.886108032226",
+      "openedAt": "2026-05-12 16:44:27",
+      "status": "open"
+    },
+    {
+      "ticker": "SOXX",
+      "allocatedCapital": "5208.2028778076165",
+      "openedAt": "2026-05-12 16:44:27",
+      "status": "open"
+    },
+    {
+      "ticker": "FFIV",
+      "allocatedCapital": "5670.144460449218",
+      "openedAt": "2026-05-12 16:44:26",
+      "status": "open"
+    },
+    {
+      "ticker": "TBLA",
+      "allocatedCapital": "4997.742749999999",
+      "openedAt": "2026-05-12 16:43:21",
+      "status": "open"
+    },
+    {
+      "ticker": "CRWD",
+      "allocatedCapital": "4754.680105957031",
+      "openedAt": "2026-05-12 16:43:10",
+      "status": "open"
+    },
+    {
+      "ticker": "GE",
+      "allocatedCapital": "4759.154302246093",
+      "openedAt": "2026-05-12 16:43:07",
+      "status": "open"
+    },
+    {
+      "ticker": "RKLB",
+      "allocatedCapital": "4962.0471474304195",
+      "openedAt": "2026-05-12 16:43:03",
+      "status": "open"
+    },
+    {
+      "ticker": "LLY",
+      "allocatedCapital": "4746.992311096191",
+      "openedAt": "2026-05-12 16:42:59",
+      "status": "open"
+    },
+    {
+      "ticker": "AAPL",
+      "allocatedCapital": "4991.42656463623",
+      "openedAt": "2026-05-12 16:42:49",
+      "status": "open"
+    },
+    {
+      "ticker": "AMD",
+      "allocatedCapital": "4556.451924438477",
+      "openedAt": "2026-05-12 16:42:45",
+      "status": "open"
+    },
+    {
+      "ticker": "MU",
+      "allocatedCapital": "4485.340845336914",
+      "openedAt": "2026-05-12 16:42:41",
+      "status": "open"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tallocatedCapital\topenedAt\tstatus\nGOOGL\t7221.614180053712\t2026-05-12 17:06:40\topen\nGD\t5550.024460449218\t2026-05-12 16:57:52\topen\nSNDK\t4691.706917358399\t2026-05-12 16:47:51\topen\nBKR\t5691.896155624389\t2026-05-12 16:45:40\topen\nKO\t5651.886108032226\t2026-05-12 16:44:27\topen\nSOXX\t5208.2028778076165\t2026-05-12 16:44:27\topen\nFFIV\t5670.144460449218\t2026-05-12 16:44:26\topen\nTBLA\t4997.742749999999\t2026-05-12 16:43:21\topen\nCRWD\t4754.680105957031\t2026-05-12 16:43:10\topen\nGE\t4759.154302246093\t2026-05-12 16:43:07\topen\nRKLB\t4962.0471474304195\t2026-05-12 16:43:03\topen\nLLY\t4746.992311096191\t2026-05-12 16:42:59\topen\nAAPL\t4991.42656463623\t2026-05-12 16:42:49\topen\nAMD\t4556.451924438477\t2026-05-12 16:42:45\topen\nMU\t4485.340845336914\t2026-05-12 16:42:41\topen\n",
+  "stderr": "",
+  "execution_time_ms": 1848
+}

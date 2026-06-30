@@ -1,0 +1,1 @@
+ALTER TABLE `breakoutScans` MODIFY COLUMN `signalType` varchar(16) NOT NULL DEFAULT 'BREAKOUT';

@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE labSimulations SET status = 'error', errorMessage = 'Interrupted by Cloud Run restart (v12.20b cleanup)' WHERE status = 'running' AND TIMESTAMPDIFF(SECOND, updatedAt, NOW()) > 120",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute UPDATE labSimulations SET status = 'error', errorMessage = 'Interrupted by Cloud Run restart (v12.20b cleanup)' WHERE status = 'running' AND TIMESTAMPDIFF(SECOND, updatedAt, NOW()) > 120",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1851
+}

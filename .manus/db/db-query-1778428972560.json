@@ -1,0 +1,25 @@
+{
+  "query": "SELECT ticker FROM userAssets WHERE ticker LIKE '%GOOG%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker FROM userAssets WHERE ticker LIKE '%GOOG%' LIMIT 5;",
+  "rows": [
+    {
+      "ticker": "GOOGL"
+    },
+    {
+      "ticker": "GOOGL"
+    },
+    {
+      "ticker": "GOOGL"
+    },
+    {
+      "ticker": "GOOGL"
+    },
+    {
+      "ticker": "GOOGL"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\nGOOGL\nGOOGL\nGOOGL\nGOOGL\nGOOGL\n",
+  "stderr": "",
+  "execution_time_ms": 1818
+}

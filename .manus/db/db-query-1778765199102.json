@@ -1,0 +1,50 @@
+{
+  "query": "SELECT COUNT(*) as total, userId FROM userAssets GROUP BY userId LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT COUNT(*) as total, userId FROM userAssets GROUP BY userId LIMIT 10;",
+  "rows": [
+    {
+      "total": "60",
+      "userId": "480303"
+    },
+    {
+      "total": "201",
+      "userId": "3180001"
+    },
+    {
+      "total": "202",
+      "userId": "1980365"
+    },
+    {
+      "total": "63",
+      "userId": "1740142"
+    },
+    {
+      "total": "201",
+      "userId": "7620254"
+    },
+    {
+      "total": "210",
+      "userId": "9992132"
+    },
+    {
+      "total": "202",
+      "userId": "1"
+    },
+    {
+      "total": "61",
+      "userId": "1680140"
+    },
+    {
+      "total": "61",
+      "userId": "1230170"
+    },
+    {
+      "total": "61",
+      "userId": "2071394"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tuserId\n60\t480303\n201\t3180001\n202\t1980365\n63\t1740142\n201\t7620254\n210\t9992132\n202\t1\n61\t1680140\n61\t1230170\n61\t2071394\n",
+  "stderr": "",
+  "execution_time_ms": 1801
+}

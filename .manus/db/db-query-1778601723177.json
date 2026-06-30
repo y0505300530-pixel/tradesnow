@@ -1,0 +1,190 @@
+{
+  "query": "SELECT ticker, units, entryPrice, exitPrice, realizedPnl, exitReason, closedAt FROM paperTrades ORDER BY closedAt DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, units, entryPrice, exitPrice, realizedPnl, exitReason, closedAt FROM paperTrades ORDER BY closedAt DESC LIMIT 20;",
+  "rows": [
+    {
+      "ticker": "WMB",
+      "units": "211",
+      "entryPrice": "72.03195908355713",
+      "exitPrice": "74.17575",
+      "realizedPnl": "449.83988336944503",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 16:01:52"
+    },
+    {
+      "ticker": "SLB",
+      "units": "286",
+      "entryPrice": "53.32327045822143",
+      "exitPrice": "55.20474",
+      "realizedPnl": "535.6002889486714",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 16:01:52"
+    },
+    {
+      "ticker": "AEP",
+      "units": "117",
+      "entryPrice": "130.29016366577147",
+      "exitPrice": "131.22364499999998",
+      "realizedPnl": "106.71731610473486",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:01:52"
+    },
+    {
+      "ticker": "SEDG",
+      "units": "368",
+      "entryPrice": "41.3412992362976",
+      "exitPrice": "39.170790000000004",
+      "realizedPnl": "-801.2473989575159",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:01:52"
+    },
+    {
+      "ticker": "JPM",
+      "units": "50",
+      "entryPrice": "302.4021061096191",
+      "exitPrice": "301.2484378051758",
+      "realizedPnl": "-60.183415222166445",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:01:52"
+    },
+    {
+      "ticker": "AEP",
+      "units": "95",
+      "entryPrice": "130.29016366577147",
+      "exitPrice": "131.23863",
+      "realizedPnl": "87.6043017517101",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:01:02"
+    },
+    {
+      "ticker": "SEDG",
+      "units": "300",
+      "entryPrice": "41.3412992362976",
+      "exitPrice": "39.1608",
+      "realizedPnl": "-656.6497708892798",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:01:02"
+    },
+    {
+      "ticker": "ZIM",
+      "units": "466",
+      "entryPrice": "26.636610610961903",
+      "exitPrice": "25.669305",
+      "realizedPnl": "-453.2644147082459",
+      "exitReason": "SL",
+      "closedAt": "2026-05-12 16:01:02"
+    },
+    {
+      "ticker": "JPM",
+      "units": "41",
+      "entryPrice": "302.4021061096191",
+      "exitPrice": "301.253445",
+      "realizedPnl": "-49.5951054943842",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:01:02"
+    },
+    {
+      "ticker": "GOOGL",
+      "units": "30",
+      "entryPrice": "401.20078778076174",
+      "exitPrice": "385.7338751220703",
+      "realizedPnl": "-466.5073797607437",
+      "exitReason": "SL",
+      "closedAt": "2026-05-12 16:01:02"
+    },
+    {
+      "ticker": "AEP",
+      "units": "95",
+      "entryPrice": "130.29016366577147",
+      "exitPrice": "131.35351500000002",
+      "realizedPnl": "98.51837675171154",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:00:04"
+    },
+    {
+      "ticker": "SEDG",
+      "units": "302",
+      "entryPrice": "41.3412992362976",
+      "exitPrice": "39.22074",
+      "realizedPnl": "-642.9088893618758",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 16:00:03"
+    },
+    {
+      "ticker": "ZIM",
+      "units": "469",
+      "entryPrice": "26.636610610961903",
+      "exitPrice": "25.6743",
+      "realizedPnl": "-453.82367654113284",
+      "exitReason": "SL",
+      "closedAt": "2026-05-12 16:00:01"
+    },
+    {
+      "ticker": "GOOGL",
+      "units": "30",
+      "entryPrice": "401.20078778076174",
+      "exitPrice": "386.07354",
+      "realizedPnl": "-456.3174334228529",
+      "exitReason": "SL",
+      "closedAt": "2026-05-12 16:00:01"
+    },
+    {
+      "ticker": "JPM",
+      "units": "33",
+      "entryPrice": "302.4021061096191",
+      "exitPrice": "301.433265",
+      "realizedPnl": "-34.47175661743097",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 15:59:59"
+    },
+    {
+      "ticker": "WMB",
+      "units": "172",
+      "entryPrice": "72.03195908355713",
+      "exitPrice": "74.13079499999999",
+      "realizedPnl": "358.4997776281729",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 15:59:52"
+    },
+    {
+      "ticker": "SLB",
+      "units": "233",
+      "entryPrice": "53.32327045822143",
+      "exitPrice": "55.20474",
+      "realizedPnl": "435.88240323440715",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 15:59:52"
+    },
+    {
+      "ticker": "AEP",
+      "units": "95",
+      "entryPrice": "130.29016366577147",
+      "exitPrice": "131.35351500000002",
+      "realizedPnl": "98.51837675171154",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 15:59:52"
+    },
+    {
+      "ticker": "SEDG",
+      "units": "300",
+      "entryPrice": "41.3412992362976",
+      "exitPrice": "39.22074",
+      "realizedPnl": "-638.6677708892806",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 15:59:52"
+    },
+    {
+      "ticker": "JPM",
+      "units": "41",
+      "entryPrice": "302.4021061096191",
+      "exitPrice": "301.34835",
+      "realizedPnl": "-45.7040004943849",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 15:59:52"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tunits\tentryPrice\texitPrice\trealizedPnl\texitReason\tclosedAt\nWMB\t211\t72.03195908355713\t74.17575\t449.83988336944503\tTP\t2026-05-12 16:01:52\nSLB\t286\t53.32327045822143\t55.20474\t535.6002889486714\tTP\t2026-05-12 16:01:52\nAEP\t117\t130.29016366577147\t131.22364499999998\t106.71731610473486\tForce-Close\t2026-05-12 16:01:52\nSEDG\t368\t41.3412992362976\t39.170790000000004\t-801.2473989575159\tForce-Close\t2026-05-12 16:01:52\nJPM\t50\t302.4021061096191\t301.2484378051758\t-60.183415222166445\tForce-Close\t2026-05-12 16:01:52\nAEP\t95\t130.29016366577147\t131.23863\t87.6043017517101\tForce-Close\t2026-05-12 16:01:02\nSEDG\t300\t41.3412992362976\t39.1608\t-656.6497708892798\tForce-Close\t2026-05-12 16:01:02\nZIM\t466\t26.636610610961903\t25.669305\t-453.2644147082459\tSL\t2026-05-12 16:01:02\nJPM\t41\t302.4021061096191\t301.253445\t-49.5951054943842\tForce-Close\t2026-05-12 16:01:02\nGOOGL\t30\t401.20078778076174\t385.7338751220703\t-466.5073797607437\tSL\t2026-05-12 16:01:02\nAEP\t95\t130.29016366577147\t131.35351500000002\t98.51837675171154\tForce-Close\t2026-05-12 16:00:04\nSEDG\t302\t41.3412992362976\t39.22074\t-642.9088893618758\tForce-Close\t2026-05-12 16:00:03\nZIM\t469\t26.636610610961903\t25.6743\t-453.82367654113284\tSL\t2026-05-12 16:00:01\nGOOGL\t30\t401.20078778076174\t386.07354\t-456.3174334228529\tSL\t2026-05-12 16:00:01\nJPM\t33\t302.4021061096191\t301.433265\t-34.47175661743097\tForce-Close\t2026-05-12 15:59:59\nWMB\t172\t72.03195908355713\t74.13079499999999\t358.4997776281729\tTP\t2026-05-12 15:59:52\nSLB\t233\t53.32327045822143\t55.20474\t435.88240323440715\tTP\t2026-05-12 15:59:52\nAEP\t95\t130.29016366577147\t131.35351500000002\t98.51837675171154\tForce-Close\t2026-05-12 15:59:52\nSEDG\t300\t41.3412992362976\t39.22074\t-638.6677708892806\tForce-Close\t2026-05-12 15:59:52\nJPM\t41\t302.4021061096191\t301.34835\t-45.7040004943849\tForce-Close\t2026-05-12 15:59:52\n",
+  "stderr": "",
+  "execution_time_ms": 1787
+}

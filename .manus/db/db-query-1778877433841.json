@@ -1,0 +1,82 @@
+{
+  "query": "SELECT s.id, s.name, s.totalROI, s.finalWallet, s.monkeyValue, s.tickers, ROUND((CAST(s.finalWallet AS DECIMAL(12,2)) - CAST(s.monkeyValue AS DECIMAL(12,2))) / CAST(s.monkeyValue AS DECIMAL(12,2)) * 100, 1) as alphaVsMonkey FROM labSimulations s WHERE s.status = 'done' AND s.totalROI IS NOT NULL ORDER BY CAST(s.totalROI AS DECIMAL(10,2)) DESC LIMIT 8;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT s.id, s.name, s.totalROI, s.finalWallet, s.monkeyValue, s.tickers, ROUND((CAST(s.finalWallet AS DECIMAL(12,2)) - CAST(s.monkeyValue AS DECIMAL(12,2))) / CAST(s.monkeyValue AS DECIMAL(12,2)) * 100, 1) as alphaVsMonkey FROM labSimulations s WHERE s.status = 'done' AND s.totalROI IS NOT NULL ORDER BY CAST(s.totalROI AS DECIMAL(10,2)) DESC LIMIT 8;",
+  "rows": [
+    {
+      "id": "360009",
+      "name": "Lab 3/9/2026",
+      "totalROI": "1035.64",
+      "finalWallet": "1135184.24",
+      "monkeyValue": "468387.29",
+      "tickers": "[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]",
+      "alphaVsMonkey": "142.4"
+    },
+    {
+      "id": "360010",
+      "name": "Lab 3/9/2026",
+      "totalROI": "1035.64",
+      "finalWallet": "1135184.24",
+      "monkeyValue": "468387.29",
+      "tickers": "[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]",
+      "alphaVsMonkey": "142.4"
+    },
+    {
+      "id": "510012",
+      "name": "Triple Risk-5 3/11/2026",
+      "totalROI": "885.32",
+      "finalWallet": "5911904.47",
+      "monkeyValue": "2929059.38",
+      "tickers": "[\"NVDA\",\"TSM\",\"AVGO\",\"MU\",\"ALAB\",\"AMD\",\"MRVL\",\"ARM\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"ORCL\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"JPM\",\"GS\",\"V\",\"SOFI\",\"LLY\",\"HIMS\",\"CELH\",\"TSLA\",\"RIVN\",\"RKLB\",\"LUNR\",\"AXON\",\"IONQ\",\"QUBT\",\"RGTI\",\"CEG\",\"VST\",\"NRG\",\"CAT\",\"GE\",\"RTX\",\"NFLX\",\"SPOT\",\"RDDT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"UBER\",\"ZIM\",\"DUOL\",\"TTD\"]",
+      "alphaVsMonkey": "101.8"
+    },
+    {
+      "id": "600003",
+      "name": "Lab 11.3.2026",
+      "totalROI": "819.89",
+      "finalWallet": "919893.33",
+      "monkeyValue": "524418.47",
+      "tickers": "[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\"]",
+      "alphaVsMonkey": "75.4"
+    },
+    {
+      "id": "360002",
+      "name": "Lab 3/9/2026",
+      "totalROI": "762.04",
+      "finalWallet": "861698.44",
+      "monkeyValue": "272989.25",
+      "tickers": "[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]",
+      "alphaVsMonkey": "215.7"
+    },
+    {
+      "id": "360007",
+      "name": "Lab 3/9/2026",
+      "totalROI": "748.53",
+      "finalWallet": "848188.43",
+      "monkeyValue": "254574.99",
+      "tickers": "[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]",
+      "alphaVsMonkey": "233.2"
+    },
+    {
+      "id": "690003",
+      "name": "Lab 3/15/2026",
+      "totalROI": "693.73",
+      "finalWallet": "793725.75",
+      "monkeyValue": "511268.83",
+      "tickers": "[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\"]",
+      "alphaVsMonkey": "55.2"
+    },
+    {
+      "id": "210008",
+      "name": "Lab 3/8/2026",
+      "totalROI": "563.32",
+      "finalWallet": "663251.61",
+      "monkeyValue": "312720.49",
+      "tickers": "[\"AVGO\",\"MU\",\"CAT\",\"NVDA\",\"AMZN\",\"ALAB\",\"BABA\",\"AAPL\",\"MSFT\",\"OPEN\",\"BIDU\",\"TSM\",\"GOOGL\",\"PLTR\",\"TSLA\",\"RDDT\",\"RKLB\",\"SEDG\",\"KLAC\",\"FRAF\",\"U\",\"ZIM\",\"LUNR\",\"META\",\"COIN\",\"SPOT\",\"SMR\",\"NOW\",\"QUBT\",\"SOUN\"]",
+      "alphaVsMonkey": "112.1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttotalROI\tfinalWallet\tmonkeyValue\ttickers\talphaVsMonkey\n360009\tLab 3/9/2026\t1035.64\t1135184.24\t468387.29\t[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]\t142.4\n360010\tLab 3/9/2026\t1035.64\t1135184.24\t468387.29\t[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]\t142.4\n510012\tTriple Risk-5 3/11/2026\t885.32\t5911904.47\t2929059.38\t[\"NVDA\",\"TSM\",\"AVGO\",\"MU\",\"ALAB\",\"AMD\",\"MRVL\",\"ARM\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"ORCL\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"JPM\",\"GS\",\"V\",\"SOFI\",\"LLY\",\"HIMS\",\"CELH\",\"TSLA\",\"RIVN\",\"RKLB\",\"LUNR\",\"AXON\",\"IONQ\",\"QUBT\",\"RGTI\",\"CEG\",\"VST\",\"NRG\",\"CAT\",\"GE\",\"RTX\",\"NFLX\",\"SPOT\",\"RDDT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"UBER\",\"ZIM\",\"DUOL\",\"TTD\"]\t101.8\n600003\tLab 11.3.2026\t819.89\t919893.33\t524418.47\t[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\"]\t75.4\n360002\tLab 3/9/2026\t762.04\t861698.44\t272989.25\t[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]\t215.7\n360007\tLab 3/9/2026\t748.53\t848188.43\t254574.99\t[\"JPM\",\"ORCL\",\"GS\",\"V\",\"HIMS\",\"CAT\",\"GE\",\"LUNR\",\"LLY\",\"RTX\",\"CEG\",\"AVGO\",\"CELH\",\"AXON\",\"TSM\",\"NFLX\",\"UBER\",\"NVDA\",\"MU\",\"AMD\",\"MRVL\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"CRM\",\"PLTR\",\"APP\",\"SOUN\",\"AI\",\"COIN\",\"MSTR\",\"MARA\",\"HOOD\",\"PYPL\",\"SOFI\",\"TSLA\",\"RIVN\",\"RKLB\",\"IONQ\",\"QUBT\",\"RGTI\",\"VST\",\"NRG\",\"SPOT\",\"CRWD\",\"PANW\",\"S\",\"DDOG\",\"NET\",\"SNOW\",\"SHOP\",\"ZIM\",\"DUOL\",\"TTD\",\"AFRM\",\"ALAB\",\"ARM\"]\t233.2\n690003\tLab 3/15/2026\t693.73\t793725.75\t511268.83\t[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\"]\t55.2\n210008\tLab 3/8/2026\t563.32\t663251.61\t312720.49\t[\"AVGO\",\"MU\",\"CAT\",\"NVDA\",\"AMZN\",\"ALAB\",\"BABA\",\"AAPL\",\"MSFT\",\"OPEN\",\"BIDU\",\"TSM\",\"GOOGL\",\"PLTR\",\"TSLA\",\"RDDT\",\"RKLB\",\"SEDG\",\"KLAC\",\"FRAF\",\"U\",\"ZIM\",\"LUNR\",\"META\",\"COIN\",\"SPOT\",\"SMR\",\"NOW\",\"QUBT\",\"SOUN\"]\t112.1\n",
+  "stderr": "",
+  "execution_time_ms": 1754
+}

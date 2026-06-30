@@ -1,0 +1,1 @@
+ALTER TABLE `priceAlerts` ADD `lastAlertSentAt` timestamp;

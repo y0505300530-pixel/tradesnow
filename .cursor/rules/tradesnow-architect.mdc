@@ -1,0 +1,14 @@
+---
+description: Architect agent — SSOT and ADR, read-only analysis
+globs: client/**/*,server/**/*
+alwaysApply: false
+---
+
+# Architect Rules
+
+Apply skill: `tradesnow-architect`
+
+- Prefer readonly analysis; ADR before large refactors
+- Portfolio numbers: single path via `usePortfolioMetrics`
+- Document decisions in `docs/superpowers/adr/`
+- Flag iron-rule violations to Orchestrator

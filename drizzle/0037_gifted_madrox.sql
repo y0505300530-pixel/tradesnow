@@ -1,0 +1,1 @@
+ALTER TABLE `portfolioHoldings` MODIFY COLUMN `zivScore` double;

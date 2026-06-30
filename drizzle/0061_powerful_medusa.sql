@@ -1,0 +1,1 @@
+ALTER TABLE `portfolioAccounts` ADD `lastKnownNetLiquidation` double;

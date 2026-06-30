@@ -1,0 +1,1 @@
+ALTER TABLE `liveEngineConfig` MODIFY COLUMN `zivOnlyFloor` double NOT NULL DEFAULT 7.5;

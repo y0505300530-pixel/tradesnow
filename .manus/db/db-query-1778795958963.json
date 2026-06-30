@@ -1,0 +1,91 @@
+{
+  "query": "SELECT id, ticker, userId, sortOrder, score, archived, scannedAt FROM userAssets WHERE ticker = 'LAHAV.TA' AND archived = 0 ORDER BY userId, id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, ticker, userId, sortOrder, score, archived, scannedAt FROM userAssets WHERE ticker = 'LAHAV.TA' AND archived = 0 ORDER BY userId, id;",
+  "rows": [
+    {
+      "id": "810003",
+      "ticker": "LAHAV.TA",
+      "userId": "1",
+      "sortOrder": "104",
+      "score": "6.83",
+      "archived": "0",
+      "scannedAt": "2026-05-14 21:49:23"
+    },
+    {
+      "id": "930027",
+      "ticker": "LAHAV.TA",
+      "userId": "1",
+      "sortOrder": "0",
+      "score": "6.83",
+      "archived": "0",
+      "scannedAt": "2026-05-14 21:49:23"
+    },
+    {
+      "id": "1170295",
+      "ticker": "LAHAV.TA",
+      "userId": "1980365",
+      "sortOrder": "104",
+      "score": "4.99",
+      "archived": "0",
+      "scannedAt": "2026-05-12 15:45:29"
+    },
+    {
+      "id": "1170334",
+      "ticker": "LAHAV.TA",
+      "userId": "1980365",
+      "sortOrder": "0",
+      "score": "4.99",
+      "archived": "0",
+      "scannedAt": "2026-05-12 15:45:29"
+    },
+    {
+      "id": "1170154",
+      "ticker": "LAHAV.TA",
+      "userId": "3180001",
+      "sortOrder": "104",
+      "score": "4.44",
+      "archived": "0",
+      "scannedAt": "2026-05-06 08:17:24"
+    },
+    {
+      "id": "1170195",
+      "ticker": "LAHAV.TA",
+      "userId": "3180001",
+      "sortOrder": "0",
+      "score": "4.44",
+      "archived": "0",
+      "scannedAt": "2026-05-06 08:17:24"
+    },
+    {
+      "id": "990105",
+      "ticker": "LAHAV.TA",
+      "userId": "7620254",
+      "sortOrder": "104",
+      "score": "4.26",
+      "archived": "0",
+      "scannedAt": "2026-04-30 12:19:50"
+    },
+    {
+      "id": "990147",
+      "ticker": "LAHAV.TA",
+      "userId": "7620254",
+      "sortOrder": "0",
+      "score": "7",
+      "archived": "0",
+      "scannedAt": "NULL"
+    },
+    {
+      "id": "1170653",
+      "ticker": "LAHAV.TA",
+      "userId": "9992132",
+      "sortOrder": "104",
+      "score": "4.99",
+      "archived": "0",
+      "scannedAt": "2026-05-13 10:29:30"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tticker\tuserId\tsortOrder\tscore\tarchived\tscannedAt\n810003\tLAHAV.TA\t1\t104\t6.83\t0\t2026-05-14 21:49:23\n930027\tLAHAV.TA\t1\t0\t6.83\t0\t2026-05-14 21:49:23\n1170295\tLAHAV.TA\t1980365\t104\t4.99\t0\t2026-05-12 15:45:29\n1170334\tLAHAV.TA\t1980365\t0\t4.99\t0\t2026-05-12 15:45:29\n1170154\tLAHAV.TA\t3180001\t104\t4.44\t0\t2026-05-06 08:17:24\n1170195\tLAHAV.TA\t3180001\t0\t4.44\t0\t2026-05-06 08:17:24\n990105\tLAHAV.TA\t7620254\t104\t4.26\t0\t2026-04-30 12:19:50\n990147\tLAHAV.TA\t7620254\t0\t7\t0\tNULL\n1170653\tLAHAV.TA\t9992132\t104\t4.99\t0\t2026-05-13 10:29:30\n",
+  "stderr": "",
+  "execution_time_ms": 1817
+}

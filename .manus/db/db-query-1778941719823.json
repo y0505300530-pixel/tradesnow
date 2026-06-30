@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `paperPenaltyBox` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `userId` int NOT NULL,\n  `ticker` varchar(16) NOT NULL,\n  `activatedAt` timestamp NOT NULL DEFAULT (now()),\n  `expiresAt` timestamp NOT NULL,\n  `slHitCount` int NOT NULL DEFAULT 2,\n  `sessionId` int NOT NULL DEFAULT 1,\n  CONSTRAINT `paperPenaltyBox_id` PRIMARY KEY(`id`),\n  INDEX `paperPenaltyBox_userId_ticker_idx` (`userId`, `ticker`),\n  INDEX `paperPenaltyBox_expiresAt_idx` (`expiresAt`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute CREATE TABLE IF NOT EXISTS `paperPenaltyBox` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `userId` int NOT NULL,\n  `ticker` varchar(16) NOT NULL,\n  `activatedAt` timestamp NOT NULL DEFAULT (now()),\n  `expiresAt` timestamp NOT NULL,\n  `slHitCount` int NOT NULL DEFAULT 2,\n  `sessionId` int NOT NULL DEFAULT 1,\n  CONSTRAINT `paperPenaltyBox_id` PRIMARY KEY(`id`),\n  INDEX `paperPenaltyBox_userId_ticker_idx` (`userId`, `ticker`),\n  INDEX `paperPenaltyBox_expiresAt_idx` (`expiresAt`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1895
+}

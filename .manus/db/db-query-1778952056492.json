@@ -1,0 +1,190 @@
+{
+  "query": "SELECT DISTINCT ticker, companyName, sector, exchange FROM userAssets WHERE archived = 0 ORDER BY ticker LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT DISTINCT ticker, companyName, sector, exchange FROM userAssets WHERE archived = 0 ORDER BY ticker LIMIT 30;",
+  "rows": [
+    {
+      "ticker": "AA",
+      "companyName": "AA",
+      "sector": "מניות",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AA",
+      "companyName": "Alcoa Corporation",
+      "sector": "מניות",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AAPL",
+      "companyName": "Apple",
+      "sector": "Technology",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AAPL",
+      "companyName": "Apple Inc.",
+      "sector": "Technology",
+      "exchange": "US"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "companyName": "ACCL.TA",
+      "sector": "Custom",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "companyName": "Accel",
+      "sector": "Israeli",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "AEP",
+      "companyName": "American Electric Power Company, Inc.",
+      "sector": "מניות",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AEP",
+      "companyName": "AEP",
+      "sector": "מניות",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings, Inc.",
+      "sector": "Fintech",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings",
+      "sector": "Fintech",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AI",
+      "companyName": "C3.ai, Inc.",
+      "sector": "AI / Data",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AI",
+      "companyName": "C3.ai",
+      "sector": "AI / Data",
+      "exchange": "US"
+    },
+    {
+      "ticker": "ALAB",
+      "companyName": "Astera Labs, Inc.",
+      "sector": "Semiconductors",
+      "exchange": "US"
+    },
+    {
+      "ticker": "ALAB",
+      "companyName": "Astera Labs",
+      "sector": "Semiconductors",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AMD",
+      "companyName": "AMD",
+      "sector": "מניות",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices, Inc.",
+      "sector": "Semiconductors",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices",
+      "sector": "Semiconductors",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices, Inc.",
+      "sector": "מניות",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "companyName": "AMOT.TA",
+      "sector": "Custom",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "companyName": "Amot Investments Ltd.",
+      "sector": "Custom",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "AMZN",
+      "companyName": "Amazon.com, Inc.",
+      "sector": "Technology",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AMZN",
+      "companyName": "Amazon",
+      "sector": "Technology",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AON",
+      "companyName": "Aon plc",
+      "sector": "Custom",
+      "exchange": "US"
+    },
+    {
+      "ticker": "AON",
+      "companyName": "AON",
+      "sector": "Custom",
+      "exchange": "US"
+    },
+    {
+      "ticker": "APP",
+      "companyName": "AppLovin",
+      "sector": "AI / Data",
+      "exchange": "US"
+    },
+    {
+      "ticker": "APP",
+      "companyName": "AppLovin Corporation",
+      "sector": "AI / Data",
+      "exchange": "US"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "companyName": "Ari Real Estate (Arena) Investment Ltd",
+      "sector": "Israeli",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "companyName": "ARIN.TA",
+      "sector": "Custom",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "companyName": "Arin",
+      "sector": "Israeli",
+      "exchange": "TASE"
+    },
+    {
+      "ticker": "ARM",
+      "companyName": "Arm Holdings plc",
+      "sector": "Semiconductors",
+      "exchange": "US"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tcompanyName\tsector\texchange\nAA\tAA\tמניות\tUS\nAA\tAlcoa Corporation\tמניות\tUS\nAAPL\tApple\tTechnology\tUS\nAAPL\tApple Inc.\tTechnology\tUS\nACCL.TA\tACCL.TA\tCustom\tTASE\nACCL.TA\tAccel\tIsraeli\tTASE\nAEP\tAmerican Electric Power Company, Inc.\tמניות\tUS\nAEP\tAEP\tמניות\tUS\nAFRM\tAffirm Holdings, Inc.\tFintech\tUS\nAFRM\tAffirm Holdings\tFintech\tUS\nAI\tC3.ai, Inc.\tAI / Data\tUS\nAI\tC3.ai\tAI / Data\tUS\nALAB\tAstera Labs, Inc.\tSemiconductors\tUS\nALAB\tAstera Labs\tSemiconductors\tUS\nAMD\tAMD\tמניות\tUS\nAMD\tAdvanced Micro Devices, Inc.\tSemiconductors\tUS\nAMD\tAdvanced Micro Devices\tSemiconductors\tUS\nAMD\tAdvanced Micro Devices, Inc.\tמניות\tUS\nAMOT.TA\tAMOT.TA\tCustom\tTASE\nAMOT.TA\tAmot Investments Ltd.\tCustom\tTASE\nAMZN\tAmazon.com, Inc.\tTechnology\tUS\nAMZN\tAmazon\tTechnology\tUS\nAON\tAon plc\tCustom\tUS\nAON\tAON\tCustom\tUS\nAPP\tAppLovin\tAI / Data\tUS\nAPP\tAppLovin Corporation\tAI / Data\tUS\nARIN.TA\tAri Real Estate (Arena) Investment Ltd\tIsraeli\tTASE\nARIN.TA\tARIN.TA\tCustom\tTASE\nARIN.TA\tArin\tIsraeli\tTASE\nARM\tArm Holdings plc\tSemiconductors\tUS\n",
+  "stderr": "",
+  "execution_time_ms": 1747
+}

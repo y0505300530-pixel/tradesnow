@@ -1,0 +1,1 @@
+ALTER TABLE `portfolioHoldings` ADD `dailyChangePercent` double;

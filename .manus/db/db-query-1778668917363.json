@@ -1,0 +1,19 @@
+{
+  "query": "SELECT * FROM paperLedger LIMIT 2;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT * FROM paperLedger LIMIT 2;",
+  "rows": [
+    {
+      "id": "2",
+      "userId": "1",
+      "availableCash": "26564.56322369258",
+      "initialCapital": "100000",
+      "createdAt": "2026-05-12 13:52:06",
+      "updatedAt": "2026-05-13 10:36:51",
+      "sessionId": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tavailableCash\tinitialCapital\tcreatedAt\tupdatedAt\tsessionId\n2\t1\t26564.56322369258\t100000\t2026-05-12 13:52:06\t2026-05-13 10:36:51\t5\n",
+  "stderr": "",
+  "execution_time_ms": 1861
+}

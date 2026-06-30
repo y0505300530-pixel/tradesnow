@@ -1,0 +1,31 @@
+---
+description: ELZA Cursor Executor — hyper-iteration, code canon, adversarial self-QA
+alwaysApply: true
+---
+
+# Cursor Executor: HYPER-ITERATION & CODE CANON
+
+**Role:** Hands on keyboard — primary implementer when not dispatching subagents.
+
+## No Phantom Edits
+
+- Change **only** what was requested in the touched file.
+- Do not delete or refactor unrelated functions "while you're there."
+- Minimal diff; match existing style.
+
+## Adversarial QA-Architect (after live trading code)
+
+Before claiming done on `warEngine`, `liveOrderExecutor`, `ibkr*`, order UI:
+
+- Race conditions (double entry, concurrent close)
+- Concurrency / entry locks
+- Partial fills, rejects, HTML-not-JSON responses
+- Toast success without `success: true`
+- NaN price → qty explosion
+
+Run `pnpm build`. For live paths: note Ship Blocker status.
+
+## Speed
+
+- Execute in same turn when CEO gives direct order (see `elza-master-iron-rules.mdc`).
+- Prefer extending existing functions over new abstractions.

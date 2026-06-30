@@ -1,0 +1,9 @@
+{
+  "query": "\nCREATE INDEX IF NOT EXISTS `labTrades_simulationId_idx` ON `labTrades` (`simulationId`);\nCREATE INDEX IF NOT EXISTS `labTrades_ticker_idx` ON `labTrades` (`ticker`);\nCREATE INDEX IF NOT EXISTS `labDailyLogs_simulationId_idx` ON `labDailyLogs` (`simulationId`);\nCREATE INDEX IF NOT EXISTS `labDailyLogs_date_idx` ON `labDailyLogs` (`date`);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nCREATE INDEX IF NOT EXISTS `labTrades_simulationId_idx` ON `labTrades` (`simulationId`);\nCREATE INDEX IF NOT EXISTS `labTrades_ticker_idx` ON `labTrades` (`ticker`);\nCREATE INDEX IF NOT EXISTS `labDailyLogs_simulationId_idx` ON `labDailyLogs` (`simulationId`);\nCREATE INDEX IF NOT EXISTS `labDailyLogs_date_idx` ON `labDailyLogs` (`date`);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3997
+}

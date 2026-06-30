@@ -1,0 +1,1 @@
+ALTER TABLE `labSimulations` MODIFY COLUMN `scanReport` mediumtext;

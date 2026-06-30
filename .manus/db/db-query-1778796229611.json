@@ -1,0 +1,42 @@
+{
+  "query": "SELECT * FROM userAssets WHERE ticker = 'LAHAV.TA' AND userId = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT * FROM userAssets WHERE ticker = 'LAHAV.TA' AND userId = 1;",
+  "rows": [
+    {
+      "id": "810003",
+      "userId": "1",
+      "ticker": "LAHAV.TA",
+      "exchange": "TASE",
+      "companyName": "Lahav LR Real Estate Ltd",
+      "sector": "Custom",
+      "score": "6.83",
+      "label": "NULL",
+      "dailyChangePercent": "-0.4882017900732303",
+      "sortOrder": "104",
+      "updatedAt": "2026-05-14 21:49:22",
+      "createdAt": "2026-04-26 10:10:54",
+      "cmp": "1223",
+      "ema50": "3.923745962698345",
+      "ema200": "3.023531510763865",
+      "proximityToEma50Pct": "7.383705039514675",
+      "recommendation": "WATCH",
+      "reason": "Trend is bullish (Price > EMA-200) but price ($4.21) is 7.4% from EMA-50 — EMA-20 > EMA-50 (Golden Cross active).",
+      "tier": "Near Entry Watch",
+      "weeklyEma50Slope": "0.2405188667730349",
+      "donchian20High": "4.530421001860401",
+      "priceAction": "Inside Bar",
+      "scannedAt": "2026-05-14 21:49:23",
+      "recommendedBuyPrice": "3.88",
+      "recommendedStopLoss": "3.59",
+      "hotSignal": "0",
+      "archived": "0",
+      "archivedAt": "NULL",
+      "profitPotential": "NULL",
+      "note": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tticker\texchange\tcompanyName\tsector\tscore\tlabel\tdailyChangePercent\tsortOrder\tupdatedAt\tcreatedAt\tcmp\tema50\tema200\tproximityToEma50Pct\trecommendation\treason\ttier\tweeklyEma50Slope\tdonchian20High\tpriceAction\tscannedAt\trecommendedBuyPrice\trecommendedStopLoss\thotSignal\tarchived\tarchivedAt\tprofitPotential\tnote\n810003\t1\tLAHAV.TA\tTASE\tLahav LR Real Estate Ltd\tCustom\t6.83\tNULL\t-0.4882017900732303\t104\t2026-05-14 21:49:22\t2026-04-26 10:10:54\t1223\t3.923745962698345\t3.023531510763865\t7.383705039514675\tWATCH\tTrend is bullish (Price > EMA-200) but price ($4.21) is 7.4% from EMA-50 — EMA-20 > EMA-50 (Golden Cross active).\tNear Entry Watch\t0.2405188667730349\t4.530421001860401\tInside Bar\t2026-05-14 21:49:23\t3.88\t3.59\t0\t0\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1780
+}

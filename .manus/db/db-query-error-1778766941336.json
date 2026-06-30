@@ -1,0 +1,8 @@
+{
+  "query": "\n-- Step 1: Close all open positions (mark as force-closed)\nUPDATE paper_positions SET status = 'closed', closed_at = NOW(), exit_reason = 'RESET_LAB_BUG_C1', realized_pnl = 0 WHERE status = 'open';\n\n-- Step 2: Reset ledger to $100k initial capital for all users\nUPDATE paper_ledger SET available_cash = 100000, updated_at = NOW();\n\n-- Step 3: Verify\nSELECT COUNT(*) as open_positions FROM paper_positions WHERE status = 'open';\nSELECT available_cash, initial_capital FROM paper_ledger LIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \n-- Step 1: Close all open positions (mark as force-closed)\nUPDATE paper_positions SET status = 'closed', closed_at = NOW(), exit_reason = 'RESET_LAB_BUG_C1', realized_pnl = 0 WHERE status = 'open';\n\n-- Step 2: Reset ledger to $100k initial capital for all users\nUPDATE paper_ledger SET available_cash = 100000, updated_at = NOW();\n\n-- Step 3: Verify\nSELECT COUNT(*) as open_positions FROM paper_positions WHERE status = 'open';\nSELECT available_cash, initial_capital FROM paper_ledger LIMIT 5;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 3: Table 'mmwmjbh77myyxtzazvypbm.paper_positions' doesn't exist"
+  ]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `userAssets` ADD `exchange` varchar(8) DEFAULT 'US' NOT NULL;

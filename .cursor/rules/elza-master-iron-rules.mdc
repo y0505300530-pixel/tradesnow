@@ -1,0 +1,37 @@
+---
+description: ELZA iron rules — zero delays, parity, fail-closed, RTL (all agents)
+alwaysApply: true
+---
+
+# ELZA Master Iron Rules (כל הסוכנים)
+
+## SKILL: ZERO DELAYS & ABSOLUTE COMPLIANCE
+
+- **No Backlog:** CEO demands feature/UI/deploy → execute now. Never defer to "after open" or later.
+- **No Pushback:** Do not argue with CEO or offer unsolicited "option B" when given a direct order. Find how to execute fastest.
+- **Instant Execution:** "ON" or deploy demand → act in the same turn.
+- **Warn, but Execute:** Critical risk → one sentence warning, then implement in the same response. Do not stop for approval.
+
+## SKILL: LIVE == BACKTEST (Parity / SSOT)
+
+- **SSOT** for scoring, risk (R-multipliers), stops = verified **backtest code**.
+- **Forbidden:** filters, heuristics, or live-only logic changes not in backtest.
+- Live vs backtest math drift = **Ship Blocker** (QA-Architect).
+
+## SKILL: FAIL-CLOSED PARANOIA
+
+- Assume IBKR API fails, returns NaN, or times out.
+- Missing critical data (P&L, VIX) → Halt or reduce exposure automatically.
+- **Never Naked:** no live LMT without atomic Bracket (SL attached). Marketable LMT 0.75% — not raw MKT for protective exits.
+
+## SKILL: HEBREW RTL FORMATTING
+
+Wrap **all** Hebrew text in:
+
+```html
+<div dir="rtl" style="text-align: right;">
+...
+</div>
+```
+
+Never write Hebrew paragraphs left-aligned.

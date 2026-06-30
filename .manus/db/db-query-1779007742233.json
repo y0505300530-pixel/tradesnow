@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, name, status, createdAt, updatedAt FROM labSimulations WHERE id IN (900021, 900020, 900019) ORDER BY id DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, createdAt, updatedAt FROM labSimulations WHERE id IN (900021, 900020, 900019) ORDER BY id DESC;",
+  "rows": [
+    {
+      "id": "900021",
+      "name": "Lab 5/17/2026 11:43 AM",
+      "status": "running",
+      "createdAt": "2026-05-17 08:43:43",
+      "updatedAt": "2026-05-17 08:43:52"
+    },
+    {
+      "id": "900020",
+      "name": "Lab 5/17/2026 11:40 AM",
+      "status": "running",
+      "createdAt": "2026-05-17 08:40:20",
+      "updatedAt": "2026-05-17 08:42:53"
+    },
+    {
+      "id": "900019",
+      "name": "Lab 5/17/2026 11:23 AM",
+      "status": "done",
+      "createdAt": "2026-05-17 08:23:12",
+      "updatedAt": "2026-05-17 08:33:40"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\tcreatedAt\tupdatedAt\n900021\tLab 5/17/2026 11:43 AM\trunning\t2026-05-17 08:43:43\t2026-05-17 08:43:52\n900020\tLab 5/17/2026 11:40 AM\trunning\t2026-05-17 08:40:20\t2026-05-17 08:42:53\n900019\tLab 5/17/2026 11:23 AM\tdone\t2026-05-17 08:23:12\t2026-05-17 08:33:40\n",
+  "stderr": "",
+  "execution_time_ms": 1813
+}

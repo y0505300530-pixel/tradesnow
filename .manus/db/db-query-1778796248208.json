@@ -1,0 +1,814 @@
+{
+  "query": "SELECT sortOrder, ticker FROM userAssets WHERE userId = 1 AND archived = 0 ORDER BY sortOrder LIMIT 210;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT sortOrder, ticker FROM userAssets WHERE userId = 1 AND archived = 0 ORDER BY sortOrder LIMIT 210;",
+  "rows": [
+    {
+      "sortOrder": "0",
+      "ticker": "LMT"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "CVX"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "REGN"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "NVDA"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "LRCX"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "QCOM"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "CMG"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "INTC"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "SBUX"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "NXPI"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "WDC"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "VRT"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "AEP"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "CRS"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "LMND"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "W"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "SMCI"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "MA"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "FFIV"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "BKNG"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "CSGP"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "POET"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "SOXX"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "UPS"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "KO"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "IGV"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "GM"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "MGR"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "AA"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "NCMI"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "NIKE"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "C"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "ETN"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "PTON"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "GLW"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "CRWV"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "TKO"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "CF"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "OPEN"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "PL"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "AS"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "HWM"
+    },
+    {
+      "sortOrder": "0",
+      "ticker": "NBIS"
+    },
+    {
+      "sortOrder": "1",
+      "ticker": "TSM"
+    },
+    {
+      "sortOrder": "2",
+      "ticker": "AVGO"
+    },
+    {
+      "sortOrder": "3",
+      "ticker": "MU"
+    },
+    {
+      "sortOrder": "4",
+      "ticker": "ALAB"
+    },
+    {
+      "sortOrder": "5",
+      "ticker": "AMD"
+    },
+    {
+      "sortOrder": "6",
+      "ticker": "MRVL"
+    },
+    {
+      "sortOrder": "7",
+      "ticker": "ARM"
+    },
+    {
+      "sortOrder": "8",
+      "ticker": "AAPL"
+    },
+    {
+      "sortOrder": "9",
+      "ticker": "MSFT"
+    },
+    {
+      "sortOrder": "10",
+      "ticker": "META"
+    },
+    {
+      "sortOrder": "11",
+      "ticker": "GOOGL"
+    },
+    {
+      "sortOrder": "12",
+      "ticker": "AMZN"
+    },
+    {
+      "sortOrder": "13",
+      "ticker": "NOW"
+    },
+    {
+      "sortOrder": "14",
+      "ticker": "ORCL"
+    },
+    {
+      "sortOrder": "15",
+      "ticker": "CRM"
+    },
+    {
+      "sortOrder": "16",
+      "ticker": "PLTR"
+    },
+    {
+      "sortOrder": "17",
+      "ticker": "APP"
+    },
+    {
+      "sortOrder": "18",
+      "ticker": "SOUN"
+    },
+    {
+      "sortOrder": "19",
+      "ticker": "AI"
+    },
+    {
+      "sortOrder": "20",
+      "ticker": "COIN"
+    },
+    {
+      "sortOrder": "21",
+      "ticker": "MSTR"
+    },
+    {
+      "sortOrder": "22",
+      "ticker": "MARA"
+    },
+    {
+      "sortOrder": "23",
+      "ticker": "HOOD"
+    },
+    {
+      "sortOrder": "24",
+      "ticker": "PYPL"
+    },
+    {
+      "sortOrder": "25",
+      "ticker": "JPM"
+    },
+    {
+      "sortOrder": "26",
+      "ticker": "GS"
+    },
+    {
+      "sortOrder": "27",
+      "ticker": "V"
+    },
+    {
+      "sortOrder": "28",
+      "ticker": "SOFI"
+    },
+    {
+      "sortOrder": "29",
+      "ticker": "LLY"
+    },
+    {
+      "sortOrder": "30",
+      "ticker": "HIMS"
+    },
+    {
+      "sortOrder": "31",
+      "ticker": "CELH"
+    },
+    {
+      "sortOrder": "32",
+      "ticker": "TSLA"
+    },
+    {
+      "sortOrder": "33",
+      "ticker": "RIVN"
+    },
+    {
+      "sortOrder": "34",
+      "ticker": "RKLB"
+    },
+    {
+      "sortOrder": "35",
+      "ticker": "LUNR"
+    },
+    {
+      "sortOrder": "36",
+      "ticker": "AXON"
+    },
+    {
+      "sortOrder": "37",
+      "ticker": "IONQ"
+    },
+    {
+      "sortOrder": "38",
+      "ticker": "QUBT"
+    },
+    {
+      "sortOrder": "39",
+      "ticker": "RGTI"
+    },
+    {
+      "sortOrder": "40",
+      "ticker": "CEG"
+    },
+    {
+      "sortOrder": "41",
+      "ticker": "VST"
+    },
+    {
+      "sortOrder": "42",
+      "ticker": "NRG"
+    },
+    {
+      "sortOrder": "43",
+      "ticker": "CAT"
+    },
+    {
+      "sortOrder": "44",
+      "ticker": "GE"
+    },
+    {
+      "sortOrder": "45",
+      "ticker": "RTX"
+    },
+    {
+      "sortOrder": "46",
+      "ticker": "NFLX"
+    },
+    {
+      "sortOrder": "47",
+      "ticker": "SPOT"
+    },
+    {
+      "sortOrder": "48",
+      "ticker": "RDDT"
+    },
+    {
+      "sortOrder": "49",
+      "ticker": "CRWD"
+    },
+    {
+      "sortOrder": "50",
+      "ticker": "PANW"
+    },
+    {
+      "sortOrder": "51",
+      "ticker": "S"
+    },
+    {
+      "sortOrder": "52",
+      "ticker": "DDOG"
+    },
+    {
+      "sortOrder": "53",
+      "ticker": "NET"
+    },
+    {
+      "sortOrder": "54",
+      "ticker": "SNOW"
+    },
+    {
+      "sortOrder": "55",
+      "ticker": "SHOP"
+    },
+    {
+      "sortOrder": "56",
+      "ticker": "UBER"
+    },
+    {
+      "sortOrder": "57",
+      "ticker": "ZIM"
+    },
+    {
+      "sortOrder": "58",
+      "ticker": "DUOL"
+    },
+    {
+      "sortOrder": "59",
+      "ticker": "TTD"
+    },
+    {
+      "sortOrder": "60",
+      "ticker": "AFRM"
+    },
+    {
+      "sortOrder": "61",
+      "ticker": "OKLO"
+    },
+    {
+      "sortOrder": "62",
+      "ticker": "GD"
+    },
+    {
+      "sortOrder": "62",
+      "ticker": "MXL"
+    },
+    {
+      "sortOrder": "63",
+      "ticker": "MX"
+    },
+    {
+      "sortOrder": "64",
+      "ticker": "CLS"
+    },
+    {
+      "sortOrder": "64",
+      "ticker": "HLT"
+    },
+    {
+      "sortOrder": "64",
+      "ticker": "ENOG.TA"
+    },
+    {
+      "sortOrder": "65",
+      "ticker": "MP"
+    },
+    {
+      "sortOrder": "65",
+      "ticker": "O"
+    },
+    {
+      "sortOrder": "65",
+      "ticker": "NOFR.TA"
+    },
+    {
+      "sortOrder": "66",
+      "ticker": "PLD"
+    },
+    {
+      "sortOrder": "66",
+      "ticker": "SEDG"
+    },
+    {
+      "sortOrder": "67",
+      "ticker": "STX"
+    },
+    {
+      "sortOrder": "67",
+      "ticker": "D"
+    },
+    {
+      "sortOrder": "68",
+      "ticker": "TBLA"
+    },
+    {
+      "sortOrder": "68",
+      "ticker": "BAC"
+    },
+    {
+      "sortOrder": "68",
+      "ticker": "AZRG.TA"
+    },
+    {
+      "sortOrder": "69",
+      "ticker": "IMCO.TA"
+    },
+    {
+      "sortOrder": "69",
+      "ticker": "USB"
+    },
+    {
+      "sortOrder": "70",
+      "ticker": "PNC"
+    },
+    {
+      "sortOrder": "71",
+      "ticker": "KMI"
+    },
+    {
+      "sortOrder": "71",
+      "ticker": "NXSN.TA"
+    },
+    {
+      "sortOrder": "73",
+      "ticker": "SO"
+    },
+    {
+      "sortOrder": "73",
+      "ticker": "AURA.TA"
+    },
+    {
+      "sortOrder": "74",
+      "ticker": "XEL"
+    },
+    {
+      "sortOrder": "75",
+      "ticker": "KRDI.TA"
+    },
+    {
+      "sortOrder": "75",
+      "ticker": "TFC"
+    },
+    {
+      "sortOrder": "76",
+      "ticker": "BA"
+    },
+    {
+      "sortOrder": "76",
+      "ticker": "ARYT.TA"
+    },
+    {
+      "sortOrder": "77",
+      "ticker": "AON"
+    },
+    {
+      "sortOrder": "78",
+      "ticker": "PEP"
+    },
+    {
+      "sortOrder": "78",
+      "ticker": "ISRS.TA"
+    },
+    {
+      "sortOrder": "79",
+      "ticker": "SLARL.TA"
+    },
+    {
+      "sortOrder": "79",
+      "ticker": "SATL"
+    },
+    {
+      "sortOrder": "80",
+      "ticker": "ILCO.TA"
+    },
+    {
+      "sortOrder": "80",
+      "ticker": "ENVX"
+    },
+    {
+      "sortOrder": "81",
+      "ticker": "KEN.TA"
+    },
+    {
+      "sortOrder": "82",
+      "ticker": "NTO.TA"
+    },
+    {
+      "sortOrder": "83",
+      "ticker": "CRNC"
+    },
+    {
+      "sortOrder": "83",
+      "ticker": "DLEKG.TA"
+    },
+    {
+      "sortOrder": "84",
+      "ticker": "EQTL.TA"
+    },
+    {
+      "sortOrder": "85",
+      "ticker": "NFTA.TA"
+    },
+    {
+      "sortOrder": "86",
+      "ticker": "AUR"
+    },
+    {
+      "sortOrder": "86",
+      "ticker": "FIBI.TA"
+    },
+    {
+      "sortOrder": "86",
+      "ticker": "TEVA"
+    },
+    {
+      "sortOrder": "87",
+      "ticker": "TMC"
+    },
+    {
+      "sortOrder": "88",
+      "ticker": "PNRG.TA"
+    },
+    {
+      "sortOrder": "88",
+      "ticker": "AVGD.TA"
+    },
+    {
+      "sortOrder": "89",
+      "ticker": "IBI.TA"
+    },
+    {
+      "sortOrder": "89",
+      "ticker": "HGGE.TA"
+    },
+    {
+      "sortOrder": "90",
+      "ticker": "NWMD.TA"
+    },
+    {
+      "sortOrder": "90",
+      "ticker": "ACCL.TA"
+    },
+    {
+      "sortOrder": "91",
+      "ticker": "GCT.TA"
+    },
+    {
+      "sortOrder": "91",
+      "ticker": "ARIN.TA"
+    },
+    {
+      "sortOrder": "92",
+      "ticker": "AMOT.TA"
+    },
+    {
+      "sortOrder": "92",
+      "ticker": "GAGR.TA"
+    },
+    {
+      "sortOrder": "93",
+      "ticker": "GLTL.TA"
+    },
+    {
+      "sortOrder": "94",
+      "ticker": "HIPR.TA"
+    },
+    {
+      "sortOrder": "95",
+      "ticker": "TLSY.TA"
+    },
+    {
+      "sortOrder": "96",
+      "ticker": "TRX.TA"
+    },
+    {
+      "sortOrder": "97",
+      "ticker": "MISH.TA"
+    },
+    {
+      "sortOrder": "98",
+      "ticker": "MTAV.TA"
+    },
+    {
+      "sortOrder": "99",
+      "ticker": "MLTM.TA"
+    },
+    {
+      "sortOrder": "100",
+      "ticker": "MNIF.TA"
+    },
+    {
+      "sortOrder": "101",
+      "ticker": "CMER.TA"
+    },
+    {
+      "sortOrder": "102",
+      "ticker": "PRIM.TA"
+    },
+    {
+      "sortOrder": "102",
+      "ticker": "NVPT.TA"
+    },
+    {
+      "sortOrder": "103",
+      "ticker": "NXTM.TA"
+    },
+    {
+      "sortOrder": "103",
+      "ticker": "DORL.TA"
+    },
+    {
+      "sortOrder": "104",
+      "ticker": "SOFW.TA"
+    },
+    {
+      "sortOrder": "104",
+      "ticker": "LAHAV.TA"
+    },
+    {
+      "sortOrder": "105",
+      "ticker": "FOX.TA"
+    },
+    {
+      "sortOrder": "105",
+      "ticker": "ENERGEAN.TA"
+    },
+    {
+      "sortOrder": "106",
+      "ticker": "ENLT.TA"
+    },
+    {
+      "sortOrder": "106",
+      "ticker": "QLTU.TA"
+    },
+    {
+      "sortOrder": "107",
+      "ticker": "SHOM.TA"
+    },
+    {
+      "sortOrder": "107",
+      "ticker": "PHINERGY.TA"
+    },
+    {
+      "sortOrder": "108",
+      "ticker": "MGOR.TA"
+    },
+    {
+      "sortOrder": "109",
+      "ticker": "KSTN.TA"
+    },
+    {
+      "sortOrder": "110",
+      "ticker": "XOM"
+    },
+    {
+      "sortOrder": "111",
+      "ticker": "COP"
+    },
+    {
+      "sortOrder": "112",
+      "ticker": "SLB"
+    },
+    {
+      "sortOrder": "113",
+      "ticker": "WMB"
+    },
+    {
+      "sortOrder": "114",
+      "ticker": "EOG"
+    },
+    {
+      "sortOrder": "115",
+      "ticker": "VLO"
+    },
+    {
+      "sortOrder": "116",
+      "ticker": "MPC"
+    },
+    {
+      "sortOrder": "117",
+      "ticker": "PSX"
+    },
+    {
+      "sortOrder": "118",
+      "ticker": "BKR"
+    },
+    {
+      "sortOrder": "119",
+      "ticker": "BE"
+    },
+    {
+      "sortOrder": "152",
+      "ticker": "FVRR"
+    },
+    {
+      "sortOrder": "153",
+      "ticker": "HAL"
+    },
+    {
+      "sortOrder": "154",
+      "ticker": "SNDK"
+    },
+    {
+      "sortOrder": "154",
+      "ticker": "DVN"
+    },
+    {
+      "sortOrder": "196",
+      "ticker": "ASTS"
+    },
+    {
+      "sortOrder": "197",
+      "ticker": "LITE"
+    },
+    {
+      "sortOrder": "200",
+      "ticker": "NXT"
+    },
+    {
+      "sortOrder": "201",
+      "ticker": "TSEM"
+    },
+    {
+      "sortOrder": "204",
+      "ticker": "OPCE.TA"
+    }
+  ],
+  "messages": [],
+  "stdout": "sortOrder\tticker\n0\tLMT\n0\tCVX\n0\tREGN\n0\tNVDA\n0\tLRCX\n0\tQCOM\n0\tCMG\n0\tINTC\n0\tSBUX\n0\tNXPI\n0\tWDC\n0\tVRT\n0\tAEP\n0\tCRS\n0\tLMND\n0\tW\n0\tSMCI\n0\tMA\n0\tFFIV\n0\tBKNG\n0\tCSGP\n0\tPOET\n0\tSOXX\n0\tUPS\n0\tKO\n0\tIGV\n0\tGM\n0\tMGR\n0\tAA\n0\tNCMI\n0\tNIKE\n0\tC\n0\tETN\n0\tPTON\n0\tGLW\n0\tCRWV\n0\tTKO\n0\tCF\n0\tOPEN\n0\tPL\n0\tAS\n0\tHWM\n0\tNBIS\n1\tTSM\n2\tAVGO\n3\tMU\n4\tALAB\n5\tAMD\n6\tMRVL\n7\tARM\n8\tAAPL\n9\tMSFT\n10\tMETA\n11\tGOOGL\n12\tAMZN\n13\tNOW\n14\tORCL\n15\tCRM\n16\tPLTR\n17\tAPP\n18\tSOUN\n19\tAI\n20\tCOIN\n21\tMSTR\n22\tMARA\n23\tHOOD\n24\tPYPL\n25\tJPM\n26\tGS\n27\tV\n28\tSOFI\n29\tLLY\n30\tHIMS\n31\tCELH\n32\tTSLA\n33\tRIVN\n34\tRKLB\n35\tLUNR\n36\tAXON\n37\tIONQ\n38\tQUBT\n39\tRGTI\n40\tCEG\n41\tVST\n42\tNRG\n43\tCAT\n44\tGE\n45\tRTX\n46\tNFLX\n47\tSPOT\n48\tRDDT\n49\tCRWD\n50\tPANW\n51\tS\n52\tDDOG\n53\tNET\n54\tSNOW\n55\tSHOP\n56\tUBER\n57\tZIM\n58\tDUOL\n59\tTTD\n60\tAFRM\n61\tOKLO\n62\tGD\n62\tMXL\n63\tMX\n64\tCLS\n64\tHLT\n64\tENOG.TA\n65\tMP\n65\tO\n65\tNOFR.TA\n66\tPLD\n66\tSEDG\n67\tSTX\n67\tD\n68\tTBLA\n68\tBAC\n68\tAZRG.TA\n69\tIMCO.TA\n69\tUSB\n70\tPNC\n71\tKMI\n71\tNXSN.TA\n73\tSO\n73\tAURA.TA\n74\tXEL\n75\tKRDI.TA\n75\tTFC\n76\tBA\n76\tARYT.TA\n77\tAON\n78\tPEP\n78\tISRS.TA\n79\tSLARL.TA\n79\tSATL\n80\tILCO.TA\n80\tENVX\n81\tKEN.TA\n82\tNTO.TA\n83\tCRNC\n83\tDLEKG.TA\n84\tEQTL.TA\n85\tNFTA.TA\n86\tAUR\n86\tFIBI.TA\n86\tTEVA\n87\tTMC\n88\tPNRG.TA\n88\tAVGD.TA\n89\tIBI.TA\n89\tHGGE.TA\n90\tNWMD.TA\n90\tACCL.TA\n91\tGCT.TA\n91\tARIN.TA\n92\tAMOT.TA\n92\tGAGR.TA\n93\tGLTL.TA\n94\tHIPR.TA\n95\tTLSY.TA\n96\tTRX.TA\n97\tMISH.TA\n98\tMTAV.TA\n99\tMLTM.TA\n100\tMNIF.TA\n101\tCMER.TA\n102\tPRIM.TA\n102\tNVPT.TA\n103\tNXTM.TA\n103\tDORL.TA\n104\tSOFW.TA\n104\tLAHAV.TA\n105\tFOX.TA\n105\tENERGEAN.TA\n106\tENLT.TA\n106\tQLTU.TA\n107\tSHOM.TA\n107\tPHINERGY.TA\n108\tMGOR.TA\n109\tKSTN.TA\n110\tXOM\n111\tCOP\n112\tSLB\n113\tWMB\n114\tEOG\n115\tVLO\n116\tMPC\n117\tPSX\n118\tBKR\n119\tBE\n152\tFVRR\n153\tHAL\n154\tSNDK\n154\tDVN\n196\tASTS\n197\tLITE\n200\tNXT\n201\tTSEM\n204\tOPCE.TA\n",
+  "stderr": "",
+  "execution_time_ms": 1814
+}

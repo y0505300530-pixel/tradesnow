@@ -1,0 +1,58 @@
+{
+  "query": "SHOW TABLES LIKE 'bulk%'; SELECT * FROM bulkSessions LIMIT 5; SELECT * FROM bulkSessionAnalyses LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SHOW TABLES LIKE 'bulk%'; SELECT * FROM bulkSessions LIMIT 5; SELECT * FROM bulkSessionAnalyses LIMIT 10;",
+  "rows": [
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "bulkSessionAnalyses"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "bulkSessions"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "id\tuserId\ttotalCount\tdoneCount\terrorCount\tstatus\tcreatedAt\tupdatedAt"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "1\t1\t10\t7\t1\tprocessing\t2026-03-04 07:52:08\t2026-03-04 07:56:52"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "2\t1\t2\t1\t1\tdone\t2026-03-04 07:54:57\t2026-03-04 07:56:33"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "id\tbulkSessionId\tanalysisId\tposition"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "1\t1\t60001\t0"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "2\t1\t60002\t1"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "3\t1\t60003\t2"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "4\t1\t60004\t3"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "5\t1\t60005\t4"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "6\t1\t60006\t5"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "7\t1\t60007\t6"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "8\t1\t60008\t7"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "9\t1\t60009\t8"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)": "10\t1\t60010\t9"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_MmWmJbH77mYYXTZazVYpbM (bulk%)\nbulkSessionAnalyses\nbulkSessions\nid\tuserId\ttotalCount\tdoneCount\terrorCount\tstatus\tcreatedAt\tupdatedAt\n1\t1\t10\t7\t1\tprocessing\t2026-03-04 07:52:08\t2026-03-04 07:56:52\n2\t1\t2\t1\t1\tdone\t2026-03-04 07:54:57\t2026-03-04 07:56:33\nid\tbulkSessionId\tanalysisId\tposition\n1\t1\t60001\t0\n2\t1\t60002\t1\n3\t1\t60003\t2\n4\t1\t60004\t3\n5\t1\t60005\t4\n6\t1\t60006\t5\n7\t1\t60007\t6\n8\t1\t60008\t7\n9\t1\t60009\t8\n10\t1\t60010\t9\n",
+  "stderr": "",
+  "execution_time_ms": 2070
+}

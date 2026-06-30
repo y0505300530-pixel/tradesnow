@@ -1,0 +1,150 @@
+{
+  "query": "SELECT ticker, COUNT(*) as tradeCount, SUM(realizedPnl) as totalPnl, AVG(holdTimeMinutes) as avgHoldMin, GROUP_CONCAT(exitReason ORDER BY closedAt SEPARATOR ',') as reasons FROM paperTrades WHERE sessionId = 25 GROUP BY ticker ORDER BY tradeCount DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, COUNT(*) as tradeCount, SUM(realizedPnl) as totalPnl, AVG(holdTimeMinutes) as avgHoldMin, GROUP_CONCAT(exitReason ORDER BY closedAt SEPARATOR ',') as reasons FROM paperTrades WHERE sessionId = 25 GROUP BY ticker ORDER BY tradeCount DESC LIMIT 20;",
+  "rows": [
+    {
+      "ticker": "GM",
+      "tradeCount": "7",
+      "totalPnl": "-49.982576811827045",
+      "avgHoldMin": "13.2857",
+      "reasons": "Force-Close,SL-Gap,TP-Gap,TP-Gap,TP-Gap,TP-Gap,TP-Gap"
+    },
+    {
+      "ticker": "XOM",
+      "tradeCount": "5",
+      "totalPnl": "-75.40010444152537",
+      "avgHoldMin": "47.6000",
+      "reasons": "Force-Close,Force-Close,Force-Close,TP,TP"
+    },
+    {
+      "ticker": "GD",
+      "tradeCount": "5",
+      "totalPnl": "-21.85738693065821",
+      "avgHoldMin": "26.8000",
+      "reasons": "SL,TP,TP,TP,TP"
+    },
+    {
+      "ticker": "JPM",
+      "tradeCount": "5",
+      "totalPnl": "-70.6931036093747",
+      "avgHoldMin": "48.6000",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "BKR",
+      "tradeCount": "5",
+      "totalPnl": "-10.993668090207208",
+      "avgHoldMin": "25.4000",
+      "reasons": "Force-Close,Force-Close,Force-Close,TP,TP"
+    },
+    {
+      "ticker": "NET",
+      "tradeCount": "5",
+      "totalPnl": "-2.499025671385624",
+      "avgHoldMin": "49.2000",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "EOG",
+      "tradeCount": "4",
+      "totalPnl": "-27.171209912108395",
+      "avgHoldMin": "45.2500",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "CVX",
+      "tradeCount": "4",
+      "totalPnl": "-35.46244999999897",
+      "avgHoldMin": "53.0000",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "ZIM",
+      "tradeCount": "4",
+      "totalPnl": "-27.452088195799153",
+      "avgHoldMin": "56.5000",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "XEL",
+      "tradeCount": "4",
+      "totalPnl": "82.04419575927949",
+      "avgHoldMin": "10.7500",
+      "reasons": "SL,SL,TP,TP"
+    },
+    {
+      "ticker": "AEP",
+      "tradeCount": "4",
+      "totalPnl": "-55.75647875671115",
+      "avgHoldMin": "53.0000",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "COP",
+      "tradeCount": "4",
+      "totalPnl": "-37.79632020019561",
+      "avgHoldMin": "38.2500",
+      "reasons": "Force-Close,Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "REGN",
+      "tradeCount": "3",
+      "totalPnl": "-142.69897444335788",
+      "avgHoldMin": "37.6667",
+      "reasons": "Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "TKO",
+      "tradeCount": "3",
+      "totalPnl": "-183.8421846954337",
+      "avgHoldMin": "62.0000",
+      "reasons": "Force-Close,Force-Close,Force-Close"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "tradeCount": "2",
+      "totalPnl": "-15.288000000000466",
+      "avgHoldMin": "205.0000",
+      "reasons": "Force-Close,Force-Close"
+    },
+    {
+      "ticker": "USB",
+      "tradeCount": "2",
+      "totalPnl": "-13.101629829711264",
+      "avgHoldMin": "81.0000",
+      "reasons": "Force-Close,Force-Close"
+    },
+    {
+      "ticker": "C",
+      "tradeCount": "2",
+      "totalPnl": "-69.24847346191257",
+      "avgHoldMin": "43.0000",
+      "reasons": "Force-Close,Force-Close"
+    },
+    {
+      "ticker": "HLT",
+      "tradeCount": "2",
+      "totalPnl": "-24.156631634521375",
+      "avgHoldMin": "43.0000",
+      "reasons": "Force-Close,Force-Close"
+    },
+    {
+      "ticker": "PNC",
+      "tradeCount": "2",
+      "totalPnl": "-18.567699859618074",
+      "avgHoldMin": "76.0000",
+      "reasons": "Force-Close,Force-Close"
+    },
+    {
+      "ticker": "O",
+      "tradeCount": "2",
+      "totalPnl": "-23.653254024656924",
+      "avgHoldMin": "43.0000",
+      "reasons": "Force-Close,Force-Close"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\ttradeCount\ttotalPnl\tavgHoldMin\treasons\nGM\t7\t-49.982576811827045\t13.2857\tForce-Close,SL-Gap,TP-Gap,TP-Gap,TP-Gap,TP-Gap,TP-Gap\nXOM\t5\t-75.40010444152537\t47.6000\tForce-Close,Force-Close,Force-Close,TP,TP\nGD\t5\t-21.85738693065821\t26.8000\tSL,TP,TP,TP,TP\nJPM\t5\t-70.6931036093747\t48.6000\tForce-Close,Force-Close,Force-Close,Force-Close,Force-Close\nBKR\t5\t-10.993668090207208\t25.4000\tForce-Close,Force-Close,Force-Close,TP,TP\nNET\t5\t-2.499025671385624\t49.2000\tForce-Close,Force-Close,Force-Close,Force-Close,Force-Close\nEOG\t4\t-27.171209912108395\t45.2500\tForce-Close,Force-Close,Force-Close,Force-Close\nCVX\t4\t-35.46244999999897\t53.0000\tForce-Close,Force-Close,Force-Close,Force-Close\nZIM\t4\t-27.452088195799153\t56.5000\tForce-Close,Force-Close,Force-Close,Force-Close\nXEL\t4\t82.04419575927949\t10.7500\tSL,SL,TP,TP\nAEP\t4\t-55.75647875671115\t53.0000\tForce-Close,Force-Close,Force-Close,Force-Close\nCOP\t4\t-37.79632020019561\t38.2500\tForce-Close,Force-Close,Force-Close,Force-Close\nREGN\t3\t-142.69897444335788\t37.6667\tForce-Close,Force-Close,Force-Close\nTKO\t3\t-183.8421846954337\t62.0000\tForce-Close,Force-Close,Force-Close\nHIPR.TA\t2\t-15.288000000000466\t205.0000\tForce-Close,Force-Close\nUSB\t2\t-13.101629829711264\t81.0000\tForce-Close,Force-Close\nC\t2\t-69.24847346191257\t43.0000\tForce-Close,Force-Close\nHLT\t2\t-24.156631634521375\t43.0000\tForce-Close,Force-Close\nPNC\t2\t-18.567699859618074\t76.0000\tForce-Close,Force-Close\nO\t2\t-23.653254024656924\t43.0000\tForce-Close,Force-Close\n",
+  "stderr": "",
+  "execution_time_ms": 1768
+}

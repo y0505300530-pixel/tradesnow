@@ -1,0 +1,18 @@
+{
+  "query": "\nSELECT availableCash, initialCapital,\n  ROUND((availableCash - initialCapital) / initialCapital * 100, 2) AS cashRoiPct\nFROM paperLedger LIMIT 1;\n\nSELECT COUNT(*) AS openPositions,\n  ROUND(SUM(allocatedCapital), 2) AS totalDeployed,\n  ROUND(MIN(allocatedCapital), 2) AS minPos,\n  ROUND(MAX(allocatedCapital), 2) AS maxPos\nFROM paperPositions WHERE status = 'open';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT availableCash, initialCapital,\n  ROUND((availableCash - initialCapital) / initialCapital * 100, 2) AS cashRoiPct\nFROM paperLedger LIMIT 1;\n\nSELECT COUNT(*) AS openPositions,\n  ROUND(SUM(allocatedCapital), 2) AS totalDeployed,\n  ROUND(MIN(allocatedCapital), 2) AS minPos,\n  ROUND(MAX(allocatedCapital), 2) AS maxPos\nFROM paperPositions WHERE status = 'open';\n",
+  "rows": [
+    {
+      "availableCash": "26483.50841784486",
+      "initialCapital": "100000",
+      "cashRoiPct": "-73.52"
+    }
+  ],
+  "messages": [
+    "openPositions\ttotalDeployed\tminPos\tmaxPos",
+    "15\t73113.24\t4485.34\t4997.74"
+  ],
+  "stdout": "availableCash\tinitialCapital\tcashRoiPct\n26483.50841784486\t100000\t-73.52\nopenPositions\ttotalDeployed\tminPos\tmaxPos\n15\t73113.24\t4485.34\t4997.74\n",
+  "stderr": "",
+  "execution_time_ms": 2066
+}

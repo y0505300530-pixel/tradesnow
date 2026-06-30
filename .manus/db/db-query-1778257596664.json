@@ -1,0 +1,94 @@
+{
+  "query": "SELECT ticker, units, buyPrice, currentPrice, ibkrUnrealizedPnl FROM portfolioHoldings WHERE units > 0 ORDER BY ticker LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, units, buyPrice, currentPrice, ibkrUnrealizedPnl FROM portfolioHoldings WHERE units > 0 ORDER BY ticker LIMIT 20;",
+  "rows": [
+    {
+      "ticker": "AAPL",
+      "units": "60",
+      "buyPrice": "293.220625",
+      "currentPrice": "292.57",
+      "ibkrUnrealizedPnl": "-26.43"
+    },
+    {
+      "ticker": "AMD",
+      "units": "70",
+      "buyPrice": "436.4357143",
+      "currentPrice": "439.66",
+      "ibkrUnrealizedPnl": "338.98"
+    },
+    {
+      "ticker": "APPL",
+      "units": "100",
+      "buyPrice": "115.55",
+      "currentPrice": "NULL",
+      "ibkrUnrealizedPnl": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "units": "50",
+      "buyPrice": "423.19",
+      "currentPrice": "426.73",
+      "ibkrUnrealizedPnl": "218.07"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "units": "10000",
+      "buyPrice": "85",
+      "currentPrice": "87.93195821055451",
+      "ibkrUnrealizedPnl": "NULL"
+    },
+    {
+      "ticker": "GOOG",
+      "units": "78",
+      "buyPrice": "391.245",
+      "currentPrice": "395.11",
+      "ibkrUnrealizedPnl": "357.01"
+    },
+    {
+      "ticker": "LUNR",
+      "units": "700",
+      "buyPrice": "27.74772855",
+      "currentPrice": "28.04",
+      "ibkrUnrealizedPnl": "82.34"
+    },
+    {
+      "ticker": "MU",
+      "units": "30",
+      "buyPrice": "720.60093335",
+      "currentPrice": "722.69",
+      "ibkrUnrealizedPnl": "273.57"
+    },
+    {
+      "ticker": "NVDA",
+      "units": "200",
+      "buyPrice": "215.9725",
+      "currentPrice": "215.37",
+      "ibkrUnrealizedPnl": "-121.09"
+    },
+    {
+      "ticker": "SNDK",
+      "units": "10",
+      "buyPrice": "1489.91",
+      "currentPrice": "1505.9",
+      "ibkrUnrealizedPnl": "211.83"
+    },
+    {
+      "ticker": "STX",
+      "units": "20",
+      "buyPrice": "792.935",
+      "currentPrice": "792.88",
+      "ibkrUnrealizedPnl": "18.96"
+    },
+    {
+      "ticker": "ZIM",
+      "units": "800",
+      "buyPrice": "26.7847",
+      "currentPrice": "26.64",
+      "ibkrUnrealizedPnl": "-124.89"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tunits\tbuyPrice\tcurrentPrice\tibkrUnrealizedPnl\nAAPL\t60\t293.220625\t292.57\t-26.43\nAMD\t70\t436.4357143\t439.66\t338.98\nAPPL\t100\t115.55\tNULL\tNULL\nAVGO\t50\t423.19\t426.73\t218.07\nENLT.TA\t10000\t85\t87.93195821055451\tNULL\nGOOG\t78\t391.245\t395.11\t357.01\nLUNR\t700\t27.74772855\t28.04\t82.34\nMU\t30\t720.60093335\t722.69\t273.57\nNVDA\t200\t215.9725\t215.37\t-121.09\nSNDK\t10\t1489.91\t1505.9\t211.83\nSTX\t20\t792.935\t792.88\t18.96\nZIM\t800\t26.7847\t26.64\t-124.89\n",
+  "stderr": "",
+  "execution_time_ms": 1849
+}

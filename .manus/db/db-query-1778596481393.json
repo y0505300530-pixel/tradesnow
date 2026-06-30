@@ -1,0 +1,16 @@
+{
+  "query": "SELECT userId, availableCash, initialCapital, updatedAt FROM paperLedger LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT userId, availableCash, initialCapital, updatedAt FROM paperLedger LIMIT 5;",
+  "rows": [
+    {
+      "userId": "1",
+      "availableCash": "164295.71069212965",
+      "initialCapital": "100000",
+      "updatedAt": "2026-05-12 14:34:01"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\tavailableCash\tinitialCapital\tupdatedAt\n1\t164295.71069212965\t100000\t2026-05-12 14:34:01\n",
+  "stderr": "",
+  "execution_time_ms": 1749
+}

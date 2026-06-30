@@ -1,0 +1,18 @@
+{
+  "query": "SELECT category, COUNT(*) as cnt FROM systemLogs GROUP BY category ORDER BY cnt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT category, COUNT(*) as cnt FROM systemLogs GROUP BY category ORDER BY cnt DESC;",
+  "rows": [
+    {
+      "category": "SYSTEM",
+      "cnt": "161"
+    },
+    {
+      "category": "ALERTS",
+      "cnt": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "category\tcnt\nSYSTEM\t161\nALERTS\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1790
+}

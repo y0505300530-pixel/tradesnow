@@ -1,0 +1,25 @@
+{
+  "query": "SHOW COLUMNS FROM portfolioHoldings LIKE 'dailyChangePercent'; SELECT ticker, currentPrice, dailyChangePercent FROM portfolioHoldings LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SHOW COLUMNS FROM portfolioHoldings LIKE 'dailyChangePercent'; SELECT ticker, currentPrice, dailyChangePercent FROM portfolioHoldings LIMIT 5;",
+  "rows": [
+    {
+      "Field": "dailyChangePercent",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [
+    "ticker\tcurrentPrice\tdailyChangePercent",
+    "SPOT\t547.607\t0",
+    "PLTR\t153.93\t0",
+    "RKLB\t68.141\t0",
+    "NVDA\t176.66\t0",
+    "ZIM\t28.255\t0"
+  ],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\ndailyChangePercent\tdouble\tYES\t\tNULL\t\nticker\tcurrentPrice\tdailyChangePercent\nSPOT\t547.607\t0\nPLTR\t153.93\t0\nRKLB\t68.141\t0\nNVDA\t176.66\t0\nZIM\t28.255\t0\n",
+  "stderr": "",
+  "execution_time_ms": 1889
+}

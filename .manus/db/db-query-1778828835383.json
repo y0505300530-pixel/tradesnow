@@ -1,0 +1,9 @@
+{
+  "query": "\nDELETE FROM paperPositions \nWHERE userId = 1 \n  AND ticker = 'MP' \n  AND status = 'open'\n  AND id NOT IN (\n    SELECT id FROM (\n      SELECT MIN(id) as id FROM paperPositions \n      WHERE userId = 1 AND ticker = 'MP' AND status = 'open'\n    ) t\n  );\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nDELETE FROM paperPositions \nWHERE userId = 1 \n  AND ticker = 'MP' \n  AND status = 'open'\n  AND id NOT IN (\n    SELECT id FROM (\n      SELECT MIN(id) as id FROM paperPositions \n      WHERE userId = 1 AND ticker = 'MP' AND status = 'open'\n    ) t\n  );\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1763
+}

@@ -1,0 +1,46 @@
+{
+  "query": "SELECT COUNT(*) as total_rows FROM priceCache; SELECT ticker, COUNT(*) as bars, MIN(date) as earliest, MAX(date) as latest FROM priceCache GROUP BY ticker ORDER BY ticker LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT COUNT(*) as total_rows FROM priceCache; SELECT ticker, COUNT(*) as bars, MIN(date) as earliest, MAX(date) as latest FROM priceCache GROUP BY ticker ORDER BY ticker LIMIT 10;",
+  "rows": [
+    {
+      "total_rows": "319617"
+    },
+    {
+      "total_rows": "ticker\tbars\tearliest\tlatest"
+    },
+    {
+      "total_rows": "AA\t1792\t2019-04-01\t2026-05-15"
+    },
+    {
+      "total_rows": "AAPL\t1792\t2019-04-01\t2026-05-15"
+    },
+    {
+      "total_rows": "ACCL.TA\t1423\t2019-04-01\t2026-05-15"
+    },
+    {
+      "total_rows": "AEP\t1792\t2019-04-01\t2026-05-15"
+    },
+    {
+      "total_rows": "AFRM\t1341\t2021-01-13\t2026-05-15"
+    },
+    {
+      "total_rows": "AI\t1364\t2020-12-09\t2026-05-15"
+    },
+    {
+      "total_rows": "ALAB\t541\t2024-03-20\t2026-05-15"
+    },
+    {
+      "total_rows": "AMD\t1792\t2019-04-01\t2026-05-15"
+    },
+    {
+      "total_rows": "AMOT.TA\t1423\t2019-04-01\t2026-05-15"
+    },
+    {
+      "total_rows": "AMZN\t1792\t2019-04-01\t2026-05-15"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_rows\n319617\nticker\tbars\tearliest\tlatest\nAA\t1792\t2019-04-01\t2026-05-15\nAAPL\t1792\t2019-04-01\t2026-05-15\nACCL.TA\t1423\t2019-04-01\t2026-05-15\nAEP\t1792\t2019-04-01\t2026-05-15\nAFRM\t1341\t2021-01-13\t2026-05-15\nAI\t1364\t2020-12-09\t2026-05-15\nALAB\t541\t2024-03-20\t2026-05-15\nAMD\t1792\t2019-04-01\t2026-05-15\nAMOT.TA\t1423\t2019-04-01\t2026-05-15\nAMZN\t1792\t2019-04-01\t2026-05-15\n",
+  "stderr": "",
+  "execution_time_ms": 2386
+}

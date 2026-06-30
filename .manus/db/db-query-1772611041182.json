@@ -1,0 +1,140 @@
+{
+  "query": "SELECT * FROM bulkSessionAnalyses ORDER BY id DESC LIMIT 10; SELECT * FROM bulkSessions ORDER BY id DESC LIMIT 5; SELECT id, status, videoId, videoTitle FROM analyses ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT * FROM bulkSessionAnalyses ORDER BY id DESC LIMIT 10; SELECT * FROM bulkSessions ORDER BY id DESC LIMIT 5; SELECT id, status, videoId, videoTitle FROM analyses ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "12",
+      "bulkSessionId": "2",
+      "analysisId": "60012",
+      "position": "1"
+    },
+    {
+      "id": "11",
+      "bulkSessionId": "2",
+      "analysisId": "60011",
+      "position": "0"
+    },
+    {
+      "id": "10",
+      "bulkSessionId": "1",
+      "analysisId": "60010",
+      "position": "9"
+    },
+    {
+      "id": "9",
+      "bulkSessionId": "1",
+      "analysisId": "60009",
+      "position": "8"
+    },
+    {
+      "id": "8",
+      "bulkSessionId": "1",
+      "analysisId": "60008",
+      "position": "7"
+    },
+    {
+      "id": "7",
+      "bulkSessionId": "1",
+      "analysisId": "60007",
+      "position": "6"
+    },
+    {
+      "id": "6",
+      "bulkSessionId": "1",
+      "analysisId": "60006",
+      "position": "5"
+    },
+    {
+      "id": "5",
+      "bulkSessionId": "1",
+      "analysisId": "60005",
+      "position": "4"
+    },
+    {
+      "id": "4",
+      "bulkSessionId": "1",
+      "analysisId": "60004",
+      "position": "3"
+    },
+    {
+      "id": "3",
+      "bulkSessionId": "1",
+      "analysisId": "60003",
+      "position": "2"
+    },
+    {
+      "id": "id",
+      "bulkSessionId": "status",
+      "analysisId": "videoId",
+      "position": "videoTitle"
+    },
+    {
+      "id": "60012",
+      "bulkSessionId": "done",
+      "analysisId": "lx_6phsV_qA",
+      "position": "5 טעויות נפוצות שגורמות לכם להפסיד כסף בשוק ההון (ואיך לתקן את זה)"
+    },
+    {
+      "id": "60011",
+      "bulkSessionId": "error",
+      "analysisId": "cebH2KIvZWU",
+      "position": "הדוח היחיד בישראל שעוזר לסוחרים לתזמן את שוק ההון"
+    },
+    {
+      "id": "60010",
+      "bulkSessionId": "pending",
+      "analysisId": "eTVqiCxolTY",
+      "position": "NULL"
+    },
+    {
+      "id": "60009",
+      "bulkSessionId": "processing",
+      "analysisId": "FwQgQvb9QlU",
+      "position": "איך להשתמש באינדיקטור RSI כדי לדעת מתי השוק יתהפך"
+    },
+    {
+      "id": "60008",
+      "bulkSessionId": "done",
+      "analysisId": "cyauiZO-Irw",
+      "position": "לחזות את העתיד - מבוסס על שיטותיו של הסוחר האגדי וויליאם גאן - סייקלס טריידינג"
+    },
+    {
+      "id": "60007",
+      "bulkSessionId": "done",
+      "analysisId": "F8-Hi9wYxSs",
+      "position": "מתנד RSI - איך להשתמש באינדיקטור אר אס איי כדי לזהות שיא או שפל"
+    },
+    {
+      "id": "60006",
+      "bulkSessionId": "done",
+      "analysisId": "JtUNKJDj4Qg",
+      "position": "טעויות נפוצות שגורמות לכם להפסיד בשוק ההון (ואיך לשנות את זה)"
+    },
+    {
+      "id": "60005",
+      "bulkSessionId": "done",
+      "analysisId": "h7LDZfyoeXo",
+      "position": "🔴ככה נראה תיק השקעות אמיתי – אל תתנו לירידות להוציא אתכם מהמשחק!"
+    },
+    {
+      "id": "60004",
+      "bulkSessionId": "done",
+      "analysisId": "vcwY8NgyofE",
+      "position": "כך אני בוחר עסקאות בשוק תנודתי – בלי לחץ, ספק או חרטה"
+    },
+    {
+      "id": "60003",
+      "bulkSessionId": "done",
+      "analysisId": "lx_6phsV_qA",
+      "position": "5 טעויות נפוצות שגורמות לכם להפסיד כסף בשוק ההון (ואיך לתקן את זה)"
+    }
+  ],
+  "messages": [
+    "id\tuserId\ttotalCount\tdoneCount\terrorCount\tstatus\tcreatedAt\tupdatedAt",
+    "2\t1\t2\t1\t1\tdone\t2026-03-04 07:54:57\t2026-03-04 07:56:33",
+    "1\t1\t10\t7\t1\tprocessing\t2026-03-04 07:52:08\t2026-03-04 07:56:52"
+  ],
+  "stdout": "id\tbulkSessionId\tanalysisId\tposition\n12\t2\t60012\t1\n11\t2\t60011\t0\n10\t1\t60010\t9\n9\t1\t60009\t8\n8\t1\t60008\t7\n7\t1\t60007\t6\n6\t1\t60006\t5\n5\t1\t60005\t4\n4\t1\t60004\t3\n3\t1\t60003\t2\nid\tuserId\ttotalCount\tdoneCount\terrorCount\tstatus\tcreatedAt\tupdatedAt\n2\t1\t2\t1\t1\tdone\t2026-03-04 07:54:57\t2026-03-04 07:56:33\n1\t1\t10\t7\t1\tprocessing\t2026-03-04 07:52:08\t2026-03-04 07:56:52\nid\tstatus\tvideoId\tvideoTitle\n60012\tdone\tlx_6phsV_qA\t5 טעויות נפוצות שגורמות לכם להפסיד כסף בשוק ההון (ואיך לתקן את זה)\n60011\terror\tcebH2KIvZWU\tהדוח היחיד בישראל שעוזר לסוחרים לתזמן את שוק ההון\n60010\tpending\teTVqiCxolTY\tNULL\n60009\tprocessing\tFwQgQvb9QlU\tאיך להשתמש באינדיקטור RSI כדי לדעת מתי השוק יתהפך\n60008\tdone\tcyauiZO-Irw\tלחזות את העתיד - מבוסס על שיטותיו של הסוחר האגדי וויליאם גאן - סייקלס טריידינג\n60007\tdone\tF8-Hi9wYxSs\tמתנד RSI - איך להשתמש באינדיקטור אר אס איי כדי לזהות שיא או שפל\n60006\tdone\tJtUNKJDj4Qg\tטעויות נפוצות שגורמות לכם להפסיד בשוק ההון (ואיך לשנות את זה)\n60005\tdone\th7LDZfyoeXo\t🔴ככה נראה תיק השקעות אמיתי – אל תתנו לירידות להוציא אתכם מהמשחק!\n60004\tdone\tvcwY8NgyofE\tכך אני בוחר עסקאות בשוק תנודתי – בלי לחץ, ספק או חרטה\n60003\tdone\tlx_6phsV_qA\t5 טעויות נפוצות שגורמות לכם להפסיד כסף בשוק ההון (ואיך לתקן את זה)\n",
+  "stderr": "",
+  "execution_time_ms": 1948
+}

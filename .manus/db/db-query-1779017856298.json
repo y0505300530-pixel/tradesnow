@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, name, status, simVersion, createdAt, updatedAt, errorMessage FROM labSimulations ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, simVersion, createdAt, updatedAt, errorMessage FROM labSimulations ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "900032",
+      "name": "Lab 5/17/2026 02:35 PM",
+      "status": "running",
+      "simVersion": "2026-05-17.10.032",
+      "createdAt": "2026-05-17 11:35:02",
+      "updatedAt": "2026-05-17 11:35:04",
+      "errorMessage": "NULL"
+    },
+    {
+      "id": "900031",
+      "name": "Lab 5/17/2026 02:03 PM",
+      "status": "done",
+      "simVersion": "2026-05-17.10.031",
+      "createdAt": "2026-05-17 11:03:31",
+      "updatedAt": "2026-05-17 11:23:28",
+      "errorMessage": "NULL"
+    },
+    {
+      "id": "900030",
+      "name": "Lab 5/17/2026 01:34 PM",
+      "status": "error",
+      "simVersion": "2026-05-17.10.030",
+      "createdAt": "2026-05-17 10:34:22",
+      "updatedAt": "2026-05-17 10:59:52",
+      "errorMessage": "Reset for v12.24 test"
+    },
+    {
+      "id": "900029",
+      "name": "Lab 5/17/2026 01:23 PM",
+      "status": "error",
+      "simVersion": "2026-05-17.10.029",
+      "createdAt": "2026-05-17 10:23:19",
+      "updatedAt": "2026-05-17 10:31:21",
+      "errorMessage": "NULL"
+    },
+    {
+      "id": "900028",
+      "name": "Lab 5/17/2026 01:02 PM",
+      "status": "error",
+      "simVersion": "2026-05-17.10.028",
+      "createdAt": "2026-05-17 10:02:20",
+      "updatedAt": "2026-05-17 10:21:36",
+      "errorMessage": "Reset for v12.23 test"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\tsimVersion\tcreatedAt\tupdatedAt\terrorMessage\n900032\tLab 5/17/2026 02:35 PM\trunning\t2026-05-17.10.032\t2026-05-17 11:35:02\t2026-05-17 11:35:04\tNULL\n900031\tLab 5/17/2026 02:03 PM\tdone\t2026-05-17.10.031\t2026-05-17 11:03:31\t2026-05-17 11:23:28\tNULL\n900030\tLab 5/17/2026 01:34 PM\terror\t2026-05-17.10.030\t2026-05-17 10:34:22\t2026-05-17 10:59:52\tReset for v12.24 test\n900029\tLab 5/17/2026 01:23 PM\terror\t2026-05-17.10.029\t2026-05-17 10:23:19\t2026-05-17 10:31:21\tNULL\n900028\tLab 5/17/2026 01:02 PM\terror\t2026-05-17.10.028\t2026-05-17 10:02:20\t2026-05-17 10:21:36\tReset for v12.23 test\n",
+  "stderr": "",
+  "execution_time_ms": 1789
+}

@@ -1,0 +1,85 @@
+{
+  "query": "SELECT id, message, createdAt FROM systemLogs WHERE category='SYSTEM' AND createdAt >= '2026-05-17 08:43:00' ORDER BY id ASC LIMIT 15;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, message, createdAt FROM systemLogs WHERE category='SYSTEM' AND createdAt >= '2026-05-17 08:43:00' ORDER BY id ASC LIMIT 15;",
+  "rows": [
+    {
+      "id": "134",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:43:02"
+    },
+    {
+      "id": "135",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:10"
+    },
+    {
+      "id": "136",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:43:15"
+    },
+    {
+      "id": "137",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:21"
+    },
+    {
+      "id": "138",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:43:25"
+    },
+    {
+      "id": "139",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:25"
+    },
+    {
+      "id": "140",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:43:32"
+    },
+    {
+      "id": "141",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:39"
+    },
+    {
+      "id": "142",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:43"
+    },
+    {
+      "id": "143",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:43:45"
+    },
+    {
+      "id": "144",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:45"
+    },
+    {
+      "id": "145",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:49"
+    },
+    {
+      "id": "146",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:43:52"
+    },
+    {
+      "id": "147",
+      "message": "SIGTERM received — shutting down gracefully",
+      "createdAt": "2026-05-17 08:43:56"
+    },
+    {
+      "id": "148",
+      "message": "Server started on port 3000",
+      "createdAt": "2026-05-17 08:44:01"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tmessage\tcreatedAt\n134\tServer started on port 3000\t2026-05-17 08:43:02\n135\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:10\n136\tServer started on port 3000\t2026-05-17 08:43:15\n137\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:21\n138\tServer started on port 3000\t2026-05-17 08:43:25\n139\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:25\n140\tServer started on port 3000\t2026-05-17 08:43:32\n141\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:39\n142\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:43\n143\tServer started on port 3000\t2026-05-17 08:43:45\n144\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:45\n145\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:49\n146\tServer started on port 3000\t2026-05-17 08:43:52\n147\tSIGTERM received — shutting down gracefully\t2026-05-17 08:43:56\n148\tServer started on port 3000\t2026-05-17 08:44:01\n",
+  "stderr": "",
+  "execution_time_ms": 1809
+}

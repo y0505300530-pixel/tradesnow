@@ -1,0 +1,365 @@
+{
+  "path": "/root/tradesnow/catalog_kinetic_audit_126_PREVIEW.csv",
+  "total": 126,
+  "scoringMethod": "rank_percentile",
+  "fullyHydrated": true,
+  "apex": [
+    {
+      "symbol": "CRCL",
+      "atrPct": 11.434175999138388,
+      "bestLong": 367.17185974121094,
+      "bestShort": 49.8299835926738,
+      "rawKinetic": 4198.30766621196,
+      "kineticScore": 100,
+      "predatorType": "LONG DRIVER",
+      "bars": 261
+    },
+    {
+      "symbol": "SPCE",
+      "atrPct": 12.553403817214182,
+      "bestLong": 269.29457682830684,
+      "bestShort": 63.48314450223877,
+      "rawKinetic": 3380.563568711545,
+      "kineticScore": 99.2,
+      "predatorType": "LONG DRIVER",
+      "bars": 274
+    },
+    {
+      "symbol": "ASTS",
+      "atrPct": 9.635985830542747,
+      "bestLong": 127.68119051234,
+      "bestShort": 39.33327937328656,
+      "rawKinetic": 1230.3341426037373,
+      "kineticScore": 98.4,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "APLD",
+      "atrPct": 7.111136776623283,
+      "bestLong": 168.17391437032944,
+      "bestShort": 46.64514393414388,
+      "rawKinetic": 1195.9077073475446,
+      "kineticScore": 97.6,
+      "predatorType": "LONG DRIVER",
+      "bars": 274
+    },
+    {
+      "symbol": "RGTI",
+      "atrPct": 8.00885602325566,
+      "bestLong": 137.73324734666653,
+      "bestShort": 52.681389151458525,
+      "rawKinetic": 1103.085747614912,
+      "kineticScore": 96.8,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "LUNR",
+      "atrPct": 11.165916646029098,
+      "bestLong": 97.92547984311291,
+      "bestShort": 45.090908927713485,
+      "rawKinetic": 1093.4277454506014,
+      "kineticScore": 96,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "QUBT",
+      "atrPct": 8.245295961655993,
+      "bestLong": 101.63934501610441,
+      "bestShort": 46.284829595673095,
+      "rawKinetic": 838.0464810066459,
+      "kineticScore": 95.2,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "ENPH",
+      "atrPct": 7.000356117293263,
+      "bestLong": 110.84686169786116,
+      "bestShort": 35.35394690814484,
+      "rawKinetic": 775.9675063693827,
+      "kineticScore": 94.4,
+      "predatorType": "LONG DRIVER",
+      "bars": 274
+    },
+    {
+      "symbol": "MP",
+      "atrPct": 6.17730643945543,
+      "bestLong": 122.58281442768033,
+      "bestShort": 44.30927787859416,
+      "rawKinetic": 757.2316089306797,
+      "kineticScore": 93.6,
+      "predatorType": "LONG DRIVER",
+      "bars": 251
+    },
+    {
+      "symbol": "IREN",
+      "atrPct": 7.674780930060793,
+      "bestLong": 95.35424350197198,
+      "bestShort": 48.58852732443684,
+      "rawKinetic": 731.8229296293079,
+      "kineticScore": 92.8,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "HIMS",
+      "atrPct": 7.085962726982182,
+      "bestLong": 100.43669122482186,
+      "bestShort": 50.5221478407399,
+      "rawKinetic": 711.6906504405061,
+      "kineticScore": 92,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "JOBY",
+      "atrPct": 6.498321646735786,
+      "bestLong": 108.40141477645517,
+      "bestShort": 41.9113050732018,
+      "rawKinetic": 704.4272601786231,
+      "kineticScore": 91.2,
+      "predatorType": "LONG DRIVER",
+      "bars": 274
+    },
+    {
+      "symbol": "RKLB",
+      "atrPct": 7.147921955884749,
+      "bestLong": 94.08708684335203,
+      "bestShort": 40.459586999463035,
+      "rawKinetic": 672.5271538128311,
+      "kineticScore": 90.4,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "KTOS",
+      "atrPct": 8.127410884121861,
+      "bestLong": 80.27713803178665,
+      "bestShort": 36.940298507462686,
+      "rawKinetic": 652.4452853856958,
+      "kineticScore": 89.6,
+      "predatorType": "LONG DRIVER",
+      "bars": 274
+    },
+    {
+      "symbol": "LEU",
+      "atrPct": 7.553686464398747,
+      "bestLong": 81.65803883490256,
+      "bestShort": 45.99805670640663,
+      "rawKinetic": 616.8192226565507,
+      "kineticScore": 88.8,
+      "predatorType": "LONG DRIVER",
+      "bars": 274
+    },
+    {
+      "symbol": "SNDK",
+      "atrPct": 5.077211787443948,
+      "bestLong": 117.59130456918625,
+      "bestShort": 35.73535829324481,
+      "rawKinetic": 597.0359576595838,
+      "kineticScore": 88,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "SOUN",
+      "atrPct": 7.705977156705407,
+      "bestLong": 75.90113137595364,
+      "bestShort": 42.01680582475408,
+      "rawKinetic": 584.8923845511947,
+      "kineticScore": 87.2,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "IONQ",
+      "atrPct": 6.481523450014147,
+      "bestLong": 88.5314407850454,
+      "bestShort": 44.70870419787588,
+      "rawKinetic": 573.8186095118107,
+      "kineticScore": 86.4,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "NBIS",
+      "atrPct": 6.415357427763668,
+      "bestLong": 88.18110597925384,
+      "bestShort": 42.03660910854651,
+      "rawKinetic": 565.7133132324213,
+      "kineticScore": 85.6,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    },
+    {
+      "symbol": "INTC",
+      "atrPct": 5.270679342566961,
+      "bestLong": 104.29361825484595,
+      "bestShort": 22.86252239105167,
+      "rawKinetic": 549.6982192973811,
+      "kineticScore": 84.8,
+      "predatorType": "LONG DRIVER",
+      "bars": 267
+    }
+  ],
+  "dead": [
+    {
+      "symbol": "AAPL",
+      "atrPct": 2.0405063079267203,
+      "bestLong": 16.68486110034119,
+      "bestShort": 12.388424497056928,
+      "rawKinetic": 34.04556432212736,
+      "kineticScore": 0,
+      "predatorType": "FLATLINER",
+      "bars": 267
+    },
+    {
+      "symbol": "RTX",
+      "atrPct": 2.9590403933668945,
+      "bestLong": 16.493188299673424,
+      "bestShort": 16.424812829806186,
+      "rawKinetic": 48.80401039413991,
+      "kineticScore": 0.8,
+      "predatorType": "FLATLINER",
+      "bars": 251
+    },
+    {
+      "symbol": "EQIX",
+      "atrPct": 1.9649359589750905,
+      "bestLong": 26.588902316511266,
+      "bestShort": 23.177059101707258,
+      "rawKinetic": 52.24549027138907,
+      "kineticScore": 1.6,
+      "predatorType": "FLATLINER",
+      "bars": 273
+    },
+    {
+      "symbol": "MSFT",
+      "atrPct": 2.5535993237033763,
+      "bestLong": 21.13505895670963,
+      "bestShort": 18.898578731492233,
+      "rawKinetic": 53.9704722582847,
+      "kineticScore": 2.4,
+      "predatorType": "FLATLINER",
+      "bars": 267
+    },
+    {
+      "symbol": "NOC",
+      "atrPct": 2.8155660809966814,
+      "bestLong": 20.394231164855334,
+      "bestShort": 19.173082168306156,
+      "rawKinetic": 57.42130551577212,
+      "kineticScore": 3.2,
+      "predatorType": "FLATLINER",
+      "bars": 274
+    },
+    {
+      "symbol": "GOOGL",
+      "atrPct": 2.463390434913438,
+      "bestLong": 25.80207480513654,
+      "bestShort": 15.114613180515759,
+      "rawKinetic": 63.56058427589437,
+      "kineticScore": 4,
+      "predatorType": "FLATLINER",
+      "bars": 267
+    },
+    {
+      "symbol": "GS",
+      "atrPct": 2.9348523008173975,
+      "bestLong": 21.896548486198622,
+      "bestShort": 16.82562816992359,
+      "rawKinetic": 64.26313570467973,
+      "kineticScore": 4.8,
+      "predatorType": "FLATLINER",
+      "bars": 251
+    },
+    {
+      "symbol": "UBER",
+      "atrPct": 3.452214063563227,
+      "bestLong": 18.71582946935525,
+      "bestShort": 18.774286621189344,
+      "rawKinetic": 64.81285630703678,
+      "kineticScore": 5.6,
+      "predatorType": "FLATLINER",
+      "bars": 267
+    },
+    {
+      "symbol": "GFL",
+      "atrPct": 3.555701836386044,
+      "bestLong": 17.538861982863928,
+      "bestShort": 18.53647794887162,
+      "rawKinetic": 65.91018868293223,
+      "kineticScore": 6.4,
+      "predatorType": "FLATLINER",
+      "bars": 273
+    },
+    {
+      "symbol": "DOX",
+      "atrPct": 3.2927980721575825,
+      "bestLong": 10.471382257445306,
+      "bestShort": 20.76932498258241,
+      "rawKinetic": 68.38919326266168,
+      "kineticScore": 7.2,
+      "predatorType": "FLATLINER",
+      "bars": 273
+    },
+    {
+      "symbol": "TTWO",
+      "atrPct": 2.936388591201275,
+      "bestLong": 18.503366883332166,
+      "bestShort": 24.099782104126504,
+      "rawKinetic": 70.76632522099372,
+      "kineticScore": 8,
+      "predatorType": "FLATLINER",
+      "bars": 274
+    },
+    {
+      "symbol": "BA",
+      "atrPct": 3.167614919567839,
+      "bestLong": 22.650758574452613,
+      "bestShort": 16.994314660613323,
+      "rawKinetic": 71.74888079996526,
+      "kineticScore": 8.8,
+      "predatorType": "FLATLINER",
+      "bars": 251
+    },
+    {
+      "symbol": "GE",
+      "atrPct": 3.8606389451638994,
+      "bestLong": 17.855166209167848,
+      "bestShort": 18.69527689515296,
+      "rawKinetic": 72.17571407205035,
+      "kineticScore": 9.6,
+      "predatorType": "FLATLINER",
+      "bars": 251
+    },
+    {
+      "symbol": "AMZN",
+      "atrPct": 2.6885089202018393,
+      "bestLong": 28.643162328490913,
+      "bestShort": 20.897570035674455,
+      "rawKinetic": 77.0073974229371,
+      "kineticScore": 10.4,
+      "predatorType": "FLATLINER",
+      "bars": 267
+    },
+    {
+      "symbol": "NVDA",
+      "atrPct": 3.118242194319377,
+      "bestLong": 24.85891814959377,
+      "bestShort": 18.174507583836352,
+      "rawKinetic": 77.51612747919506,
+      "kineticScore": 11.2,
+      "predatorType": "FLATLINER",
+      "bars": 267
+    }
+  ],
+  "predatorCounts": {
+    "LONG DRIVER": 74,
+    "OMNI-VIOLENT": 20,
+    "FLATLINER": 32
+  }
+}

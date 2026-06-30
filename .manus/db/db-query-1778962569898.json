@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, name, status, errorMessage, createdAt, updatedAt FROM labSimulations ORDER BY id DESC LIMIT 3",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, errorMessage, createdAt, updatedAt FROM labSimulations ORDER BY id DESC LIMIT 3",
+  "rows": [
+    {
+      "id": "870002",
+      "name": "Lab 5/16/2026 11:13 PM",
+      "status": "running",
+      "errorMessage": "Simulation was interrupted by a server restart. Please run it again.",
+      "createdAt": "2026-05-16 20:13:14",
+      "updatedAt": "2026-05-16 20:13:25"
+    },
+    {
+      "id": "780001",
+      "name": "Lab 30.4.2026",
+      "status": "pending",
+      "errorMessage": "NULL",
+      "createdAt": "2026-04-30 12:13:16",
+      "updatedAt": "2026-04-30 12:13:28"
+    },
+    {
+      "id": "750007",
+      "name": "Lab 3/16/2026",
+      "status": "done",
+      "errorMessage": "NULL",
+      "createdAt": "2026-03-16 07:40:42",
+      "updatedAt": "2026-03-16 07:43:19"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\terrorMessage\tcreatedAt\tupdatedAt\n870002\tLab 5/16/2026 11:13 PM\trunning\tSimulation was interrupted by a server restart. Please run it again.\t2026-05-16 20:13:14\t2026-05-16 20:13:25\n780001\tLab 30.4.2026\tpending\tNULL\t2026-04-30 12:13:16\t2026-04-30 12:13:28\n750007\tLab 3/16/2026\tdone\tNULL\t2026-03-16 07:40:42\t2026-03-16 07:43:19\n",
+  "stderr": "",
+  "execution_time_ms": 1796
+}

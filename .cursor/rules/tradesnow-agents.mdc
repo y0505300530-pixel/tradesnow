@@ -1,0 +1,57 @@
+---
+description: TradeSnow agent ownership, gates, and SSOT — always apply
+alwaysApply: true
+---
+
+# TradeSnow — Agent & Ownership
+
+## SSOT
+
+- Open items: `docs/superpowers/2026-06-25-MASTER-OPEN-ITEMS.md`
+- Agent roster: `AGENTS.md`
+- **Master skills:** `docs/superpowers/MASTER-SKILLS-CONFIG.md` + `.cursor/rules/elza-*.mdc`
+- Skills: `.cursor/skills/tradesnow-*/SKILL.md`
+
+## Agent dispatch (ELZA names)
+
+| Task type | Agent / Skill |
+|-----------|----------------|
+| Plan + parallel work | Orchestrator → `tradesnow-orchestrator` |
+| Server / warEngine / IBKR | **Backhand** → `tradesnow-backend-dev` |
+| React / War Room / UI | **Fronthand** → `tradesnow-frontend-dev` |
+| Mobile 375 / PWA | **Fronthand-mobile** → `tradesnow-mobile-dev` |
+| Pre-merge / ship blocker | **QA-Architect** → `tradesnow-qa-architect` + `qa-master-persona` |
+| Scoring / sizing / expectancy | **Quant-Strategy** → `tradesnow-quant-strategy` |
+| SSOT / ADR / split brain | **Architect** → `tradesnow-architect` |
+| Git history / Golden DNA | **Base** → `tradesnow-base-archivist` |
+| UI friction / hierarchy | `tradesnow-design` + `ui-ux-master-persona` |
+| Auth / orders security | `tradesnow-security` + `review-security` |
+| Build / smoke / A6 | `tradesnow-deploy-smoke` |
+| Handoff to Claude | `tradesnow-server-liaison` |
+
+Full roster: `AGENTS.md` | Teams: `docs/superpowers/ELZA-AGENT-TEAMS.md`
+
+## Orchestrator default (every user task)
+
+On **every** new user task in this repo:
+
+1. **Triage** (silent if trivial): map to MASTER item + which agents needed
+2. **Split** or **solo**: one domain → one agent; 2+ independent domains → parallel dispatch
+3. **Coordinate**: dispatch subagents, merge results, run build before "done"
+4. **Document**: update MASTER / handoff / QA report when task closes a gate or crosses to Claude
+
+**Skip full team** only when: single-file one-liner, pure question, or user says "בלי פיזור" / "רק תענה".
+
+**Always show** a short dispatch line when 2+ agents run:
+`[Orchestrator] Frontend ✓ | Backend … | Mobile … | QA pending`
+
+## Gates
+
+- No merge to `main` without **A6** E2E + build ✅
+- Branch: `feat/manual-trading-ux` until **B10**
+- Claiming "done" requires `verification-before-completion` (run build)
+
+## Deploy split
+
+- **Client build** in repo: `npm run build`
+- **Production pm2 / IBKR live**: user or Claude on droplet — flag in handoff

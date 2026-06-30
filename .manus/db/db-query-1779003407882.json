@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, name, status, LENGTH(scanReport) as scanReportLen, LEFT(scanReport, 200) as scanReportPreview FROM labSimulations WHERE id IN (900015, 900016);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, LENGTH(scanReport) as scanReportLen, LEFT(scanReport, 200) as scanReportPreview FROM labSimulations WHERE id IN (900015, 900016);",
+  "rows": [
+    {
+      "id": "900015",
+      "name": "Lab 5/17/2026 10:29 AM",
+      "status": "running",
+      "scanReportLen": "NULL",
+      "scanReportPreview": "NULL"
+    },
+    {
+      "id": "900016",
+      "name": "Lab 5/17/2026 10:34 AM",
+      "status": "running",
+      "scanReportLen": "NULL",
+      "scanReportPreview": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\tscanReportLen\tscanReportPreview\n900015\tLab 5/17/2026 10:29 AM\trunning\tNULL\tNULL\n900016\tLab 5/17/2026 10:34 AM\trunning\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1794
+}

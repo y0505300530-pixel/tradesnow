@@ -1,0 +1,28 @@
+{
+  "query": "SELECT ticker, date, close, fetchedAt FROM priceCache WHERE ticker = 'DDOG' ORDER BY date DESC LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, date, close, fetchedAt FROM priceCache WHERE ticker = 'DDOG' ORDER BY date DESC LIMIT 3;",
+  "rows": [
+    {
+      "ticker": "DDOG",
+      "date": "2026-05-14",
+      "close": "203.2111053466797",
+      "fetchedAt": "2026-05-14 17:23:17"
+    },
+    {
+      "ticker": "DDOG",
+      "date": "2026-05-13",
+      "close": "205.30999755859375",
+      "fetchedAt": "2026-05-14 17:23:17"
+    },
+    {
+      "ticker": "DDOG",
+      "date": "2026-05-12",
+      "close": "199.94000244140625",
+      "fetchedAt": "2026-05-14 17:23:17"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tdate\tclose\tfetchedAt\nDDOG\t2026-05-14\t203.2111053466797\t2026-05-14 17:23:17\nDDOG\t2026-05-13\t205.30999755859375\t2026-05-14 17:23:17\nDDOG\t2026-05-12\t199.94000244140625\t2026-05-14 17:23:17\n",
+  "stderr": "",
+  "execution_time_ms": 1803
+}

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `otpCodes` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `openId` varchar(64) NOT NULL,\n  `code` varchar(8) NOT NULL,\n  `pendingToken` varchar(128) NOT NULL,\n  `expiresAt` timestamp NOT NULL,\n  `used` tinyint NOT NULL DEFAULT 0,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  CONSTRAINT `otpCodes_id` PRIMARY KEY(`id`),\n  CONSTRAINT `otpCodes_pendingToken_unique` UNIQUE(`pendingToken`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute CREATE TABLE IF NOT EXISTS `otpCodes` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `openId` varchar(64) NOT NULL,\n  `code` varchar(8) NOT NULL,\n  `pendingToken` varchar(128) NOT NULL,\n  `expiresAt` timestamp NOT NULL,\n  `used` tinyint NOT NULL DEFAULT 0,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  CONSTRAINT `otpCodes_id` PRIMARY KEY(`id`),\n  CONSTRAINT `otpCodes_pendingToken_unique` UNIQUE(`pendingToken`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1698
+}

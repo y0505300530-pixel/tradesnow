@@ -1,0 +1,1474 @@
+{
+  "query": "SELECT u.name, u.openId, ua.ticker, ua.companyName, ua.sector, ua.sortOrder FROM userAssets ua JOIN users u ON u.id = ua.userId ORDER BY u.id, ua.sortOrder, ua.id LIMIT 200;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT u.name, u.openId, ua.ticker, ua.companyName, ua.sector, ua.sortOrder FROM userAssets ua JOIN users u ON u.id = ua.userId ORDER BY u.id, ua.sortOrder, ua.id LIMIT 200;",
+  "rows": [
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "sortOrder": "0"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "TSM",
+      "companyName": "Taiwan Semiconductor Manufacturing Company Limited",
+      "sector": "Semiconductors",
+      "sortOrder": "1"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AVGO",
+      "companyName": "Broadcom Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "2"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "MU",
+      "companyName": "Micron Technology, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "3"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "ALAB",
+      "companyName": "Astera Labs, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "4"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "5"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "MRVL",
+      "companyName": "Marvell Technology, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "6"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "ARM",
+      "companyName": "Arm Holdings plc",
+      "sector": "Semiconductors",
+      "sortOrder": "7"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AAPL",
+      "companyName": "Apple Inc.",
+      "sector": "Technology",
+      "sortOrder": "8"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "MSFT",
+      "companyName": "Microsoft Corporation",
+      "sector": "Technology",
+      "sortOrder": "9"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "META",
+      "companyName": "Meta Platforms, Inc.",
+      "sector": "Technology",
+      "sortOrder": "10"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "GOOGL",
+      "companyName": "Alphabet Inc.",
+      "sector": "Technology",
+      "sortOrder": "11"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AMZN",
+      "companyName": "Amazon.com, Inc.",
+      "sector": "Technology",
+      "sortOrder": "12"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "NOW",
+      "companyName": "ServiceNow, Inc.",
+      "sector": "Technology",
+      "sortOrder": "13"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "ORCL",
+      "companyName": "Oracle Corporation",
+      "sector": "Technology",
+      "sortOrder": "14"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "CRM",
+      "companyName": "Salesforce, Inc.",
+      "sector": "Technology",
+      "sortOrder": "15"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "PLTR",
+      "companyName": "Palantir Technologies Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "16"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "APP",
+      "companyName": "AppLovin Corporation",
+      "sector": "AI / Data",
+      "sortOrder": "17"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "SOUN",
+      "companyName": "SoundHound AI, Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "18"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AI",
+      "companyName": "C3.ai, Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "19"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "COIN",
+      "companyName": "Coinbase Global, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "20"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "MSTR",
+      "companyName": "Strategy Inc",
+      "sector": "Crypto / Fin",
+      "sortOrder": "21"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "MARA",
+      "companyName": "MARA Holdings, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "22"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "HOOD",
+      "companyName": "Robinhood Markets, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "23"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "PYPL",
+      "companyName": "PayPal Holdings, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "24"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "JPM",
+      "companyName": "JPMorgan Chase & Co.",
+      "sector": "Finance",
+      "sortOrder": "25"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "GS",
+      "companyName": "The Goldman Sachs Group, Inc.",
+      "sector": "Finance",
+      "sortOrder": "26"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "V",
+      "companyName": "Visa Inc.",
+      "sector": "Finance",
+      "sortOrder": "27"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "SOFI",
+      "companyName": "SoFi Technologies, Inc.",
+      "sector": "Finance",
+      "sortOrder": "28"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "LLY",
+      "companyName": "Eli Lilly and Company",
+      "sector": "Healthcare",
+      "sortOrder": "29"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "HIMS",
+      "companyName": "Hims & Hers Health, Inc.",
+      "sector": "Healthcare",
+      "sortOrder": "30"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "CELH",
+      "companyName": "Celsius Holdings, Inc.",
+      "sector": "Healthcare",
+      "sortOrder": "31"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "TSLA",
+      "companyName": "Tesla, Inc.",
+      "sector": "EV / Auto",
+      "sortOrder": "32"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "RIVN",
+      "companyName": "Rivian Automotive, Inc.",
+      "sector": "EV / Auto",
+      "sortOrder": "33"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "RKLB",
+      "companyName": "Rocket Lab Corporation",
+      "sector": "Space",
+      "sortOrder": "34"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "LUNR",
+      "companyName": "Intuitive Machines, Inc.",
+      "sector": "Space",
+      "sortOrder": "35"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AXON",
+      "companyName": "Axon Enterprise, Inc.",
+      "sector": "Defense Tech",
+      "sortOrder": "36"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "IONQ",
+      "companyName": "IonQ, Inc.",
+      "sector": "Quantum",
+      "sortOrder": "37"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "QUBT",
+      "companyName": "Quantum Computing Inc.",
+      "sector": "Quantum",
+      "sortOrder": "38"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "RGTI",
+      "companyName": "Rigetti Computing, Inc.",
+      "sector": "Quantum",
+      "sortOrder": "39"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "CEG",
+      "companyName": "Constellation Energy Corporation",
+      "sector": "Nuclear",
+      "sortOrder": "40"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "VST",
+      "companyName": "Vistra Corp.",
+      "sector": "Energy",
+      "sortOrder": "41"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "NRG",
+      "companyName": "NRG Energy, Inc.",
+      "sector": "Energy",
+      "sortOrder": "42"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "CAT",
+      "companyName": "Caterpillar Inc.",
+      "sector": "Industrials",
+      "sortOrder": "43"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "GE",
+      "companyName": "GE Aerospace",
+      "sector": "Industrials",
+      "sortOrder": "44"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "RTX",
+      "companyName": "RTX Corporation",
+      "sector": "Defense",
+      "sortOrder": "45"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "NFLX",
+      "companyName": "Netflix, Inc.",
+      "sector": "Media",
+      "sortOrder": "46"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "SPOT",
+      "companyName": "Spotify Technology S.A.",
+      "sector": "Media",
+      "sortOrder": "47"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "RDDT",
+      "companyName": "Reddit, Inc.",
+      "sector": "Social Media",
+      "sortOrder": "48"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "CRWD",
+      "companyName": "CrowdStrike Holdings, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "49"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "PANW",
+      "companyName": "Palo Alto Networks, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "50"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "S",
+      "companyName": "SentinelOne, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "51"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "DDOG",
+      "companyName": "Datadog, Inc.",
+      "sector": "SaaS",
+      "sortOrder": "52"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "NET",
+      "companyName": "Cloudflare, Inc.",
+      "sector": "SaaS",
+      "sortOrder": "53"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "SNOW",
+      "companyName": "Snowflake Inc.",
+      "sector": "SaaS",
+      "sortOrder": "54"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "SHOP",
+      "companyName": "Shopify Inc.",
+      "sector": "E-Commerce",
+      "sortOrder": "55"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "UBER",
+      "companyName": "Uber Technologies, Inc.",
+      "sector": "Technology",
+      "sortOrder": "56"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "ZIM",
+      "companyName": "ZIM Integrated Shipping Services Ltd.",
+      "sector": "Shipping",
+      "sortOrder": "57"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "DUOL",
+      "companyName": "Duolingo, Inc.",
+      "sector": "EdTech",
+      "sortOrder": "58"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "TTD",
+      "companyName": "The Trade Desk, Inc.",
+      "sector": "Ad Tech",
+      "sortOrder": "59"
+    },
+    {
+      "name": "Yehuda Ashash",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings, Inc.",
+      "sector": "Fintech",
+      "sortOrder": "60"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "sortOrder": "0"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "TSM",
+      "companyName": "Taiwan Semiconductor Manufacturing Company Limited",
+      "sector": "Semiconductors",
+      "sortOrder": "1"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AVGO",
+      "companyName": "Broadcom Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "2"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "MU",
+      "companyName": "Micron Technology, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "3"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "ALAB",
+      "companyName": "Astera Labs, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "4"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "5"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "MRVL",
+      "companyName": "Marvell Technology, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "6"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "ARM",
+      "companyName": "Arm Holdings plc",
+      "sector": "Semiconductors",
+      "sortOrder": "7"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AAPL",
+      "companyName": "Apple",
+      "sector": "Technology",
+      "sortOrder": "8"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "MSFT",
+      "companyName": "Microsoft Corporation",
+      "sector": "Technology",
+      "sortOrder": "9"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "META",
+      "companyName": "Meta Platforms",
+      "sector": "Technology",
+      "sortOrder": "10"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "GOOGL",
+      "companyName": "Alphabet Inc.",
+      "sector": "Technology",
+      "sortOrder": "11"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AMZN",
+      "companyName": "Amazon.com, Inc.",
+      "sector": "Technology",
+      "sortOrder": "12"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "NOW",
+      "companyName": "ServiceNow, Inc.",
+      "sector": "Technology",
+      "sortOrder": "13"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "ORCL",
+      "companyName": "Oracle Corporation",
+      "sector": "Technology",
+      "sortOrder": "14"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "CRM",
+      "companyName": "Salesforce, Inc.",
+      "sector": "Technology",
+      "sortOrder": "15"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "PLTR",
+      "companyName": "Palantir Technologies Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "16"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "APP",
+      "companyName": "AppLovin",
+      "sector": "AI / Data",
+      "sortOrder": "17"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "SOUN",
+      "companyName": "SoundHound AI, Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "18"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AI",
+      "companyName": "C3.ai, Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "19"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "COIN",
+      "companyName": "Coinbase Global, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "20"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "MSTR",
+      "companyName": "Strategy Inc",
+      "sector": "Crypto / Fin",
+      "sortOrder": "21"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "MARA",
+      "companyName": "MARA Holdings, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "22"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "HOOD",
+      "companyName": "Robinhood Markets, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "23"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "PYPL",
+      "companyName": "PayPal Holdings",
+      "sector": "Crypto / Fin",
+      "sortOrder": "24"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "JPM",
+      "companyName": "JPMorgan Chase & Co.",
+      "sector": "Finance",
+      "sortOrder": "25"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "GS",
+      "companyName": "The Goldman Sachs Group, Inc.",
+      "sector": "Finance",
+      "sortOrder": "26"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "V",
+      "companyName": "Visa Inc.",
+      "sector": "Finance",
+      "sortOrder": "27"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "SOFI",
+      "companyName": "SoFi Technologies, Inc.",
+      "sector": "Finance",
+      "sortOrder": "28"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "LLY",
+      "companyName": "Eli Lilly and Company",
+      "sector": "Healthcare",
+      "sortOrder": "29"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "HIMS",
+      "companyName": "Hims & Hers Health, Inc.",
+      "sector": "Healthcare",
+      "sortOrder": "30"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "CELH",
+      "companyName": "Celsius Holdings, Inc.",
+      "sector": "Healthcare",
+      "sortOrder": "31"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "TSLA",
+      "companyName": "Tesla, Inc.",
+      "sector": "EV / Auto",
+      "sortOrder": "32"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "RIVN",
+      "companyName": "Rivian Automotive, Inc.",
+      "sector": "EV / Auto",
+      "sortOrder": "33"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "RKLB",
+      "companyName": "Rocket Lab Corporation",
+      "sector": "Space",
+      "sortOrder": "34"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "LUNR",
+      "companyName": "Intuitive Machines, Inc.",
+      "sector": "Space",
+      "sortOrder": "35"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AXON",
+      "companyName": "Axon Enterprise, Inc.",
+      "sector": "Defense Tech",
+      "sortOrder": "36"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "IONQ",
+      "companyName": "IonQ, Inc.",
+      "sector": "Quantum",
+      "sortOrder": "37"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "QUBT",
+      "companyName": "Quantum Computing Inc.",
+      "sector": "Quantum",
+      "sortOrder": "38"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "RGTI",
+      "companyName": "Rigetti Computing, Inc.",
+      "sector": "Quantum",
+      "sortOrder": "39"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "CEG",
+      "companyName": "Constellation Energy Corporation",
+      "sector": "Nuclear",
+      "sortOrder": "40"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "VST",
+      "companyName": "Vistra Corp.",
+      "sector": "Energy",
+      "sortOrder": "41"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "NRG",
+      "companyName": "NRG Energy, Inc.",
+      "sector": "Energy",
+      "sortOrder": "42"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "CAT",
+      "companyName": "Caterpillar",
+      "sector": "Industrials",
+      "sortOrder": "43"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "GE",
+      "companyName": "GE Aerospace",
+      "sector": "Industrials",
+      "sortOrder": "44"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "RTX",
+      "companyName": "RTX Corporation",
+      "sector": "Defense",
+      "sortOrder": "45"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "NFLX",
+      "companyName": "Netflix, Inc.",
+      "sector": "Media",
+      "sortOrder": "46"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "SPOT",
+      "companyName": "Spotify",
+      "sector": "Media",
+      "sortOrder": "47"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "RDDT",
+      "companyName": "Reddit",
+      "sector": "Social Media",
+      "sortOrder": "48"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "CRWD",
+      "companyName": "CrowdStrike Holdings, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "49"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "PANW",
+      "companyName": "Palo Alto Networks, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "50"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "S",
+      "companyName": "SentinelOne, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "51"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "DDOG",
+      "companyName": "Datadog",
+      "sector": "SaaS",
+      "sortOrder": "52"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "NET",
+      "companyName": "Cloudflare, Inc.",
+      "sector": "SaaS",
+      "sortOrder": "53"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "SNOW",
+      "companyName": "Snowflake Inc.",
+      "sector": "SaaS",
+      "sortOrder": "54"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "SHOP",
+      "companyName": "Shopify Inc.",
+      "sector": "E-Commerce",
+      "sortOrder": "55"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "UBER",
+      "companyName": "Uber Technologies, Inc.",
+      "sector": "Technology",
+      "sortOrder": "56"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "ZIM",
+      "companyName": "ZIM Integrated Shipping",
+      "sector": "Shipping",
+      "sortOrder": "57"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "DUOL",
+      "companyName": "Duolingo, Inc.",
+      "sector": "EdTech",
+      "sortOrder": "58"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "TTD",
+      "companyName": "The Trade Desk, Inc.",
+      "sector": "Ad Tech",
+      "sortOrder": "59"
+    },
+    {
+      "name": "Nayan Ray",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings, Inc.",
+      "sector": "Fintech",
+      "sortOrder": "60"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "sortOrder": "0"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "TSM",
+      "companyName": "TSMC",
+      "sector": "Semiconductors",
+      "sortOrder": "1"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AVGO",
+      "companyName": "Broadcom",
+      "sector": "Semiconductors",
+      "sortOrder": "2"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "MU",
+      "companyName": "Micron Technology",
+      "sector": "Semiconductors",
+      "sortOrder": "3"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "ALAB",
+      "companyName": "Astera Labs",
+      "sector": "Semiconductors",
+      "sortOrder": "4"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices",
+      "sector": "Semiconductors",
+      "sortOrder": "5"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "MRVL",
+      "companyName": "Marvell Technology",
+      "sector": "Semiconductors",
+      "sortOrder": "6"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "ARM",
+      "companyName": "Arm Holdings",
+      "sector": "Semiconductors",
+      "sortOrder": "7"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AAPL",
+      "companyName": "Apple",
+      "sector": "Technology",
+      "sortOrder": "8"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "MSFT",
+      "companyName": "Microsoft",
+      "sector": "Technology",
+      "sortOrder": "9"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "META",
+      "companyName": "Meta Platforms",
+      "sector": "Technology",
+      "sortOrder": "10"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "GOOGL",
+      "companyName": "Alphabet",
+      "sector": "Technology",
+      "sortOrder": "11"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AMZN",
+      "companyName": "Amazon",
+      "sector": "Technology",
+      "sortOrder": "12"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "NOW",
+      "companyName": "ServiceNow",
+      "sector": "Technology",
+      "sortOrder": "13"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "ORCL",
+      "companyName": "Oracle",
+      "sector": "Technology",
+      "sortOrder": "14"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "CRM",
+      "companyName": "Salesforce",
+      "sector": "Technology",
+      "sortOrder": "15"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "PLTR",
+      "companyName": "Palantir",
+      "sector": "AI / Data",
+      "sortOrder": "16"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "APP",
+      "companyName": "AppLovin",
+      "sector": "AI / Data",
+      "sortOrder": "17"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "SOUN",
+      "companyName": "SoundHound AI",
+      "sector": "AI / Data",
+      "sortOrder": "18"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AI",
+      "companyName": "C3.ai",
+      "sector": "AI / Data",
+      "sortOrder": "19"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "COIN",
+      "companyName": "Coinbase",
+      "sector": "Crypto / Fin",
+      "sortOrder": "20"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "MSTR",
+      "companyName": "MicroStrategy",
+      "sector": "Crypto / Fin",
+      "sortOrder": "21"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "MARA",
+      "companyName": "Marathon Digital",
+      "sector": "Crypto / Fin",
+      "sortOrder": "22"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "HOOD",
+      "companyName": "Robinhood Markets",
+      "sector": "Crypto / Fin",
+      "sortOrder": "23"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "PYPL",
+      "companyName": "PayPal Holdings",
+      "sector": "Crypto / Fin",
+      "sortOrder": "24"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "JPM",
+      "companyName": "JPMorgan Chase",
+      "sector": "Finance",
+      "sortOrder": "25"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "GS",
+      "companyName": "Goldman Sachs",
+      "sector": "Finance",
+      "sortOrder": "26"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "V",
+      "companyName": "Visa",
+      "sector": "Finance",
+      "sortOrder": "27"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "SOFI",
+      "companyName": "SoFi Technologies",
+      "sector": "Finance",
+      "sortOrder": "28"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "LLY",
+      "companyName": "Eli Lilly",
+      "sector": "Healthcare",
+      "sortOrder": "29"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "HIMS",
+      "companyName": "Hims & Hers Health",
+      "sector": "Healthcare",
+      "sortOrder": "30"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "CELH",
+      "companyName": "Celsius Holdings",
+      "sector": "Healthcare",
+      "sortOrder": "31"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "TSLA",
+      "companyName": "Tesla",
+      "sector": "EV / Auto",
+      "sortOrder": "32"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "RIVN",
+      "companyName": "Rivian Automotive",
+      "sector": "EV / Auto",
+      "sortOrder": "33"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "RKLB",
+      "companyName": "Rocket Lab USA",
+      "sector": "Space",
+      "sortOrder": "34"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "LUNR",
+      "companyName": "Intuitive Machines",
+      "sector": "Space",
+      "sortOrder": "35"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AXON",
+      "companyName": "Axon Enterprise",
+      "sector": "Defense Tech",
+      "sortOrder": "36"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "IONQ",
+      "companyName": "IonQ",
+      "sector": "Quantum",
+      "sortOrder": "37"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "QUBT",
+      "companyName": "Quantum Computing Inc.",
+      "sector": "Quantum",
+      "sortOrder": "38"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "RGTI",
+      "companyName": "Rigetti Computing",
+      "sector": "Quantum",
+      "sortOrder": "39"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "CEG",
+      "companyName": "Constellation Energy",
+      "sector": "Nuclear",
+      "sortOrder": "40"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "VST",
+      "companyName": "Vistra Corp",
+      "sector": "Energy",
+      "sortOrder": "41"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "NRG",
+      "companyName": "NRG Energy",
+      "sector": "Energy",
+      "sortOrder": "42"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "CAT",
+      "companyName": "Caterpillar",
+      "sector": "Industrials",
+      "sortOrder": "43"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "GE",
+      "companyName": "GE Aerospace",
+      "sector": "Industrials",
+      "sortOrder": "44"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "RTX",
+      "companyName": "RTX Corporation",
+      "sector": "Defense",
+      "sortOrder": "45"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "NFLX",
+      "companyName": "Netflix",
+      "sector": "Media",
+      "sortOrder": "46"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "SPOT",
+      "companyName": "Spotify",
+      "sector": "Media",
+      "sortOrder": "47"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "RDDT",
+      "companyName": "Reddit",
+      "sector": "Social Media",
+      "sortOrder": "48"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "CRWD",
+      "companyName": "CrowdStrike",
+      "sector": "Cybersecurity",
+      "sortOrder": "49"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "PANW",
+      "companyName": "Palo Alto Networks",
+      "sector": "Cybersecurity",
+      "sortOrder": "50"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "S",
+      "companyName": "SentinelOne",
+      "sector": "Cybersecurity",
+      "sortOrder": "51"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "DDOG",
+      "companyName": "Datadog",
+      "sector": "SaaS",
+      "sortOrder": "52"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "NET",
+      "companyName": "Cloudflare",
+      "sector": "SaaS",
+      "sortOrder": "53"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "SNOW",
+      "companyName": "Snowflake",
+      "sector": "SaaS",
+      "sortOrder": "54"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "SHOP",
+      "companyName": "Shopify",
+      "sector": "E-Commerce",
+      "sortOrder": "55"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "UBER",
+      "companyName": "Uber Technologies",
+      "sector": "Technology",
+      "sortOrder": "56"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "ZIM",
+      "companyName": "ZIM Integrated Shipping",
+      "sector": "Shipping",
+      "sortOrder": "57"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "DUOL",
+      "companyName": "Duolingo",
+      "sector": "EdTech",
+      "sortOrder": "58"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "TTD",
+      "companyName": "The Trade Desk",
+      "sector": "Ad Tech",
+      "sortOrder": "59"
+    },
+    {
+      "name": "siaholdingsltd",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings",
+      "sector": "Fintech",
+      "sortOrder": "60"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\topenId\tticker\tcompanyName\tsector\tsortOrder\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tNVDA\tNVIDIA Corporation\tSemiconductors\t0\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tTSM\tTaiwan Semiconductor Manufacturing Company Limited\tSemiconductors\t1\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAVGO\tBroadcom Inc.\tSemiconductors\t2\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tMU\tMicron Technology, Inc.\tSemiconductors\t3\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tALAB\tAstera Labs, Inc.\tSemiconductors\t4\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAMD\tAdvanced Micro Devices, Inc.\tSemiconductors\t5\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tMRVL\tMarvell Technology, Inc.\tSemiconductors\t6\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tARM\tArm Holdings plc\tSemiconductors\t7\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAAPL\tApple Inc.\tTechnology\t8\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tMSFT\tMicrosoft Corporation\tTechnology\t9\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tMETA\tMeta Platforms, Inc.\tTechnology\t10\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tGOOGL\tAlphabet Inc.\tTechnology\t11\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAMZN\tAmazon.com, Inc.\tTechnology\t12\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tNOW\tServiceNow, Inc.\tTechnology\t13\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tORCL\tOracle Corporation\tTechnology\t14\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tCRM\tSalesforce, Inc.\tTechnology\t15\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tPLTR\tPalantir Technologies Inc.\tAI / Data\t16\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAPP\tAppLovin Corporation\tAI / Data\t17\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tSOUN\tSoundHound AI, Inc.\tAI / Data\t18\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAI\tC3.ai, Inc.\tAI / Data\t19\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tCOIN\tCoinbase Global, Inc.\tCrypto / Fin\t20\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tMSTR\tStrategy Inc\tCrypto / Fin\t21\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tMARA\tMARA Holdings, Inc.\tCrypto / Fin\t22\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tHOOD\tRobinhood Markets, Inc.\tCrypto / Fin\t23\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tPYPL\tPayPal Holdings, Inc.\tCrypto / Fin\t24\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tJPM\tJPMorgan Chase & Co.\tFinance\t25\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tGS\tThe Goldman Sachs Group, Inc.\tFinance\t26\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tV\tVisa Inc.\tFinance\t27\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tSOFI\tSoFi Technologies, Inc.\tFinance\t28\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tLLY\tEli Lilly and Company\tHealthcare\t29\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tHIMS\tHims & Hers Health, Inc.\tHealthcare\t30\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tCELH\tCelsius Holdings, Inc.\tHealthcare\t31\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tTSLA\tTesla, Inc.\tEV / Auto\t32\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tRIVN\tRivian Automotive, Inc.\tEV / Auto\t33\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tRKLB\tRocket Lab Corporation\tSpace\t34\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tLUNR\tIntuitive Machines, Inc.\tSpace\t35\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAXON\tAxon Enterprise, Inc.\tDefense Tech\t36\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tIONQ\tIonQ, Inc.\tQuantum\t37\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tQUBT\tQuantum Computing Inc.\tQuantum\t38\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tRGTI\tRigetti Computing, Inc.\tQuantum\t39\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tCEG\tConstellation Energy Corporation\tNuclear\t40\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tVST\tVistra Corp.\tEnergy\t41\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tNRG\tNRG Energy, Inc.\tEnergy\t42\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tCAT\tCaterpillar Inc.\tIndustrials\t43\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tGE\tGE Aerospace\tIndustrials\t44\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tRTX\tRTX Corporation\tDefense\t45\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tNFLX\tNetflix, Inc.\tMedia\t46\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tSPOT\tSpotify Technology S.A.\tMedia\t47\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tRDDT\tReddit, Inc.\tSocial Media\t48\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tCRWD\tCrowdStrike Holdings, Inc.\tCybersecurity\t49\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tPANW\tPalo Alto Networks, Inc.\tCybersecurity\t50\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tS\tSentinelOne, Inc.\tCybersecurity\t51\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tDDOG\tDatadog, Inc.\tSaaS\t52\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tNET\tCloudflare, Inc.\tSaaS\t53\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tSNOW\tSnowflake Inc.\tSaaS\t54\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tSHOP\tShopify Inc.\tE-Commerce\t55\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tUBER\tUber Technologies, Inc.\tTechnology\t56\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tZIM\tZIM Integrated Shipping Services Ltd.\tShipping\t57\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tDUOL\tDuolingo, Inc.\tEdTech\t58\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tTTD\tThe Trade Desk, Inc.\tAd Tech\t59\nYehuda Ashash\tjaDEMUoCJyxDvKw6XvdrrS\tAFRM\tAffirm Holdings, Inc.\tFintech\t60\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tNVDA\tNVIDIA Corporation\tSemiconductors\t0\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tTSM\tTaiwan Semiconductor Manufacturing Company Limited\tSemiconductors\t1\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAVGO\tBroadcom Inc.\tSemiconductors\t2\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tMU\tMicron Technology, Inc.\tSemiconductors\t3\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tALAB\tAstera Labs, Inc.\tSemiconductors\t4\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAMD\tAdvanced Micro Devices, Inc.\tSemiconductors\t5\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tMRVL\tMarvell Technology, Inc.\tSemiconductors\t6\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tARM\tArm Holdings plc\tSemiconductors\t7\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAAPL\tApple\tTechnology\t8\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tMSFT\tMicrosoft Corporation\tTechnology\t9\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tMETA\tMeta Platforms\tTechnology\t10\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tGOOGL\tAlphabet Inc.\tTechnology\t11\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAMZN\tAmazon.com, Inc.\tTechnology\t12\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tNOW\tServiceNow, Inc.\tTechnology\t13\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tORCL\tOracle Corporation\tTechnology\t14\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tCRM\tSalesforce, Inc.\tTechnology\t15\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tPLTR\tPalantir Technologies Inc.\tAI / Data\t16\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAPP\tAppLovin\tAI / Data\t17\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tSOUN\tSoundHound AI, Inc.\tAI / Data\t18\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAI\tC3.ai, Inc.\tAI / Data\t19\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tCOIN\tCoinbase Global, Inc.\tCrypto / Fin\t20\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tMSTR\tStrategy Inc\tCrypto / Fin\t21\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tMARA\tMARA Holdings, Inc.\tCrypto / Fin\t22\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tHOOD\tRobinhood Markets, Inc.\tCrypto / Fin\t23\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tPYPL\tPayPal Holdings\tCrypto / Fin\t24\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tJPM\tJPMorgan Chase & Co.\tFinance\t25\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tGS\tThe Goldman Sachs Group, Inc.\tFinance\t26\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tV\tVisa Inc.\tFinance\t27\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tSOFI\tSoFi Technologies, Inc.\tFinance\t28\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tLLY\tEli Lilly and Company\tHealthcare\t29\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tHIMS\tHims & Hers Health, Inc.\tHealthcare\t30\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tCELH\tCelsius Holdings, Inc.\tHealthcare\t31\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tTSLA\tTesla, Inc.\tEV / Auto\t32\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tRIVN\tRivian Automotive, Inc.\tEV / Auto\t33\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tRKLB\tRocket Lab Corporation\tSpace\t34\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tLUNR\tIntuitive Machines, Inc.\tSpace\t35\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAXON\tAxon Enterprise, Inc.\tDefense Tech\t36\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tIONQ\tIonQ, Inc.\tQuantum\t37\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tQUBT\tQuantum Computing Inc.\tQuantum\t38\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tRGTI\tRigetti Computing, Inc.\tQuantum\t39\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tCEG\tConstellation Energy Corporation\tNuclear\t40\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tVST\tVistra Corp.\tEnergy\t41\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tNRG\tNRG Energy, Inc.\tEnergy\t42\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tCAT\tCaterpillar\tIndustrials\t43\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tGE\tGE Aerospace\tIndustrials\t44\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tRTX\tRTX Corporation\tDefense\t45\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tNFLX\tNetflix, Inc.\tMedia\t46\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tSPOT\tSpotify\tMedia\t47\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tRDDT\tReddit\tSocial Media\t48\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tCRWD\tCrowdStrike Holdings, Inc.\tCybersecurity\t49\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tPANW\tPalo Alto Networks, Inc.\tCybersecurity\t50\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tS\tSentinelOne, Inc.\tCybersecurity\t51\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tDDOG\tDatadog\tSaaS\t52\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tNET\tCloudflare, Inc.\tSaaS\t53\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tSNOW\tSnowflake Inc.\tSaaS\t54\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tSHOP\tShopify Inc.\tE-Commerce\t55\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tUBER\tUber Technologies, Inc.\tTechnology\t56\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tZIM\tZIM Integrated Shipping\tShipping\t57\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tDUOL\tDuolingo, Inc.\tEdTech\t58\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tTTD\tThe Trade Desk, Inc.\tAd Tech\t59\nNayan Ray\tmwA83WP3SVX8SfP5jZ8bWL\tAFRM\tAffirm Holdings, Inc.\tFintech\t60\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tNVDA\tNVIDIA Corporation\tSemiconductors\t0\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tTSM\tTSMC\tSemiconductors\t1\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAVGO\tBroadcom\tSemiconductors\t2\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tMU\tMicron Technology\tSemiconductors\t3\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tALAB\tAstera Labs\tSemiconductors\t4\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAMD\tAdvanced Micro Devices\tSemiconductors\t5\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tMRVL\tMarvell Technology\tSemiconductors\t6\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tARM\tArm Holdings\tSemiconductors\t7\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAAPL\tApple\tTechnology\t8\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tMSFT\tMicrosoft\tTechnology\t9\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tMETA\tMeta Platforms\tTechnology\t10\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tGOOGL\tAlphabet\tTechnology\t11\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAMZN\tAmazon\tTechnology\t12\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tNOW\tServiceNow\tTechnology\t13\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tORCL\tOracle\tTechnology\t14\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tCRM\tSalesforce\tTechnology\t15\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tPLTR\tPalantir\tAI / Data\t16\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAPP\tAppLovin\tAI / Data\t17\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tSOUN\tSoundHound AI\tAI / Data\t18\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAI\tC3.ai\tAI / Data\t19\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tCOIN\tCoinbase\tCrypto / Fin\t20\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tMSTR\tMicroStrategy\tCrypto / Fin\t21\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tMARA\tMarathon Digital\tCrypto / Fin\t22\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tHOOD\tRobinhood Markets\tCrypto / Fin\t23\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tPYPL\tPayPal Holdings\tCrypto / Fin\t24\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tJPM\tJPMorgan Chase\tFinance\t25\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tGS\tGoldman Sachs\tFinance\t26\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tV\tVisa\tFinance\t27\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tSOFI\tSoFi Technologies\tFinance\t28\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tLLY\tEli Lilly\tHealthcare\t29\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tHIMS\tHims & Hers Health\tHealthcare\t30\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tCELH\tCelsius Holdings\tHealthcare\t31\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tTSLA\tTesla\tEV / Auto\t32\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tRIVN\tRivian Automotive\tEV / Auto\t33\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tRKLB\tRocket Lab USA\tSpace\t34\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tLUNR\tIntuitive Machines\tSpace\t35\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAXON\tAxon Enterprise\tDefense Tech\t36\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tIONQ\tIonQ\tQuantum\t37\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tQUBT\tQuantum Computing Inc.\tQuantum\t38\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tRGTI\tRigetti Computing\tQuantum\t39\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tCEG\tConstellation Energy\tNuclear\t40\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tVST\tVistra Corp\tEnergy\t41\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tNRG\tNRG Energy\tEnergy\t42\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tCAT\tCaterpillar\tIndustrials\t43\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tGE\tGE Aerospace\tIndustrials\t44\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tRTX\tRTX Corporation\tDefense\t45\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tNFLX\tNetflix\tMedia\t46\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tSPOT\tSpotify\tMedia\t47\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tRDDT\tReddit\tSocial Media\t48\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tCRWD\tCrowdStrike\tCybersecurity\t49\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tPANW\tPalo Alto Networks\tCybersecurity\t50\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tS\tSentinelOne\tCybersecurity\t51\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tDDOG\tDatadog\tSaaS\t52\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tNET\tCloudflare\tSaaS\t53\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tSNOW\tSnowflake\tSaaS\t54\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tSHOP\tShopify\tE-Commerce\t55\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tUBER\tUber Technologies\tTechnology\t56\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tZIM\tZIM Integrated Shipping\tShipping\t57\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tDUOL\tDuolingo\tEdTech\t58\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tTTD\tThe Trade Desk\tAd Tech\t59\nsiaholdingsltd\tS4sZ6Fy9AjAvTVGeWQVZ4N\tAFRM\tAffirm Holdings\tFintech\t60\n",
+  "stderr": "",
+  "execution_time_ms": 1549
+}

@@ -1,0 +1,115 @@
+{
+  "query": "SELECT ticker, alertType, targetPrice, direction, label FROM priceAlerts WHERE ticker LIKE '%.TA' LIMIT 15;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, alertType, targetPrice, direction, label FROM priceAlerts WHERE ticker LIKE '%.TA' LIMIT 15;",
+  "rows": [
+    {
+      "ticker": "ENLT.TA",
+      "alertType": "sl",
+      "targetPrice": "25472.87",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "alertType": "tp",
+      "targetPrice": "102",
+      "direction": "above",
+      "label": "Take Profit"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "alertType": "custom",
+      "targetPrice": "220.1999969482422",
+      "direction": "below",
+      "label": "Catalogue Entry Alert"
+    },
+    {
+      "ticker": "MAXO.TA",
+      "alertType": "sl",
+      "targetPrice": "8.336190731315297",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "MAXO.TA",
+      "alertType": "tp",
+      "targetPrice": "10.873292258237338",
+      "direction": "above",
+      "label": "Take Profit"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "alertType": "sl",
+      "targetPrice": "28.831636753281543",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "alertType": "tp",
+      "targetPrice": "37.60648272167157",
+      "direction": "above",
+      "label": "Take Profit"
+    },
+    {
+      "ticker": "CLIS.TA",
+      "alertType": "sl",
+      "targetPrice": "30.941869809804444",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "CLIS.TA",
+      "alertType": "tp",
+      "targetPrice": "40.35896062148405",
+      "direction": "above",
+      "label": "Take Profit"
+    },
+    {
+      "ticker": "PHOE.TA",
+      "alertType": "sl",
+      "targetPrice": "34.40758103402089",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "PHOE.TA",
+      "alertType": "tp",
+      "targetPrice": "44.87945352263594",
+      "direction": "above",
+      "label": "Take Profit"
+    },
+    {
+      "ticker": "TSEM.TA",
+      "alertType": "sl",
+      "targetPrice": "99.176",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "TSEM.TA",
+      "alertType": "tp",
+      "targetPrice": "129.35999999999999",
+      "direction": "above",
+      "label": "Take Profit"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "alertType": "sl",
+      "targetPrice": "3.8199839271363514",
+      "direction": "below",
+      "label": "Stop Loss"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "alertType": "tp",
+      "targetPrice": "4.982587731047415",
+      "direction": "above",
+      "label": "Take Profit"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\talertType\ttargetPrice\tdirection\tlabel\nENLT.TA\tsl\t25472.87\tbelow\tStop Loss\nENLT.TA\ttp\t102\tabove\tTake Profit\nACCL.TA\tcustom\t220.1999969482422\tbelow\tCatalogue Entry Alert\nMAXO.TA\tsl\t8.336190731315297\tbelow\tStop Loss\nMAXO.TA\ttp\t10.873292258237338\tabove\tTake Profit\nMTAV.TA\tsl\t28.831636753281543\tbelow\tStop Loss\nMTAV.TA\ttp\t37.60648272167157\tabove\tTake Profit\nCLIS.TA\tsl\t30.941869809804444\tbelow\tStop Loss\nCLIS.TA\ttp\t40.35896062148405\tabove\tTake Profit\nPHOE.TA\tsl\t34.40758103402089\tbelow\tStop Loss\nPHOE.TA\ttp\t44.87945352263594\tabove\tTake Profit\nTSEM.TA\tsl\t99.176\tbelow\tStop Loss\nTSEM.TA\ttp\t129.35999999999999\tabove\tTake Profit\nAVGD.TA\tsl\t3.8199839271363514\tbelow\tStop Loss\nAVGD.TA\ttp\t4.982587731047415\tabove\tTake Profit\n",
+  "stderr": "",
+  "execution_time_ms": 1836
+}

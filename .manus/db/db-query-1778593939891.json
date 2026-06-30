@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, openId, name FROM users LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, openId, name FROM users LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "jaDEMUoCJyxDvKw6XvdrrS",
+      "name": "Yehuda Ashash"
+    },
+    {
+      "id": "480303",
+      "openId": "HefhzHJfEwKvDJ5Y3jZCFn",
+      "name": "Sia Ltd"
+    },
+    {
+      "id": "692216",
+      "openId": "mwA83WP3SVX8SfP5jZ8bWL",
+      "name": "Nayan Ray"
+    },
+    {
+      "id": "1230170",
+      "openId": "S4sZ6Fy9AjAvTVGeWQVZ4N",
+      "name": "siaholdingsltd"
+    },
+    {
+      "id": "1680140",
+      "openId": "bQT8iBA4qzxXNCQW7WeT6V",
+      "name": "Noam Cohen"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\n1\tjaDEMUoCJyxDvKw6XvdrrS\tYehuda Ashash\n480303\tHefhzHJfEwKvDJ5Y3jZCFn\tSia Ltd\n692216\tmwA83WP3SVX8SfP5jZ8bWL\tNayan Ray\n1230170\tS4sZ6Fy9AjAvTVGeWQVZ4N\tsiaholdingsltd\n1680140\tbQT8iBA4qzxXNCQW7WeT6V\tNoam Cohen\n",
+  "stderr": "",
+  "execution_time_ms": 1862
+}

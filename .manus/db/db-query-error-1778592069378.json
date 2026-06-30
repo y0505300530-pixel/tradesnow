@@ -1,0 +1,14 @@
+{
+  "query": "\nSELECT 'paperLedger' AS tbl, COUNT(*) AS rows FROM paperLedger\nUNION ALL\nSELECT 'paperPositions', COUNT(*) FROM paperPositions\nUNION ALL\nSELECT 'paperTrades', COUNT(*) FROM paperTrades\nUNION ALL\nSELECT 'paperEquitySnapshots', COUNT(*) FROM paperEquitySnapshots;\n\nSELECT id, userId, availableCash, initialCapital FROM paperLedger;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT 'paperLedger' AS tbl, COUNT(*) AS rows FROM paperLedger\nUNION ALL\nSELECT 'paperPositions', COUNT(*) FROM paperPositions\nUNION ALL\nSELECT 'paperTrades', COUNT(*) FROM paperTrades\nUNION ALL\nSELECT 'paperEquitySnapshots', COUNT(*) FROM paperEquitySnapshots;\n\nSELECT id, userId, availableCash, initialCapital FROM paperLedger;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 1 column 45 near \"rows FROM paperLedger",
+    "UNION ALL",
+    "SELECT 'paperPositions', COUNT(*) FROM paperPositions",
+    "UNION ALL",
+    "SELECT 'paperTrades', COUNT(*) FROM paperTrades",
+    "UNION ALL",
+    "SELECT 'paperEquitySnapshots', COUNT(*) FROM paperEquitySnapshots\""
+  ]
+}

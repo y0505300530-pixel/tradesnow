@@ -1,0 +1,17 @@
+{
+  "query": "\nSELECT \n  l.initialCapital,\n  l.availableCash as currentCash,\n  COALESCE(SUM(t.allocatedCapital + t.realizedPnl), 0) as totalProceeds,\n  COALESCE(SUM(p.allocatedCapital), 0) as deployedCapital,\n  (l.initialCapital - COALESCE(SUM(p.allocatedCapital), 0) + COALESCE(SUM(t.allocatedCapital + t.realizedPnl), 0) - (COUNT(DISTINCT t.id) * 2 + COUNT(DISTINCT p.id)) * 2.50) as correctCash\nFROM paperLedger l\nLEFT JOIN paperTrades t ON t.userId = l.userId AND t.sessionId = l.sessionId\nLEFT JOIN paperPositions p ON p.userId = l.userId AND p.status = 'open'\nWHERE l.userId = 1\nGROUP BY l.userId, l.initialCapital, l.availableCash, l.sessionId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT \n  l.initialCapital,\n  l.availableCash as currentCash,\n  COALESCE(SUM(t.allocatedCapital + t.realizedPnl), 0) as totalProceeds,\n  COALESCE(SUM(p.allocatedCapital), 0) as deployedCapital,\n  (l.initialCapital - COALESCE(SUM(p.allocatedCapital), 0) + COALESCE(SUM(t.allocatedCapital + t.realizedPnl), 0) - (COUNT(DISTINCT t.id) * 2 + COUNT(DISTINCT p.id)) * 2.50) as correctCash\nFROM paperLedger l\nLEFT JOIN paperTrades t ON t.userId = l.userId AND t.sessionId = l.sessionId\nLEFT JOIN paperPositions p ON p.userId = l.userId AND p.status = 'open'\nWHERE l.userId = 1\nGROUP BY l.userId, l.initialCapital, l.availableCash, l.sessionId;\n",
+  "rows": [
+    {
+      "initialCapital": "100000",
+      "currentCash": "-4046.15916659258",
+      "totalProceeds": "3323750.802571109",
+      "deployedCapital": "3358485.496147018",
+      "correctCash": "64985.306424091104"
+    }
+  ],
+  "messages": [],
+  "stdout": "initialCapital\tcurrentCash\ttotalProceeds\tdeployedCapital\tcorrectCash\n100000\t-4046.15916659258\t3323750.802571109\t3358485.496147018\t64985.306424091104\n",
+  "stderr": "",
+  "execution_time_ms": 1801
+}

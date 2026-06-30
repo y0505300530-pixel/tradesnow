@@ -1,0 +1,18 @@
+{
+  "query": "SELECT userId, COUNT(*) as count FROM portfolioHoldings GROUP BY userId ORDER BY userId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT userId, COUNT(*) as count FROM portfolioHoldings GROUP BY userId ORDER BY userId;",
+  "rows": [
+    {
+      "userId": "1",
+      "count": "10"
+    },
+    {
+      "userId": "1230170",
+      "count": "20"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\tcount\n1\t10\n1230170\t20\n",
+  "stderr": "",
+  "execution_time_ms": 1659
+}

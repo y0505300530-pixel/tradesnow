@@ -1,0 +1,230 @@
+{
+  "query": "SELECT ticker, signal, zivScore, entryPrice, exitPrice, exitReason, realizedPnl, realizedPnlPct, TIMESTAMPDIFF(MINUTE, openedAt, closedAt) as holdMinutes FROM paperTrades WHERE sessionId = 25 ORDER BY realizedPnl DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, signal, zivScore, entryPrice, exitPrice, exitReason, realizedPnl, realizedPnlPct, TIMESTAMPDIFF(MINUTE, openedAt, closedAt) as holdMinutes FROM paperTrades WHERE sessionId = 25 ORDER BY realizedPnl DESC LIMIT 20;",
+  "rows": [
+    {
+      "ticker": "XEL",
+      "signal": "Gold Retest",
+      "zivScore": "7.86",
+      "entryPrice": "78.08300499999999",
+      "exitPrice": "79.38054",
+      "exitReason": "TP",
+      "realizedPnl": "80.54224000000067",
+      "realizedPnlPct": "1.6617380440212448",
+      "holdMinutes": "14"
+    },
+    {
+      "ticker": "BA",
+      "signal": "Gold Retest",
+      "zivScore": "7.72",
+      "entryPrice": "223.1229",
+      "exitPrice": "226.86291",
+      "exitReason": "TP",
+      "realizedPnl": "79.78022000000027",
+      "realizedPnlPct": "1.6762107340842256",
+      "holdMinutes": "3"
+    },
+    {
+      "ticker": "XEL",
+      "signal": "Gold Retest",
+      "zivScore": "7.86",
+      "entryPrice": "78.09801999999999",
+      "exitPrice": "79.38054",
+      "exitReason": "TP",
+      "realizedPnl": "79.58128000000033",
+      "realizedPnlPct": "1.642192721403187",
+      "holdMinutes": "3"
+    },
+    {
+      "ticker": "GM",
+      "signal": "Gold Retest",
+      "zivScore": "7.69",
+      "entryPrice": "75.27019499999999",
+      "exitPrice": "75.80411725616455",
+      "exitReason": "TP-Gap",
+      "realizedPnl": "32.73886890686086",
+      "realizedPnlPct": "0.7093408701339999",
+      "holdMinutes": "11"
+    },
+    {
+      "ticker": "GM",
+      "signal": "Gold Retest",
+      "zivScore": "7.69",
+      "entryPrice": "75.29522122192382",
+      "exitPrice": "75.80411725616455",
+      "exitReason": "TP-Gap",
+      "realizedPnl": "31.087138259887553",
+      "realizedPnlPct": "0.6758676393828622",
+      "holdMinutes": "3"
+    },
+    {
+      "ticker": "NET",
+      "signal": "Gold Retest",
+      "zivScore": "7.79",
+      "entryPrice": "197.573376",
+      "exitPrice": "198.801",
+      "exitReason": "Force-Close",
+      "realizedPnl": "28.19059999999979",
+      "realizedPnlPct": "0.621350925339248",
+      "holdMinutes": "39"
+    },
+    {
+      "ticker": "GM",
+      "signal": "Gold Retest",
+      "zivScore": "7.69",
+      "entryPrice": "75.34526999999999",
+      "exitPrice": "75.80411725616455",
+      "exitReason": "TP-Gap",
+      "realizedPnl": "27.783918906860976",
+      "realizedPnlPct": "0.6089927823797836",
+      "holdMinutes": "4"
+    },
+    {
+      "ticker": "GD",
+      "signal": "Gold Retest",
+      "zivScore": "7.7",
+      "entryPrice": "335.05472",
+      "exitPrice": "337.07259000000005",
+      "exitReason": "TP",
+      "realizedPnl": "25.750180000001023",
+      "realizedPnlPct": "0.6022508800950702",
+      "holdMinutes": "12"
+    },
+    {
+      "ticker": "GD",
+      "signal": "Gold Retest",
+      "zivScore": "7.7",
+      "entryPrice": "335.19485999999995",
+      "exitPrice": "337.07259000000005",
+      "exitReason": "TP",
+      "realizedPnl": "23.788220000001388",
+      "realizedPnlPct": "0.5601905709413622",
+      "holdMinutes": "2"
+    },
+    {
+      "ticker": "GM",
+      "signal": "Gold Retest",
+      "zivScore": "7.69",
+      "entryPrice": "75.420345",
+      "exitPrice": "75.80411725616455",
+      "exitReason": "TP-Gap",
+      "realizedPnl": "22.828968906860155",
+      "realizedPnlPct": "0.5088444718259348",
+      "holdMinutes": "2"
+    },
+    {
+      "ticker": "GM",
+      "signal": "Gold Retest",
+      "zivScore": "7.69",
+      "entryPrice": "75.45537999999999",
+      "exitPrice": "75.80411725616455",
+      "exitReason": "TP-Gap",
+      "realizedPnl": "20.516658906860584",
+      "realizedPnlPct": "0.4621767939735435",
+      "holdMinutes": "4"
+    },
+    {
+      "ticker": "ZIM",
+      "signal": "Gold Retest",
+      "zivScore": "8.7",
+      "entryPrice": "25.63561",
+      "exitPrice": "25.71426",
+      "exitReason": "Force-Close",
+      "realizedPnl": "12.836749999999935",
+      "realizedPnlPct": "0.3067997991855847",
+      "holdMinutes": "111"
+    },
+    {
+      "ticker": "BKR",
+      "signal": "Gold Retest",
+      "zivScore": "7.59",
+      "entryPrice": "64.26920683288573",
+      "exitPrice": "64.40553",
+      "exitReason": "TP",
+      "realizedPnl": "7.996883867798786",
+      "realizedPnlPct": "0.21211272681292082",
+      "holdMinutes": "2"
+    },
+    {
+      "ticker": "BKR",
+      "signal": "Gold Retest",
+      "zivScore": "7.59",
+      "entryPrice": "64.28421999999999",
+      "exitPrice": "64.40553",
+      "exitReason": "TP",
+      "realizedPnl": "6.840870000000635",
+      "realizedPnlPct": "0.18870883087639276",
+      "holdMinutes": "10"
+    },
+    {
+      "ticker": "GD",
+      "signal": "Gold Retest",
+      "zivScore": "7.7",
+      "entryPrice": "336.60827199999994",
+      "exitPrice": "337.07259000000005",
+      "exitReason": "TP",
+      "realizedPnl": "4.000452000001474",
+      "realizedPnlPct": "0.13794016327682682",
+      "holdMinutes": "3"
+    },
+    {
+      "ticker": "EOG",
+      "signal": "Gold Retest",
+      "zivScore": "7.77",
+      "entryPrice": "139.324185",
+      "exitPrice": "139.42044",
+      "exitReason": "Force-Close",
+      "realizedPnl": "0.8689250000004733",
+      "realizedPnlPct": "0.06908707199687801",
+      "holdMinutes": "39"
+    },
+    {
+      "ticker": "XOM",
+      "signal": "Gold Retest",
+      "zivScore": "7.86",
+      "entryPrice": "156.25609999999998",
+      "exitPrice": "156.36348",
+      "exitReason": "TP",
+      "realizedPnl": "0.8287800000010748",
+      "realizedPnlPct": "0.06872051715103263",
+      "holdMinutes": "85"
+    },
+    {
+      "ticker": "USB",
+      "signal": "Gold Retest",
+      "zivScore": "8.44",
+      "entryPrice": "52.69264",
+      "exitPrice": "52.712235",
+      "exitReason": "Force-Close",
+      "realizedPnl": "-0.6580699999997677",
+      "realizedPnlPct": "0.03718735671623679",
+      "holdMinutes": "114"
+    },
+    {
+      "ticker": "BKR",
+      "signal": "Gold Retest",
+      "zivScore": "7.59",
+      "entryPrice": "64.62455999999999",
+      "exitPrice": "64.64528999999999",
+      "exitReason": "Force-Close",
+      "realizedPnl": "-0.9037899999999723",
+      "realizedPnlPct": "0.032077587839670185",
+      "holdMinutes": "39"
+    },
+    {
+      "ticker": "TKO",
+      "signal": "Gold Breakout",
+      "zivScore": "9.66",
+      "entryPrice": "188.273085",
+      "exitPrice": "188.30151",
+      "exitReason": "Force-Close",
+      "realizedPnl": "-1.7609500000000367",
+      "realizedPnlPct": "0.015097750164341648",
+      "holdMinutes": "101"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tsignal\tzivScore\tentryPrice\texitPrice\texitReason\trealizedPnl\trealizedPnlPct\tholdMinutes\nXEL\tGold Retest\t7.86\t78.08300499999999\t79.38054\tTP\t80.54224000000067\t1.6617380440212448\t14\nBA\tGold Retest\t7.72\t223.1229\t226.86291\tTP\t79.78022000000027\t1.6762107340842256\t3\nXEL\tGold Retest\t7.86\t78.09801999999999\t79.38054\tTP\t79.58128000000033\t1.642192721403187\t3\nGM\tGold Retest\t7.69\t75.27019499999999\t75.80411725616455\tTP-Gap\t32.73886890686086\t0.7093408701339999\t11\nGM\tGold Retest\t7.69\t75.29522122192382\t75.80411725616455\tTP-Gap\t31.087138259887553\t0.6758676393828622\t3\nNET\tGold Retest\t7.79\t197.573376\t198.801\tForce-Close\t28.19059999999979\t0.621350925339248\t39\nGM\tGold Retest\t7.69\t75.34526999999999\t75.80411725616455\tTP-Gap\t27.783918906860976\t0.6089927823797836\t4\nGD\tGold Retest\t7.7\t335.05472\t337.07259000000005\tTP\t25.750180000001023\t0.6022508800950702\t12\nGD\tGold Retest\t7.7\t335.19485999999995\t337.07259000000005\tTP\t23.788220000001388\t0.5601905709413622\t2\nGM\tGold Retest\t7.69\t75.420345\t75.80411725616455\tTP-Gap\t22.828968906860155\t0.5088444718259348\t2\nGM\tGold Retest\t7.69\t75.45537999999999\t75.80411725616455\tTP-Gap\t20.516658906860584\t0.4621767939735435\t4\nZIM\tGold Retest\t8.7\t25.63561\t25.71426\tForce-Close\t12.836749999999935\t0.3067997991855847\t111\nBKR\tGold Retest\t7.59\t64.26920683288573\t64.40553\tTP\t7.996883867798786\t0.21211272681292082\t2\nBKR\tGold Retest\t7.59\t64.28421999999999\t64.40553\tTP\t6.840870000000635\t0.18870883087639276\t10\nGD\tGold Retest\t7.7\t336.60827199999994\t337.07259000000005\tTP\t4.000452000001474\t0.13794016327682682\t3\nEOG\tGold Retest\t7.77\t139.324185\t139.42044\tForce-Close\t0.8689250000004733\t0.06908707199687801\t39\nXOM\tGold Retest\t7.86\t156.25609999999998\t156.36348\tTP\t0.8287800000010748\t0.06872051715103263\t85\nUSB\tGold Retest\t8.44\t52.69264\t52.712235\tForce-Close\t-0.6580699999997677\t0.03718735671623679\t114\nBKR\tGold Retest\t7.59\t64.62455999999999\t64.64528999999999\tForce-Close\t-0.9037899999999723\t0.032077587839670185\t39\nTKO\tGold Breakout\t9.66\t188.273085\t188.30151\tForce-Close\t-1.7609500000000367\t0.015097750164341648\t101\n",
+  "stderr": "",
+  "execution_time_ms": 1743
+}

@@ -1,0 +1,17 @@
+{
+  "query": "\nSELECT \n  (SELECT availableCash FROM paperLedger WHERE userId=1) as cash,\n  (SELECT SUM(allocatedCapital) FROM paperPositions WHERE userId=1 AND status='open') as deployed,\n  (SELECT COUNT(*) FROM paperPositions WHERE userId=1 AND status='open') as openCount,\n  (SELECT SUM(realizedPnl) FROM paperTrades WHERE userId=1) as totalRealizedPnl,\n  (SELECT COUNT(*) FROM paperTrades WHERE userId=1) as tradeCount;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT \n  (SELECT availableCash FROM paperLedger WHERE userId=1) as cash,\n  (SELECT SUM(allocatedCapital) FROM paperPositions WHERE userId=1 AND status='open') as deployed,\n  (SELECT COUNT(*) FROM paperPositions WHERE userId=1 AND status='open') as openCount,\n  (SELECT SUM(realizedPnl) FROM paperTrades WHERE userId=1) as totalRealizedPnl,\n  (SELECT COUNT(*) FROM paperTrades WHERE userId=1) as tradeCount;\n",
+  "rows": [
+    {
+      "cash": "164295.71069212965",
+      "deployed": "73210.22345924469",
+      "openCount": "15",
+      "totalRealizedPnl": "155.51178159580107",
+      "tradeCount": "102"
+    }
+  ],
+  "messages": [],
+  "stdout": "cash\tdeployed\topenCount\ttotalRealizedPnl\ttradeCount\n164295.71069212965\t73210.22345924469\t15\t155.51178159580107\t102\n",
+  "stderr": "",
+  "execution_time_ms": 1878
+}

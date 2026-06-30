@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, name, status, updatedAt, TIMESTAMPDIFF(SECOND, updatedAt, NOW()) as seconds_since_update, LEFT(errorMessage, 100) as err FROM labSimulations ORDER BY id DESC LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, updatedAt, TIMESTAMPDIFF(SECOND, updatedAt, NOW()) as seconds_since_update, LEFT(errorMessage, 100) as err FROM labSimulations ORDER BY id DESC LIMIT 3;",
+  "rows": [
+    {
+      "id": "900018",
+      "name": "Lab 5/17/2026 10:57 AM",
+      "status": "running",
+      "updatedAt": "2026-05-17 07:58:18",
+      "seconds_since_update": "211",
+      "err": "NULL"
+    },
+    {
+      "id": "900017",
+      "name": "Lab 5/17/2026 10:38 AM",
+      "status": "error",
+      "updatedAt": "2026-05-17 07:51:28",
+      "seconds_since_update": "621",
+      "err": "Cleaned up: stuck in running state after Cloud Run restart"
+    },
+    {
+      "id": "900016",
+      "name": "Lab 5/17/2026 10:34 AM",
+      "status": "error",
+      "updatedAt": "2026-05-17 07:44:23",
+      "seconds_since_update": "1046",
+      "err": "Simulation was interrupted by a server restart. Please run it again."
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\tupdatedAt\tseconds_since_update\terr\n900018\tLab 5/17/2026 10:57 AM\trunning\t2026-05-17 07:58:18\t211\tNULL\n900017\tLab 5/17/2026 10:38 AM\terror\t2026-05-17 07:51:28\t621\tCleaned up: stuck in running state after Cloud Run restart\n900016\tLab 5/17/2026 10:34 AM\terror\t2026-05-17 07:44:23\t1046\tSimulation was interrupted by a server restart. Please run it again.\n",
+  "stderr": "",
+  "execution_time_ms": 1728
+}

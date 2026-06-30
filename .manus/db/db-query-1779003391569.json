@@ -1,0 +1,234 @@
+{
+  "query": "DESCRIBE labSimulations;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute DESCRIBE labSimulations;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "userId",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "name",
+      "Type": "varchar(128)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "Simulation",
+      "Extra": ""
+    },
+    {
+      "Field": "tickers",
+      "Type": "text",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "startDate",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "endDate",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "capitalPerTrade",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "10000",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "enum('pending','scanning','running','done','error')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "pending",
+      "Extra": ""
+    },
+    {
+      "Field": "scanReport",
+      "Type": "mediumtext",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "equityCurve",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "totalROI",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "totalProfit",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "errorMessage",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "benchmarkData",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "lessonsLearned",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "tickerCapitals",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "finalWallet",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "monkeyValue",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "profitMissed",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "simVersion",
+      "Type": "varchar(32)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "systemCodeVersion",
+      "Type": "varchar(16)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "minZivScore",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "4",
+      "Extra": ""
+    },
+    {
+      "Field": "targetAlphaMonthly",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "15",
+      "Extra": ""
+    },
+    {
+      "Field": "partialLockGainThreshold",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "50",
+      "Extra": ""
+    },
+    {
+      "Field": "riskLevel",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "5",
+      "Extra": ""
+    },
+    {
+      "Field": "maxSinglePositionPct",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "20",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\nuserId\tint\tNO\t\tNULL\t\nname\tvarchar(128)\tNO\t\tSimulation\t\ntickers\ttext\tNO\t\tNULL\t\nstartDate\ttimestamp\tNO\t\tNULL\t\nendDate\ttimestamp\tNO\t\tNULL\t\ncapitalPerTrade\tint\tNO\t\t10000\t\nstatus\tenum('pending','scanning','running','done','error')\tNO\t\tpending\t\nscanReport\tmediumtext\tYES\t\tNULL\t\nequityCurve\ttext\tYES\t\tNULL\t\ntotalROI\ttext\tYES\t\tNULL\t\ntotalProfit\ttext\tYES\t\tNULL\t\nerrorMessage\ttext\tYES\t\tNULL\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nbenchmarkData\ttext\tYES\t\tNULL\t\nlessonsLearned\ttext\tYES\t\tNULL\t\ntickerCapitals\ttext\tYES\t\tNULL\t\nfinalWallet\ttext\tYES\t\tNULL\t\nmonkeyValue\ttext\tYES\t\tNULL\t\nprofitMissed\ttext\tYES\t\tNULL\t\nsimVersion\tvarchar(32)\tYES\t\tNULL\t\nsystemCodeVersion\tvarchar(16)\tYES\t\tNULL\t\nminZivScore\tint\tYES\t\t4\t\ntargetAlphaMonthly\tint\tYES\t\t15\t\npartialLockGainThreshold\tint\tYES\t\t50\t\nriskLevel\tint\tYES\t\t5\t\nmaxSinglePositionPct\tint\tYES\t\t20\t\n",
+  "stderr": "",
+  "execution_time_ms": 1755
+}

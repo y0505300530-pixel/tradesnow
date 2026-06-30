@@ -1,0 +1,146 @@
+{
+  "query": "SELECT systemCodeVersion, COUNT(*) as cnt FROM labSimulations GROUP BY systemCodeVersion;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT systemCodeVersion, COUNT(*) as cnt FROM labSimulations GROUP BY systemCodeVersion;",
+  "rows": [
+    {
+      "systemCodeVersion": "v1.142",
+      "cnt": "7"
+    },
+    {
+      "systemCodeVersion": "v1.060",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.080",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.070",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.129",
+      "cnt": "3"
+    },
+    {
+      "systemCodeVersion": "v1.121",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.110",
+      "cnt": "2"
+    },
+    {
+      "systemCodeVersion": "v1.065",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.061",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.050",
+      "cnt": "5"
+    },
+    {
+      "systemCodeVersion": "v1.113",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.118",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.071",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.054",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.120",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.055",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.063",
+      "cnt": "2"
+    },
+    {
+      "systemCodeVersion": "v1.078",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.086",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.111",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.088",
+      "cnt": "15"
+    },
+    {
+      "systemCodeVersion": "v1.115",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "NULL",
+      "cnt": "19"
+    },
+    {
+      "systemCodeVersion": "v1.109",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.062",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.116",
+      "cnt": "2"
+    },
+    {
+      "systemCodeVersion": "v1.067",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.114",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.084",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.053",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.127",
+      "cnt": "2"
+    },
+    {
+      "systemCodeVersion": "v1.075",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.112",
+      "cnt": "1"
+    },
+    {
+      "systemCodeVersion": "v1.082",
+      "cnt": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "systemCodeVersion\tcnt\nv1.142\t7\nv1.060\t1\nv1.080\t1\nv1.070\t1\nv1.129\t3\nv1.121\t1\nv1.110\t2\nv1.065\t1\nv1.061\t1\nv1.050\t5\nv1.113\t1\nv1.118\t1\nv1.071\t1\nv1.054\t1\nv1.120\t1\nv1.055\t1\nv1.063\t2\nv1.078\t1\nv1.086\t1\nv1.111\t1\nv1.088\t15\nv1.115\t1\nNULL\t19\nv1.109\t1\nv1.062\t1\nv1.116\t2\nv1.067\t1\nv1.114\t1\nv1.084\t1\nv1.053\t1\nv1.127\t2\nv1.075\t1\nv1.112\t1\nv1.082\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1637
+}

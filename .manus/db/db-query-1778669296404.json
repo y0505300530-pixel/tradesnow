@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Step 1: Delete the duplicate trade (id=30001, the earlier one)\nDELETE FROM paperTrades WHERE id = 30001;\n\n-- Step 2: Fix availableCash by subtracting the duplicate P&L that was wrongly added\n-- Current cash: 26564.56, duplicate P&L was 9832.82\n-- Correct cash = 26564.56 - 9832.82 = 16731.74\nUPDATE paperLedger SET availableCash = 16731.740194926266 WHERE userId = 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \n-- Step 1: Delete the duplicate trade (id=30001, the earlier one)\nDELETE FROM paperTrades WHERE id = 30001;\n\n-- Step 2: Fix availableCash by subtracting the duplicate P&L that was wrongly added\n-- Current cash: 26564.56, duplicate P&L was 9832.82\n-- Correct cash = 26564.56 - 9832.82 = 16731.74\nUPDATE paperLedger SET availableCash = 16731.740194926266 WHERE userId = 1;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2026
+}

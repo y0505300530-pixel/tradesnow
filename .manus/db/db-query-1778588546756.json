@@ -1,0 +1,9 @@
+{
+  "query": "\nALTER TABLE paperPositions \n  ADD COLUMN IF NOT EXISTS slHitCount INT NOT NULL DEFAULT 0,\n  ADD COLUMN IF NOT EXISTS positionSizeUsd DOUBLE NOT NULL DEFAULT 5000;\n\nALTER TABLE paperTrades \n  MODIFY COLUMN exitReason VARCHAR(32) NOT NULL;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nALTER TABLE paperPositions \n  ADD COLUMN IF NOT EXISTS slHitCount INT NOT NULL DEFAULT 0,\n  ADD COLUMN IF NOT EXISTS positionSizeUsd DOUBLE NOT NULL DEFAULT 5000;\n\nALTER TABLE paperTrades \n  MODIFY COLUMN exitReason VARCHAR(32) NOT NULL;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2481
+}

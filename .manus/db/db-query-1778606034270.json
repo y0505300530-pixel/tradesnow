@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE paperTrades\n  ADD COLUMN IF NOT EXISTS zivHAtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS zivHAtExit DOUBLE,\n  ADD COLUMN IF NOT EXISTS atr14AtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS ema50AtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS initialSl DOUBLE,\n  ADD COLUMN IF NOT EXISTS initialTp DOUBLE,\n  ADD COLUMN IF NOT EXISTS finalSl DOUBLE,\n  ADD COLUMN IF NOT EXISTS finalTp DOUBLE,\n  ADD COLUMN IF NOT EXISTS rrRatio DOUBLE,\n  ADD COLUMN IF NOT EXISTS equityAtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS holdTimeMinutes INT;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute ALTER TABLE paperTrades\n  ADD COLUMN IF NOT EXISTS zivHAtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS zivHAtExit DOUBLE,\n  ADD COLUMN IF NOT EXISTS atr14AtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS ema50AtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS initialSl DOUBLE,\n  ADD COLUMN IF NOT EXISTS initialTp DOUBLE,\n  ADD COLUMN IF NOT EXISTS finalSl DOUBLE,\n  ADD COLUMN IF NOT EXISTS finalTp DOUBLE,\n  ADD COLUMN IF NOT EXISTS rrRatio DOUBLE,\n  ADD COLUMN IF NOT EXISTS equityAtEntry DOUBLE,\n  ADD COLUMN IF NOT EXISTS holdTimeMinutes INT;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3790
+}

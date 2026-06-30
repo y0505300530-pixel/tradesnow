@@ -1,0 +1,1 @@
+ALTER TABLE `paperPositions` ADD `profitLockTriggered` int DEFAULT 0;

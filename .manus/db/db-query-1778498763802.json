@@ -1,0 +1,154 @@
+{
+  "query": "SELECT ticker, units, buyPrice, currentPrice FROM holding2 WHERE userId = 1 ORDER BY ticker;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, units, buyPrice, currentPrice FROM holding2 WHERE userId = 1 ORDER BY ticker;",
+  "rows": [
+    {
+      "ticker": "AAPL",
+      "units": "57",
+      "buyPrice": "240",
+      "currentPrice": "293.57"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "units": "2422",
+      "buyPrice": "4.152156442539512",
+      "currentPrice": "6.227030740168297"
+    },
+    {
+      "ticker": "BTC-USD",
+      "units": "0.0055",
+      "buyPrice": "98152",
+      "currentPrice": "80943.43"
+    },
+    {
+      "ticker": "CLIS.TA",
+      "units": "149",
+      "buyPrice": "33.63246718457005",
+      "currentPrice": "98.74635067834448"
+    },
+    {
+      "ticker": "CMER.TA",
+      "units": "370",
+      "buyPrice": "18.94",
+      "currentPrice": "19.0623390005152"
+    },
+    {
+      "ticker": "DORL.TA",
+      "units": "407",
+      "buyPrice": "24.63",
+      "currentPrice": "28.906062167267727"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "units": "75",
+      "buyPrice": "88.68",
+      "currentPrice": "91.63661342950368"
+    },
+    {
+      "ticker": "ETH-USD",
+      "units": "2",
+      "buyPrice": "2140",
+      "currentPrice": "2329.57"
+    },
+    {
+      "ticker": "GAGR.TA",
+      "units": "2773",
+      "buyPrice": "4.828764828094632",
+      "currentPrice": "5.2206766271681255"
+    },
+    {
+      "ticker": "GOOG",
+      "units": "37",
+      "buyPrice": "219.83",
+      "currentPrice": "393.26"
+    },
+    {
+      "ticker": "IBI.TA",
+      "units": "70",
+      "buyPrice": "123.4",
+      "currentPrice": "157.0668040528937"
+    },
+    {
+      "ticker": "LBRA.TA",
+      "units": "2462",
+      "buyPrice": "4.540583980712563",
+      "currentPrice": "6.38159024557788"
+    },
+    {
+      "ticker": "LBRA.TA",
+      "units": "1599",
+      "buyPrice": "5.893383337798018",
+      "currentPrice": "6.38159024557788"
+    },
+    {
+      "ticker": "MAXO.TA",
+      "units": "1732",
+      "buyPrice": "9.061076881864452",
+      "currentPrice": "11.083633865704963"
+    },
+    {
+      "ticker": "MISH.TA",
+      "units": "105",
+      "buyPrice": "142.15",
+      "currentPrice": "169.2598317018719"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "units": "300",
+      "buyPrice": "17.04058398071256",
+      "currentPrice": "51.96634037437747"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "units": "308",
+      "buyPrice": "31.33873560139298",
+      "currentPrice": "51.96634037437747"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "units": "50",
+      "buyPrice": "30.39",
+      "currentPrice": "100.32629228919801"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "units": "100",
+      "buyPrice": "28",
+      "currentPrice": "100.32629228919801"
+    },
+    {
+      "ticker": "PHOE.TA",
+      "units": "26",
+      "buyPrice": "37.39954460219662",
+      "currentPrice": "66.66666666666666"
+    },
+    {
+      "ticker": "TSEM.TA",
+      "units": "40",
+      "buyPrice": "107.8",
+      "currentPrice": "211.3687102867937"
+    },
+    {
+      "ticker": "TSLA",
+      "units": "9",
+      "buyPrice": "318.24",
+      "currentPrice": "424.45"
+    },
+    {
+      "ticker": "XRP-USD",
+      "units": "200",
+      "buyPrice": "2.24",
+      "currentPrice": "1.45"
+    },
+    {
+      "ticker": "ZIM",
+      "units": "255",
+      "buyPrice": "19.57",
+      "currentPrice": "26.69"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tunits\tbuyPrice\tcurrentPrice\nAAPL\t57\t240\t293.57\nAVGD.TA\t2422\t4.152156442539512\t6.227030740168297\nBTC-USD\t0.0055\t98152\t80943.43\nCLIS.TA\t149\t33.63246718457005\t98.74635067834448\nCMER.TA\t370\t18.94\t19.0623390005152\nDORL.TA\t407\t24.63\t28.906062167267727\nENLT.TA\t75\t88.68\t91.63661342950368\nETH-USD\t2\t2140\t2329.57\nGAGR.TA\t2773\t4.828764828094632\t5.2206766271681255\nGOOG\t37\t219.83\t393.26\nIBI.TA\t70\t123.4\t157.0668040528937\nLBRA.TA\t2462\t4.540583980712563\t6.38159024557788\nLBRA.TA\t1599\t5.893383337798018\t6.38159024557788\nMAXO.TA\t1732\t9.061076881864452\t11.083633865704963\nMISH.TA\t105\t142.15\t169.2598317018719\nMTAV.TA\t300\t17.04058398071256\t51.96634037437747\nMTAV.TA\t308\t31.33873560139298\t51.96634037437747\nNXSN.TA\t50\t30.39\t100.32629228919801\nNXSN.TA\t100\t28\t100.32629228919801\nPHOE.TA\t26\t37.39954460219662\t66.66666666666666\nTSEM.TA\t40\t107.8\t211.3687102867937\nTSLA\t9\t318.24\t424.45\nXRP-USD\t200\t2.24\t1.45\nZIM\t255\t19.57\t26.69\n",
+  "stderr": "",
+  "execution_time_ms": 1797
+}

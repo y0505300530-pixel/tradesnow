@@ -1,0 +1,582 @@
+{
+  "meta": {
+    "generatedAt": "2026-06-27T21:27:40.484Z",
+    "model": "Elza V2 — proposed improvements",
+    "period": {
+      "start": "2026-01-01",
+      "end": "2026-06-25"
+    },
+    "universe": {
+      "catalogueUsa": 149,
+      "withData": 147
+    },
+    "improvements": [
+      "score_decay: 8-day grace, skip if >1R profit, floor 5.0 after TP1",
+      "shorts: BEAR regime only",
+      "hybrid breakout: momentum + volume bypass goldBreakout kill-switch",
+      "chandelier trail (2×ATR) after partial TP1",
+      "pyramid +33% on EMA-50 retest after TP1",
+      "score≥9: +20% position size"
+    ],
+    "baselineComparison": {
+      "baselineReturnPct": 26.09,
+      "v2ReturnPct": 81.06,
+      "deltaPct": 54.97
+    }
+  },
+  "performance": {
+    "startingCapital": 109801.15625,
+    "finalEquity": 198802.27,
+    "totalPnl": 89001.11,
+    "totalReturnPct": 81.06,
+    "roundTrips": 17,
+    "closedLegs": 28,
+    "maxDrawdownPct": 22.92,
+    "longLegsPnl": 89001.11,
+    "shortLegsPnl": 0
+  },
+  "weeklyEquity": [
+    {
+      "weekStart": "2025-12-29",
+      "weekEnd": "2026-01-02",
+      "equity": 109603.77,
+      "returnFromStartPct": -0.18,
+      "wowChangePct": 0,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-01-05",
+      "weekEnd": "2026-01-09",
+      "equity": 123846.57,
+      "returnFromStartPct": 12.79,
+      "wowChangePct": 12.99,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-01-12",
+      "weekEnd": "2026-01-16",
+      "equity": 138135.96,
+      "returnFromStartPct": 25.81,
+      "wowChangePct": 11.54,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-01-19",
+      "weekEnd": "2026-01-23",
+      "equity": 143464.01,
+      "returnFromStartPct": 30.66,
+      "wowChangePct": 3.86,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-01-26",
+      "weekEnd": "2026-01-30",
+      "equity": 146425.27,
+      "returnFromStartPct": 33.35,
+      "wowChangePct": 2.06,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-02-02",
+      "weekEnd": "2026-02-06",
+      "equity": 142475.79,
+      "returnFromStartPct": 29.76,
+      "wowChangePct": -2.7,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-02-09",
+      "weekEnd": "2026-02-13",
+      "equity": 147129.42,
+      "returnFromStartPct": 34,
+      "wowChangePct": 3.27,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-02-16",
+      "weekEnd": "2026-02-20",
+      "equity": 151309.92,
+      "returnFromStartPct": 37.8,
+      "wowChangePct": 2.84,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-02-23",
+      "weekEnd": "2026-02-27",
+      "equity": 150757.12,
+      "returnFromStartPct": 37.3,
+      "wowChangePct": -0.37,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-03-02",
+      "weekEnd": "2026-03-06",
+      "equity": 132322.35,
+      "returnFromStartPct": 20.51,
+      "wowChangePct": -12.23,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-03-09",
+      "weekEnd": "2026-03-13",
+      "equity": 147231.55,
+      "returnFromStartPct": 34.09,
+      "wowChangePct": 11.27,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-03-16",
+      "weekEnd": "2026-03-20",
+      "equity": 140566.15,
+      "returnFromStartPct": 28.02,
+      "wowChangePct": -4.53,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-03-23",
+      "weekEnd": "2026-03-27",
+      "equity": 135646.88,
+      "returnFromStartPct": 23.54,
+      "wowChangePct": -3.5,
+      "positions": 5,
+      "longs": 5,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-03-30",
+      "weekEnd": "2026-04-02",
+      "equity": 147033.68,
+      "returnFromStartPct": 33.91,
+      "wowChangePct": 8.39,
+      "positions": 5,
+      "longs": 5,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-04-06",
+      "weekEnd": "2026-04-10",
+      "equity": 167932.04,
+      "returnFromStartPct": 52.94,
+      "wowChangePct": 14.21,
+      "positions": 5,
+      "longs": 5,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-04-13",
+      "weekEnd": "2026-04-17",
+      "equity": 183635.59,
+      "returnFromStartPct": 67.24,
+      "wowChangePct": 9.35,
+      "positions": 6,
+      "longs": 6,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-04-20",
+      "weekEnd": "2026-04-24",
+      "equity": 207106.81,
+      "returnFromStartPct": 88.62,
+      "wowChangePct": 12.78,
+      "positions": 6,
+      "longs": 6,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-04-27",
+      "weekEnd": "2026-05-01",
+      "equity": 194524.9,
+      "returnFromStartPct": 77.16,
+      "wowChangePct": -6.08,
+      "positions": 5,
+      "longs": 5,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-05-04",
+      "weekEnd": "2026-05-08",
+      "equity": 213445.31,
+      "returnFromStartPct": 94.39,
+      "wowChangePct": 9.73,
+      "positions": 5,
+      "longs": 5,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-05-11",
+      "weekEnd": "2026-05-15",
+      "equity": 199008.89,
+      "returnFromStartPct": 81.24,
+      "wowChangePct": -6.76,
+      "positions": 5,
+      "longs": 5,
+      "shorts": 0
+    }
+  ],
+  "exitReasonBreakdown": {
+    "partial_tp_1.5R": 8,
+    "chandelier_trail_tp1": 5,
+    "stop_loss": 2,
+    "partial_tp_2.5R": 3,
+    "take_profit": 3,
+    "score_decay_X": 2,
+    "end_of_backtest": 5
+  },
+  "trades": [
+    {
+      "ticker": "KLAC",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-01-13",
+      "entryPrice": 127.57444559478759,
+      "exitPrice": 146.29355999999999,
+      "pnl": 1083.2086355023189,
+      "pnlPct": 14.673090929722377,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 7.93
+    },
+    {
+      "ticker": "KLAC",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-01-23",
+      "entryPrice": 127.57444559478759,
+      "exitPrice": 145.05808410971505,
+      "pnl": 2060.569344761441,
+      "pnlPct": 13.704655688224921,
+      "exitReason": "chandelier_trail_tp1",
+      "entryScore": 7.93
+    },
+    {
+      "ticker": "ASML",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-01-26",
+      "entryPrice": 1164.9438093261717,
+      "exitPrice": 1418.44014,
+      "pnl": 3799.944960107423,
+      "pnlPct": 21.76039124328717,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "LC",
+      "direction": "long",
+      "entryDate": "2026-01-23",
+      "exitDate": "2026-01-29",
+      "entryPrice": 21.071049236297604,
+      "exitPrice": 18.2817,
+      "pnl": -2981.5249843658403,
+      "pnlPct": -13.237827907936307,
+      "exitReason": "stop_loss",
+      "entryScore": 8.94
+    },
+    {
+      "ticker": "ASML",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-02-03",
+      "entryPrice": 1164.9438093261717,
+      "exitPrice": 1383.7134644949776,
+      "pnl": 6998.128965401789,
+      "pnlPct": 18.77941694847469,
+      "exitReason": "chandelier_trail_tp1",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "GOOGL",
+      "direction": "long",
+      "entryDate": "2026-02-03",
+      "exitDate": "2026-02-05",
+      "entryPrice": 340.04970144653316,
+      "exitPrice": 307.692,
+      "pnl": -3529.489457672114,
+      "pnlPct": -9.515580019299275,
+      "exitReason": "stop_loss",
+      "entryScore": 7.94
+    },
+    {
+      "ticker": "MU",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-03-18",
+      "entryPrice": 315.73543344116206,
+      "exitPrice": 467.87165999999996,
+      "pnl": 10342.763406000977,
+      "pnlPct": 48.184717470802596,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "MU",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-03-20",
+      "entryPrice": 315.73543344116206,
+      "exitPrice": 416.46738871111194,
+      "pnl": 14099.973737792983,
+      "pnlPct": 31.90391213684336,
+      "exitReason": "chandelier_trail_tp1",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "PWR",
+      "direction": "long",
+      "entryDate": "2026-02-05",
+      "exitDate": "2026-04-14",
+      "entryPrice": 478.19772122192376,
+      "exitPrice": 596.39301,
+      "pnl": 2952.382219451906,
+      "pnlPct": 24.716823927152042,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 8.97
+    },
+    {
+      "ticker": "INTC",
+      "direction": "long",
+      "entryDate": "2026-01-29",
+      "exitDate": "2026-04-17",
+      "entryPrice": 48.70865984725952,
+      "exitPrice": 69.05088,
+      "pnl": 5489.899441239932,
+      "pnlPct": 41.76304627663656,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 8.88
+    },
+    {
+      "ticker": "GEV",
+      "direction": "long",
+      "entryDate": "2026-03-24",
+      "exitDate": "2026-04-22",
+      "entryPrice": 910.3193831176757,
+      "exitPrice": 1139.1597,
+      "pnl": 3430.104753234864,
+      "pnlPct": 25.138464710988416,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 8.98
+    },
+    {
+      "ticker": "INTC",
+      "direction": "long",
+      "entryDate": "2026-01-29",
+      "exitDate": "2026-04-24",
+      "entryPrice": 48.70865984725952,
+      "exitPrice": 82.64727,
+      "pnl": 9160.92474123993,
+      "pnlPct": 69.67674795234582,
+      "exitReason": "partial_tp_2.5R",
+      "entryScore": 8.88
+    },
+    {
+      "ticker": "INTC",
+      "direction": "long",
+      "entryDate": "2026-01-29",
+      "exitDate": "2026-04-24",
+      "entryPrice": 48.70865984725952,
+      "exitPrice": 82.71719999999999,
+      "pnl": 9519.891242767333,
+      "pnlPct": 69.82031585222086,
+      "exitReason": "take_profit",
+      "entryScore": 8.88
+    },
+    {
+      "ticker": "TSM",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-04-24",
+      "entryPrice": 319.929595336914,
+      "exitPrice": 392.92668,
+      "pnl": 4085.3367411328136,
+      "pnlPct": 22.816608943668882,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "GEV",
+      "direction": "long",
+      "entryDate": "2026-03-24",
+      "exitDate": "2026-04-27",
+      "entryPrice": 910.3193831176757,
+      "exitPrice": 1092.391500366211,
+      "pnl": 6005.879869201664,
+      "pnlPct": 20.0009052454724,
+      "exitReason": "chandelier_trail_tp1",
+      "entryScore": 8.98
+    },
+    {
+      "ticker": "RCAT",
+      "direction": "long",
+      "entryDate": "2026-03-18",
+      "exitDate": "2026-04-28",
+      "entryPrice": 17.017,
+      "exitPrice": 11.328660152435303,
+      "pnl": -7181.184887626648,
+      "pnlPct": -33.427395237496015,
+      "exitReason": "score_decay_2.3",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "TSM",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-04-28",
+      "entryPrice": 319.929595336914,
+      "exitPrice": 388.34125919887003,
+      "pnl": 7864.841344124941,
+      "pnlPct": 21.38334960537569,
+      "exitReason": "chandelier_trail_tp1",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "PWR",
+      "direction": "long",
+      "entryDate": "2026-02-05",
+      "exitDate": "2026-04-30",
+      "entryPrice": 478.19772122192376,
+      "exitPrice": 675.51381,
+      "pnl": 4930.402219451907,
+      "pnlPct": 41.26244856915684,
+      "exitReason": "partial_tp_2.5R",
+      "entryScore": 8.97
+    },
+    {
+      "ticker": "PWR",
+      "direction": "long",
+      "entryDate": "2026-02-05",
+      "exitDate": "2026-04-30",
+      "entryPrice": 478.19772122192376,
+      "exitPrice": 675.324,
+      "pnl": 5517.035805786134,
+      "pnlPct": 41.222755782768175,
+      "exitReason": "take_profit",
+      "entryScore": 8.97
+    },
+    {
+      "ticker": "STRL",
+      "direction": "long",
+      "entryDate": "2026-04-17",
+      "exitDate": "2026-05-05",
+      "entryPrice": 464.1136438903808,
+      "exitPrice": 636.1432199999999,
+      "pnl": 3094.0323699731443,
+      "pnlPct": 37.066261329358994,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 7.99
+    },
+    {
+      "ticker": "STRL",
+      "direction": "long",
+      "entryDate": "2026-04-17",
+      "exitDate": "2026-05-05",
+      "entryPrice": 464.1136438903808,
+      "exitPrice": 751.1481,
+      "pnl": 5164.120209973145,
+      "pnlPct": 61.84572677148314,
+      "exitReason": "partial_tp_2.5R",
+      "entryScore": 7.99
+    },
+    {
+      "ticker": "STRL",
+      "direction": "long",
+      "entryDate": "2026-04-17",
+      "exitDate": "2026-05-05",
+      "entryPrice": 464.1136438903808,
+      "exitPrice": 752.247,
+      "pnl": 5472.0337660827645,
+      "pnlPct": 62.082500676854366,
+      "exitReason": "take_profit",
+      "entryScore": 7.99
+    },
+    {
+      "ticker": "UUUU",
+      "direction": "long",
+      "entryDate": "2026-04-27",
+      "exitDate": "2026-05-15",
+      "entryPrice": 21.34131969451904,
+      "exitPrice": 18.391589847564696,
+      "pnl": -4645.374779106138,
+      "pnlPct": -13.821684362433807,
+      "exitReason": "score_decay_2.5",
+      "entryScore": 8.81
+    },
+    {
+      "ticker": "CCJ",
+      "direction": "long",
+      "entryDate": "2026-04-24",
+      "exitDate": "2026-05-15",
+      "entryPrice": 122.27215152740477,
+      "exitPrice": 107.40249213409425,
+      "pnl": -6678.977067596427,
+      "exitReason": "end_of_backtest",
+      "entryScore": 8.91
+    },
+    {
+      "ticker": "UCTT",
+      "direction": "long",
+      "entryDate": "2026-04-28",
+      "exitDate": "2026-05-15",
+      "entryPrice": 78.32825,
+      "exitPrice": 85.85406243896485,
+      "pnl": 5265.568707275394,
+      "exitReason": "end_of_backtest",
+      "entryScore": 8.87
+    },
+    {
+      "ticker": "ENTG",
+      "direction": "long",
+      "entryDate": "2026-04-30",
+      "exitDate": "2026-05-15",
+      "entryPrice": 141.5213848876953,
+      "exitPrice": 132.93693731689453,
+      "pnl": -1745.1428568725546,
+      "exitReason": "end_of_backtest",
+      "entryScore": 7.98
+    },
+    {
+      "ticker": "LSCC",
+      "direction": "long",
+      "entryDate": "2026-05-05",
+      "exitDate": "2026-05-15",
+      "entryPrice": 122.39226663970946,
+      "exitPrice": 119.98989060974121,
+      "pnl": -504.5965902633647,
+      "exitReason": "end_of_backtest",
+      "entryScore": 8.93
+    },
+    {
+      "ticker": "WULF",
+      "direction": "long",
+      "entryDate": "2026-05-15",
+      "exitDate": "2026-05-15",
+      "entryPrice": 22.34231969451904,
+      "exitPrice": 22.297679695129393,
+      "pnl": -69.63855908203129,
+      "exitReason": "end_of_backtest",
+      "entryScore": 7.8
+    }
+  ]
+}

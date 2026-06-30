@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, status, errorMessage, TIMESTAMPDIFF(SECOND, updatedAt, NOW()) as seconds_since_update FROM labSimulations ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, errorMessage, TIMESTAMPDIFF(SECOND, updatedAt, NOW()) as seconds_since_update FROM labSimulations ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "900019",
+      "name": "Lab 5/17/2026 11:23 AM",
+      "status": "running",
+      "errorMessage": "NULL",
+      "seconds_since_update": "146"
+    },
+    {
+      "id": "900018",
+      "name": "Lab 5/17/2026 10:57 AM",
+      "status": "done",
+      "errorMessage": "NULL",
+      "seconds_since_update": "934"
+    },
+    {
+      "id": "900017",
+      "name": "Lab 5/17/2026 10:38 AM",
+      "status": "error",
+      "errorMessage": "Cleaned up: stuck in running state after Cloud Run restart",
+      "seconds_since_update": "2061"
+    },
+    {
+      "id": "900016",
+      "name": "Lab 5/17/2026 10:34 AM",
+      "status": "error",
+      "errorMessage": "Simulation was interrupted by a server restart. Please run it again.",
+      "seconds_since_update": "2486"
+    },
+    {
+      "id": "900015",
+      "name": "Lab 5/17/2026 10:29 AM",
+      "status": "error",
+      "errorMessage": "Simulation was interrupted by a server restart. Please run it again.",
+      "seconds_since_update": "2773"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\terrorMessage\tseconds_since_update\n900019\tLab 5/17/2026 11:23 AM\trunning\tNULL\t146\n900018\tLab 5/17/2026 10:57 AM\tdone\tNULL\t934\n900017\tLab 5/17/2026 10:38 AM\terror\tCleaned up: stuck in running state after Cloud Run restart\t2061\n900016\tLab 5/17/2026 10:34 AM\terror\tSimulation was interrupted by a server restart. Please run it again.\t2486\n900015\tLab 5/17/2026 10:29 AM\terror\tSimulation was interrupted by a server restart. Please run it again.\t2773\n",
+  "stderr": "",
+  "execution_time_ms": 1793
+}

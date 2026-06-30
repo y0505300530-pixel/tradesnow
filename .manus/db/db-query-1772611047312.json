@@ -1,0 +1,106 @@
+{
+  "query": "SELECT bsa.id, bsa.bulkSessionId, bsa.analysisId, bsa.position, a.status, a.videoId FROM bulkSessionAnalyses bsa LEFT JOIN analyses a ON bsa.analysisId = a.id ORDER BY bsa.id DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT bsa.id, bsa.bulkSessionId, bsa.analysisId, bsa.position, a.status, a.videoId FROM bulkSessionAnalyses bsa LEFT JOIN analyses a ON bsa.analysisId = a.id ORDER BY bsa.id DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "12",
+      "bulkSessionId": "2",
+      "analysisId": "60012",
+      "position": "1",
+      "status": "done",
+      "videoId": "lx_6phsV_qA"
+    },
+    {
+      "id": "11",
+      "bulkSessionId": "2",
+      "analysisId": "60011",
+      "position": "0",
+      "status": "error",
+      "videoId": "cebH2KIvZWU"
+    },
+    {
+      "id": "10",
+      "bulkSessionId": "1",
+      "analysisId": "60010",
+      "position": "9",
+      "status": "pending",
+      "videoId": "eTVqiCxolTY"
+    },
+    {
+      "id": "9",
+      "bulkSessionId": "1",
+      "analysisId": "60009",
+      "position": "8",
+      "status": "processing",
+      "videoId": "FwQgQvb9QlU"
+    },
+    {
+      "id": "8",
+      "bulkSessionId": "1",
+      "analysisId": "60008",
+      "position": "7",
+      "status": "done",
+      "videoId": "cyauiZO-Irw"
+    },
+    {
+      "id": "7",
+      "bulkSessionId": "1",
+      "analysisId": "60007",
+      "position": "6",
+      "status": "done",
+      "videoId": "F8-Hi9wYxSs"
+    },
+    {
+      "id": "6",
+      "bulkSessionId": "1",
+      "analysisId": "60006",
+      "position": "5",
+      "status": "done",
+      "videoId": "JtUNKJDj4Qg"
+    },
+    {
+      "id": "5",
+      "bulkSessionId": "1",
+      "analysisId": "60005",
+      "position": "4",
+      "status": "done",
+      "videoId": "h7LDZfyoeXo"
+    },
+    {
+      "id": "4",
+      "bulkSessionId": "1",
+      "analysisId": "60004",
+      "position": "3",
+      "status": "done",
+      "videoId": "vcwY8NgyofE"
+    },
+    {
+      "id": "3",
+      "bulkSessionId": "1",
+      "analysisId": "60003",
+      "position": "2",
+      "status": "done",
+      "videoId": "lx_6phsV_qA"
+    },
+    {
+      "id": "2",
+      "bulkSessionId": "1",
+      "analysisId": "60002",
+      "position": "1",
+      "status": "done",
+      "videoId": "lx_6phsV_qA"
+    },
+    {
+      "id": "1",
+      "bulkSessionId": "1",
+      "analysisId": "60001",
+      "position": "0",
+      "status": "error",
+      "videoId": "cebH2KIvZWU"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbulkSessionId\tanalysisId\tposition\tstatus\tvideoId\n12\t2\t60012\t1\tdone\tlx_6phsV_qA\n11\t2\t60011\t0\terror\tcebH2KIvZWU\n10\t1\t60010\t9\tpending\teTVqiCxolTY\n9\t1\t60009\t8\tprocessing\tFwQgQvb9QlU\n8\t1\t60008\t7\tdone\tcyauiZO-Irw\n7\t1\t60007\t6\tdone\tF8-Hi9wYxSs\n6\t1\t60006\t5\tdone\tJtUNKJDj4Qg\n5\t1\t60005\t4\tdone\th7LDZfyoeXo\n4\t1\t60004\t3\tdone\tvcwY8NgyofE\n3\t1\t60003\t2\tdone\tlx_6phsV_qA\n2\t1\t60002\t1\tdone\tlx_6phsV_qA\n1\t1\t60001\t0\terror\tcebH2KIvZWU\n",
+  "stderr": "",
+  "execution_time_ms": 1567
+}

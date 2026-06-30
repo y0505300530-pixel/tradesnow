@@ -1,0 +1,3 @@
+8727935 refactor(client): split DeepAnalysisModal, per-side STALLED, mobile QA
+78835a3 fix(client): mint clientOrderId at submit, persist through STALLED
+d7a49ef wip(client): manual trading UX — QA hardening before server merge

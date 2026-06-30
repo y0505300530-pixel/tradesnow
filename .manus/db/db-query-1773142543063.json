@@ -1,0 +1,26 @@
+{
+  "query": "SELECT u.name, COUNT(ua.id) as assetCount FROM users u LEFT JOIN userAssets ua ON ua.userId = u.id GROUP BY u.id, u.name ORDER BY u.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT u.name, COUNT(ua.id) as assetCount FROM users u LEFT JOIN userAssets ua ON ua.userId = u.id GROUP BY u.id, u.name ORDER BY u.id;",
+  "rows": [
+    {
+      "name": "Yehuda Ashash",
+      "assetCount": "61"
+    },
+    {
+      "name": "Sia Ltd",
+      "assetCount": "60"
+    },
+    {
+      "name": "Nayan Ray",
+      "assetCount": "61"
+    },
+    {
+      "name": "siaholdingsltd",
+      "assetCount": "61"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\tassetCount\nYehuda Ashash\t61\nSia Ltd\t60\nNayan Ray\t61\nsiaholdingsltd\t61\n",
+  "stderr": "",
+  "execution_time_ms": 1615
+}

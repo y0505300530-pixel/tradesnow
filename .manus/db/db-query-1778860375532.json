@@ -1,0 +1,210 @@
+{
+  "query": "SELECT ticker, entryPrice, currentPrice, unrealizedPnl, unrealizedPnlPct, units, status, openedAt FROM paperPositions WHERE status = 'open' ORDER BY unrealizedPnlPct ASC LIMIT 25;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, entryPrice, currentPrice, unrealizedPnl, unrealizedPnlPct, units, status, openedAt FROM paperPositions WHERE status = 'open' ORDER BY unrealizedPnlPct ASC LIMIT 25;",
+  "rows": [
+    {
+      "ticker": "DDOG",
+      "entryPrice": "203.41431645202636",
+      "currentPrice": "203.2111053466797",
+      "unrealizedPnl": "-4.877066528321393",
+      "unrealizedPnlPct": "-0.09990009990012202",
+      "units": "24",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:39"
+    },
+    {
+      "ticker": "GS",
+      "entryPrice": "967.4696770019531",
+      "currentPrice": "966.503173828125",
+      "unrealizedPnl": "-4.832515869140934",
+      "unrealizedPnlPct": "-0.0999000999001063",
+      "units": "5",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:38"
+    },
+    {
+      "ticker": "HLT",
+      "entryPrice": "317.09677877807616",
+      "currentPrice": "316.7799987792969",
+      "unrealizedPnl": "-4.751699981689228",
+      "unrealizedPnlPct": "-0.09990009990009517",
+      "units": "15",
+      "status": "open",
+      "openedAt": "2026-05-15 15:45:50"
+    },
+    {
+      "ticker": "LRCX",
+      "entryPrice": "297.922625",
+      "currentPrice": "297.625",
+      "unrealizedPnl": "-4.761999999999716",
+      "unrealizedPnlPct": "-0.09990009990009396",
+      "units": "16",
+      "status": "open",
+      "openedAt": "2026-05-15 15:35:19"
+    },
+    {
+      "ticker": "PANW",
+      "entryPrice": "234.89965827941893",
+      "currentPrice": "234.6649932861328",
+      "unrealizedPnl": "-4.927964859008455",
+      "unrealizedPnlPct": "-0.09990009990009313",
+      "units": "21",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:39"
+    },
+    {
+      "ticker": "MP",
+      "entryPrice": "59.2441863746643",
+      "currentPrice": "59.185001373291016",
+      "unrealizedPnl": "-4.971540115356078",
+      "unrealizedPnlPct": "-0.09990009990009252",
+      "units": "84",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:40"
+    },
+    {
+      "ticker": "PLD",
+      "entryPrice": "142.30216366577147",
+      "currentPrice": "142.16000366210938",
+      "unrealizedPnl": "-4.975600128173454",
+      "unrealizedPnlPct": "-0.0999000999000924",
+      "units": "35",
+      "status": "open",
+      "openedAt": "2026-05-15 14:05:59"
+    },
+    {
+      "ticker": "TKO",
+      "entryPrice": "195.08488938903807",
+      "currentPrice": "194.88999938964844",
+      "unrealizedPnl": "-4.872249984740762",
+      "unrealizedPnlPct": "-0.0999000999000907",
+      "units": "25",
+      "status": "open",
+      "openedAt": "2026-05-15 15:34:50"
+    },
+    {
+      "ticker": "C",
+      "entryPrice": "124.45433183288571",
+      "currentPrice": "124.33000183105467",
+      "unrealizedPnl": "-4.973200073241628",
+      "unrealizedPnlPct": "-0.09990009990008869",
+      "units": "40",
+      "status": "open",
+      "openedAt": "2026-05-15 15:45:49"
+    },
+    {
+      "ticker": "ASTS",
+      "entryPrice": "81.84176213836669",
+      "currentPrice": "81.76000213623047",
+      "unrealizedPnl": "-4.987360130309483",
+      "unrealizedPnlPct": "-0.09990009990008838",
+      "units": "61",
+      "status": "open",
+      "openedAt": "2026-05-15 15:35:14"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "78.50342805480956",
+      "currentPrice": "78.42500305175781",
+      "unrealizedPnl": "-4.940775192260148",
+      "unrealizedPnlPct": "-0.09990009990008789",
+      "units": "63",
+      "status": "open",
+      "openedAt": "2026-05-15 15:34:46"
+    },
+    {
+      "ticker": "CRWD",
+      "entryPrice": "577.4543799438476",
+      "currentPrice": "576.8775024414062",
+      "unrealizedPnl": "-4.615020019530675",
+      "unrealizedPnlPct": "-0.09990009990008747",
+      "units": "8",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:39"
+    },
+    {
+      "ticker": "D",
+      "entryPrice": "62.80774393081664",
+      "currentPrice": "62.744998931884766",
+      "unrealizedPnl": "-4.956854915618223",
+      "unrealizedPnlPct": "-0.09990009990008634",
+      "units": "79",
+      "status": "open",
+      "openedAt": "2026-05-15 14:06:00"
+    },
+    {
+      "ticker": "PSX",
+      "entryPrice": "172.6224469451904",
+      "currentPrice": "172.4499969482422",
+      "unrealizedPnl": "-4.828599914550068",
+      "unrealizedPnlPct": "-0.09990009990008515",
+      "units": "28",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:43"
+    },
+    {
+      "ticker": "XEL",
+      "entryPrice": "79.96988938903807",
+      "currentPrice": "79.88999938964844",
+      "unrealizedPnl": "-4.953179962157407",
+      "unrealizedPnlPct": "-0.09990009990008386",
+      "units": "62",
+      "status": "open",
+      "openedAt": "2026-05-15 15:35:06"
+    },
+    {
+      "ticker": "BA",
+      "entryPrice": "231.17595233154293",
+      "currentPrice": "230.94500732421875",
+      "unrealizedPnl": "-4.849845153807792",
+      "unrealizedPnlPct": "-0.0999000999000834",
+      "units": "21",
+      "status": "open",
+      "openedAt": "2026-05-15 15:35:10"
+    },
+    {
+      "ticker": "GD",
+      "entryPrice": "342.14178778076166",
+      "currentPrice": "341.79998779296875",
+      "unrealizedPnl": "-4.785199829100748",
+      "unrealizedPnlPct": "-0.0999000999000829",
+      "units": "14",
+      "status": "open",
+      "openedAt": "2026-05-15 14:05:59"
+    },
+    {
+      "ticker": "KMI",
+      "entryPrice": "33.38334847259521",
+      "currentPrice": "33.349998474121094",
+      "unrealizedPnl": "-4.969149772643171",
+      "unrealizedPnlPct": "-0.09990009990008238",
+      "units": "149",
+      "status": "open",
+      "openedAt": "2026-05-15 14:21:58"
+    },
+    {
+      "ticker": "KO",
+      "entryPrice": "80.84076213836669",
+      "currentPrice": "80.76000213623047",
+      "unrealizedPnl": "-4.926360130309192",
+      "unrealizedPnlPct": "-0.09990009990008233",
+      "units": "61",
+      "status": "open",
+      "openedAt": "2026-05-15 13:31:44"
+    },
+    {
+      "ticker": "NFTA.TA",
+      "entryPrice": "2841.8389999999995",
+      "currentPrice": "2839",
+      "unrealizedPnl": "-2.838999999999487",
+      "unrealizedPnlPct": "-0.09990009990008186",
+      "units": "1",
+      "status": "open",
+      "openedAt": "2026-05-15 07:36:39"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tentryPrice\tcurrentPrice\tunrealizedPnl\tunrealizedPnlPct\tunits\tstatus\topenedAt\nDDOG\t203.41431645202636\t203.2111053466797\t-4.877066528321393\t-0.09990009990012202\t24\topen\t2026-05-15 13:31:39\nGS\t967.4696770019531\t966.503173828125\t-4.832515869140934\t-0.0999000999001063\t5\topen\t2026-05-15 13:31:38\nHLT\t317.09677877807616\t316.7799987792969\t-4.751699981689228\t-0.09990009990009517\t15\topen\t2026-05-15 15:45:50\nLRCX\t297.922625\t297.625\t-4.761999999999716\t-0.09990009990009396\t16\topen\t2026-05-15 15:35:19\nPANW\t234.89965827941893\t234.6649932861328\t-4.927964859008455\t-0.09990009990009313\t21\topen\t2026-05-15 13:31:39\nMP\t59.2441863746643\t59.185001373291016\t-4.971540115356078\t-0.09990009990009252\t84\topen\t2026-05-15 13:31:40\nPLD\t142.30216366577147\t142.16000366210938\t-4.975600128173454\t-0.0999000999000924\t35\topen\t2026-05-15 14:05:59\nTKO\t195.08488938903807\t194.88999938964844\t-4.872249984740762\t-0.0999000999000907\t25\topen\t2026-05-15 15:34:50\nC\t124.45433183288571\t124.33000183105467\t-4.973200073241628\t-0.09990009990008869\t40\topen\t2026-05-15 15:45:49\nASTS\t81.84176213836669\t81.76000213623047\t-4.987360130309483\t-0.09990009990008838\t61\topen\t2026-05-15 15:35:14\nGM\t78.50342805480956\t78.42500305175781\t-4.940775192260148\t-0.09990009990008789\t63\topen\t2026-05-15 15:34:46\nCRWD\t577.4543799438476\t576.8775024414062\t-4.615020019530675\t-0.09990009990008747\t8\topen\t2026-05-15 13:31:39\nD\t62.80774393081664\t62.744998931884766\t-4.956854915618223\t-0.09990009990008634\t79\topen\t2026-05-15 14:06:00\nPSX\t172.6224469451904\t172.4499969482422\t-4.828599914550068\t-0.09990009990008515\t28\topen\t2026-05-15 13:31:43\nXEL\t79.96988938903807\t79.88999938964844\t-4.953179962157407\t-0.09990009990008386\t62\topen\t2026-05-15 15:35:06\nBA\t231.17595233154293\t230.94500732421875\t-4.849845153807792\t-0.0999000999000834\t21\topen\t2026-05-15 15:35:10\nGD\t342.14178778076166\t341.79998779296875\t-4.785199829100748\t-0.0999000999000829\t14\topen\t2026-05-15 14:05:59\nKMI\t33.38334847259521\t33.349998474121094\t-4.969149772643171\t-0.09990009990008238\t149\topen\t2026-05-15 14:21:58\nKO\t80.84076213836669\t80.76000213623047\t-4.926360130309192\t-0.09990009990008233\t61\topen\t2026-05-15 13:31:44\nNFTA.TA\t2841.8389999999995\t2839\t-2.838999999999487\t-0.09990009990008186\t1\topen\t2026-05-15 07:36:39\n",
+  "stderr": "",
+  "execution_time_ms": 1744
+}

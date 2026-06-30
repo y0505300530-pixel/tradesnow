@@ -1,0 +1,70 @@
+{
+  "query": "-- Check session 20 trades\nSELECT COUNT(*) as tradeCount, SUM(realizedPnl) as totalPnl, MAX(ABS(realizedPnl)) as maxSinglePnl\nFROM paperTrades \nWHERE userId = 1 AND sessionId = 20;\n\n-- Check recent trades in last 24h (should only be session 20)\nSELECT sessionId, COUNT(*) as cnt, SUM(realizedPnl) as pnl\nFROM paperTrades\nWHERE userId = 1 AND closedAt >= DATE_SUB(NOW(), INTERVAL 1 DAY)\nGROUP BY sessionId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute -- Check session 20 trades\nSELECT COUNT(*) as tradeCount, SUM(realizedPnl) as totalPnl, MAX(ABS(realizedPnl)) as maxSinglePnl\nFROM paperTrades \nWHERE userId = 1 AND sessionId = 20;\n\n-- Check recent trades in last 24h (should only be session 20)\nSELECT sessionId, COUNT(*) as cnt, SUM(realizedPnl) as pnl\nFROM paperTrades\nWHERE userId = 1 AND closedAt >= DATE_SUB(NOW(), INTERVAL 1 DAY)\nGROUP BY sessionId;",
+  "rows": [
+    {
+      "tradeCount": "0",
+      "totalPnl": "NULL",
+      "maxSinglePnl": "NULL"
+    },
+    {
+      "tradeCount": "sessionId",
+      "totalPnl": "cnt",
+      "maxSinglePnl": "pnl"
+    },
+    {
+      "tradeCount": "11",
+      "totalPnl": "25",
+      "maxSinglePnl": "-237.83875036889265"
+    },
+    {
+      "tradeCount": "13",
+      "totalPnl": "25",
+      "maxSinglePnl": "-204.9597699999925"
+    },
+    {
+      "tradeCount": "16",
+      "totalPnl": "41",
+      "maxSinglePnl": "-291.8661747225268"
+    },
+    {
+      "tradeCount": "18",
+      "totalPnl": "8",
+      "maxSinglePnl": "-896.2341352304765"
+    },
+    {
+      "tradeCount": "9",
+      "totalPnl": "16",
+      "maxSinglePnl": "-53.274469358722015"
+    },
+    {
+      "tradeCount": "12",
+      "totalPnl": "26",
+      "maxSinglePnl": "-337.5181545357599"
+    },
+    {
+      "tradeCount": "15",
+      "totalPnl": "26",
+      "maxSinglePnl": "-321.14695201171"
+    },
+    {
+      "tradeCount": "14",
+      "totalPnl": "27",
+      "maxSinglePnl": "-273.31325130467394"
+    },
+    {
+      "tradeCount": "10",
+      "totalPnl": "33",
+      "maxSinglePnl": "-438.4150221942992"
+    },
+    {
+      "tradeCount": "17",
+      "totalPnl": "72",
+      "maxSinglePnl": "-608.5734024327169"
+    }
+  ],
+  "messages": [],
+  "stdout": "tradeCount\ttotalPnl\tmaxSinglePnl\n0\tNULL\tNULL\nsessionId\tcnt\tpnl\n11\t25\t-237.83875036889265\n13\t25\t-204.9597699999925\n16\t41\t-291.8661747225268\n18\t8\t-896.2341352304765\n9\t16\t-53.274469358722015\n12\t26\t-337.5181545357599\n15\t26\t-321.14695201171\n14\t27\t-273.31325130467394\n10\t33\t-438.4150221942992\n17\t72\t-608.5734024327169\n",
+  "stderr": "",
+  "execution_time_ms": 1917
+}

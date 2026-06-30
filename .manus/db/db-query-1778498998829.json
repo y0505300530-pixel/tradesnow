@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, videoId, videoTitle, status, errorMessage, createdAt, updatedAt FROM analyses WHERE userId = 1 AND status IN ('processing', 'error') ORDER BY updatedAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, videoId, videoTitle, status, errorMessage, createdAt, updatedAt FROM analyses WHERE userId = 1 AND status IN ('processing', 'error') ORDER BY updatedAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "600001",
+      "videoId": "jlkE8XlBZqQ",
+      "videoTitle": "🚨 אופן איי איי נכשלים, מאסק תובע, פאואל מדבר - הלילה הכי דרמטי בשנה",
+      "status": "error",
+      "errorMessage": "Expected ',' or '}' after property value in JSON at position 5828 (line 214 column 129)",
+      "createdAt": "2026-05-04 11:07:13",
+      "updatedAt": "2026-05-04 11:08:18"
+    },
+    {
+      "id": "540004",
+      "videoId": "tbK7LxoLZ1g",
+      "videoTitle": "😱 פואט קרסה 47%: האזהרה ששווקי השיא לא מספרים 🚨",
+      "status": "error",
+      "errorMessage": "LLM invoke failed: 500 Internal Server Error – {\"code\":13,\"message\":\"received bad response from upstream\"}",
+      "createdAt": "2026-04-29 21:44:08",
+      "updatedAt": "2026-04-29 21:46:09"
+    },
+    {
+      "id": "540005",
+      "videoId": "jlkE8XlBZqQ",
+      "videoTitle": "🚨 אופן איי איי נכשלים, מאסק תובע, פאואל מדבר - הלילה הכי דרמטי בשנה",
+      "status": "error",
+      "errorMessage": "LLM invoke failed: 500 Internal Server Error – {\"code\":13,\"message\":\"received bad response from upstream\"}",
+      "createdAt": "2026-04-29 21:44:08",
+      "updatedAt": "2026-04-29 21:46:09"
+    },
+    {
+      "id": "540002",
+      "videoId": "YZFvAulH8DE",
+      "videoTitle": "מניית ASTS ועוד 6 מעניינות שנכנסו לרשימת המעקב שלי",
+      "status": "error",
+      "errorMessage": "Expected ',' or '}' after property value in JSON at position 539 (line 19 column 54)",
+      "createdAt": "2026-04-29 21:43:54",
+      "updatedAt": "2026-04-29 21:45:14"
+    },
+    {
+      "id": "450005",
+      "videoId": "G5IbyaaAKaw",
+      "videoTitle": "🥶 הוויקס נגע ב-30 — מה ההיסטוריה אומרת לנו על השבוע הבא",
+      "status": "processing",
+      "errorMessage": "progress:stage1:15:Locating caption tracks and subtitle streams...",
+      "createdAt": "2026-04-26 07:53:23",
+      "updatedAt": "2026-04-26 07:53:23"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tvideoId\tvideoTitle\tstatus\terrorMessage\tcreatedAt\tupdatedAt\n600001\tjlkE8XlBZqQ\t🚨 אופן איי איי נכשלים, מאסק תובע, פאואל מדבר - הלילה הכי דרמטי בשנה\terror\tExpected ',' or '}' after property value in JSON at position 5828 (line 214 column 129)\t2026-05-04 11:07:13\t2026-05-04 11:08:18\n540004\ttbK7LxoLZ1g\t😱 פואט קרסה 47%: האזהרה ששווקי השיא לא מספרים 🚨\terror\tLLM invoke failed: 500 Internal Server Error – {\"code\":13,\"message\":\"received bad response from upstream\"}\t2026-04-29 21:44:08\t2026-04-29 21:46:09\n540005\tjlkE8XlBZqQ\t🚨 אופן איי איי נכשלים, מאסק תובע, פאואל מדבר - הלילה הכי דרמטי בשנה\terror\tLLM invoke failed: 500 Internal Server Error – {\"code\":13,\"message\":\"received bad response from upstream\"}\t2026-04-29 21:44:08\t2026-04-29 21:46:09\n540002\tYZFvAulH8DE\tמניית ASTS ועוד 6 מעניינות שנכנסו לרשימת המעקב שלי\terror\tExpected ',' or '}' after property value in JSON at position 539 (line 19 column 54)\t2026-04-29 21:43:54\t2026-04-29 21:45:14\n450005\tG5IbyaaAKaw\t🥶 הוויקס נגע ב-30 — מה ההיסטוריה אומרת לנו על השבוע הבא\tprocessing\tprogress:stage1:15:Locating caption tracks and subtitle streams...\t2026-04-26 07:53:23\t2026-04-26 07:53:23\n",
+  "stderr": "",
+  "execution_time_ms": 1731
+}

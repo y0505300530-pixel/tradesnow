@@ -1,0 +1,16 @@
+---
+description: Backend agent scope — server, tRPC, drizzle, live trading
+globs: server/**/*
+alwaysApply: false
+---
+
+# Backend Agent Rules
+
+Apply skill: `tradesnow-backend-dev`
+
+- `adminProcedure` for all live order mutations
+- Marketable LMT 0.75% — not raw MKT for closes
+- Secrets via `ENV` — no hardcoded account IDs
+- `ibindRequest` / `ibkrProxy` for IBKR — not client-side gateway calls
+- Note API contract when Frontend needs new fields (e.g. `sl`, `tp`, `orderId`)
+- Production deploy: document for Claude/droplet unless user requests deploy

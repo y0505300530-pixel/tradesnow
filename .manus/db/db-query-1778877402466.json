@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, name, totalROI, totalProfit, finalWallet, monkeyValue, lessonsLearned, benchmarkData FROM labSimulations WHERE status = 'done' ORDER BY CAST(totalROI AS DECIMAL(10,2)) DESC LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, totalROI, totalProfit, finalWallet, monkeyValue, lessonsLearned, benchmarkData FROM labSimulations WHERE status = 'done' ORDER BY CAST(totalROI AS DECIMAL(10,2)) DESC LIMIT 3;",
+  "rows": [
+    {
+      "id": "360010",
+      "name": "Lab 3/9/2026",
+      "totalROI": "1035.64",
+      "totalProfit": "1035224.24",
+      "finalWallet": "1135184.24",
+      "monkeyValue": "468387.29",
+      "lessonsLearned": "NULL",
+      "benchmarkData": "NULL"
+    },
+    {
+      "id": "360009",
+      "name": "Lab 3/9/2026",
+      "totalROI": "1035.64",
+      "totalProfit": "1035224.24",
+      "finalWallet": "1135184.24",
+      "monkeyValue": "468387.29",
+      "lessonsLearned": "NULL",
+      "benchmarkData": "NULL"
+    },
+    {
+      "id": "510012",
+      "name": "Triple Risk-5 3/11/2026",
+      "totalROI": "885.32",
+      "totalProfit": "5311904.47",
+      "finalWallet": "5911904.47",
+      "monkeyValue": "2929059.38",
+      "lessonsLearned": "NULL",
+      "benchmarkData": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttotalROI\ttotalProfit\tfinalWallet\tmonkeyValue\tlessonsLearned\tbenchmarkData\n360010\tLab 3/9/2026\t1035.64\t1035224.24\t1135184.24\t468387.29\tNULL\tNULL\n360009\tLab 3/9/2026\t1035.64\t1035224.24\t1135184.24\t468387.29\tNULL\tNULL\n510012\tTriple Risk-5 3/11/2026\t885.32\t5311904.47\t5911904.47\t2929059.38\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1855
+}

@@ -1,0 +1,118 @@
+{
+  "query": "\nSELECT id, ticker, entryPrice, exitPrice, units, realizedPnl, realizedPnlPct, exitReason, openedAt, closedAt\nFROM paperTrades \nWHERE sessionId = 5\nORDER BY closedAt ASC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT id, ticker, entryPrice, exitPrice, units, realizedPnl, realizedPnlPct, exitReason, openedAt, closedAt\nFROM paperTrades \nWHERE sessionId = 5\nORDER BY closedAt ASC;\n",
+  "rows": [
+    {
+      "id": "762",
+      "ticker": "GM",
+      "entryPrice": "76.56648999999999",
+      "exitPrice": "76.40352",
+      "units": "65",
+      "realizedPnl": "-13.093049999999167",
+      "realizedPnlPct": "-0.2128476831052164",
+      "exitReason": "Force-Close",
+      "openedAt": "2026-05-12 18:40:57",
+      "closedAt": "2026-05-12 18:41:40"
+    },
+    {
+      "id": "763",
+      "ticker": "ETN",
+      "entryPrice": "402.06166",
+      "exitPrice": "401.20839",
+      "units": "12",
+      "realizedPnl": "-12.739240000000109",
+      "realizedPnlPct": "-0.21222366738475115",
+      "exitReason": "TP",
+      "openedAt": "2026-05-12 18:40:57",
+      "closedAt": "2026-05-12 18:41:41"
+    },
+    {
+      "id": "764",
+      "ticker": "AS",
+      "entryPrice": "33.97393999999999",
+      "exitPrice": "33.90606",
+      "units": "147",
+      "realizedPnl": "-12.478359999999306",
+      "realizedPnlPct": "-0.19980019980018596",
+      "exitReason": "Force-Close",
+      "openedAt": "2026-05-12 18:40:58",
+      "closedAt": "2026-05-12 18:41:41"
+    },
+    {
+      "id": "765",
+      "ticker": "DVN",
+      "entryPrice": "47.047",
+      "exitPrice": "46.953",
+      "units": "106",
+      "realizedPnl": "-12.463999999999373",
+      "realizedPnlPct": "-0.19980019980018726",
+      "exitReason": "Force-Close",
+      "openedAt": "2026-05-12 18:40:58",
+      "closedAt": "2026-05-12 18:41:41"
+    },
+    {
+      "id": "766",
+      "ticker": "O",
+      "entryPrice": "62.65259",
+      "exitPrice": "62.522415",
+      "units": "79",
+      "realizedPnl": "-12.783824999999538",
+      "realizedPnlPct": "-0.20777273533303917",
+      "exitReason": "Force-Close",
+      "openedAt": "2026-05-12 18:41:00",
+      "closedAt": "2026-05-12 18:41:41"
+    },
+    {
+      "id": "767",
+      "ticker": "BAC",
+      "entryPrice": "51.03097999999999",
+      "exitPrice": "50.93901",
+      "units": "97",
+      "realizedPnl": "-11.421089999998955",
+      "realizedPnlPct": "-0.18022385617518857",
+      "exitReason": "Force-Close",
+      "openedAt": "2026-05-12 18:41:44",
+      "closedAt": "2026-05-12 18:42:58"
+    },
+    {
+      "id": "768",
+      "ticker": "USB",
+      "entryPrice": "54.879825",
+      "exitPrice": "54.770175",
+      "units": "91",
+      "realizedPnl": "-12.478149999999538",
+      "realizedPnlPct": "-0.19980019980019056",
+      "exitReason": "Force-Close",
+      "openedAt": "2026-05-12 18:41:45",
+      "closedAt": "2026-05-12 18:42:58"
+    },
+    {
+      "id": "769",
+      "ticker": "BKR",
+      "entryPrice": "64.77470999999998",
+      "exitPrice": "65.45447999999999",
+      "units": "77",
+      "realizedPnl": "49.842290000000375",
+      "realizedPnlPct": "1.0494373498546037",
+      "exitReason": "TP",
+      "openedAt": "2026-05-12 18:40:56",
+      "closedAt": "2026-05-12 19:45:39"
+    },
+    {
+      "id": "30002",
+      "ticker": "MTAV.TA",
+      "entryPrice": "53.98326331014532",
+      "exitPrice": "160.85898",
+      "units": "92",
+      "realizedPnl": "9830.065935466631",
+      "realizedPnlPct": "197.9793553343209",
+      "exitReason": "SL",
+      "openedAt": "2026-05-13 10:10:51",
+      "closedAt": "2026-05-13 10:36:25"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tticker\tentryPrice\texitPrice\tunits\trealizedPnl\trealizedPnlPct\texitReason\topenedAt\tclosedAt\n762\tGM\t76.56648999999999\t76.40352\t65\t-13.093049999999167\t-0.2128476831052164\tForce-Close\t2026-05-12 18:40:57\t2026-05-12 18:41:40\n763\tETN\t402.06166\t401.20839\t12\t-12.739240000000109\t-0.21222366738475115\tTP\t2026-05-12 18:40:57\t2026-05-12 18:41:41\n764\tAS\t33.97393999999999\t33.90606\t147\t-12.478359999999306\t-0.19980019980018596\tForce-Close\t2026-05-12 18:40:58\t2026-05-12 18:41:41\n765\tDVN\t47.047\t46.953\t106\t-12.463999999999373\t-0.19980019980018726\tForce-Close\t2026-05-12 18:40:58\t2026-05-12 18:41:41\n766\tO\t62.65259\t62.522415\t79\t-12.783824999999538\t-0.20777273533303917\tForce-Close\t2026-05-12 18:41:00\t2026-05-12 18:41:41\n767\tBAC\t51.03097999999999\t50.93901\t97\t-11.421089999998955\t-0.18022385617518857\tForce-Close\t2026-05-12 18:41:44\t2026-05-12 18:42:58\n768\tUSB\t54.879825\t54.770175\t91\t-12.478149999999538\t-0.19980019980019056\tForce-Close\t2026-05-12 18:41:45\t2026-05-12 18:42:58\n769\tBKR\t64.77470999999998\t65.45447999999999\t77\t49.842290000000375\t1.0494373498546037\tTP\t2026-05-12 18:40:56\t2026-05-12 19:45:39\n30002\tMTAV.TA\t53.98326331014532\t160.85898\t92\t9830.065935466631\t197.9793553343209\tSL\t2026-05-13 10:10:51\t2026-05-13 10:36:25\n",
+  "stderr": "",
+  "execution_time_ms": 1852
+}

@@ -1,0 +1,80 @@
+{
+  "query": "SELECT ticker, entryPrice, currentPrice, unrealizedPnl, unrealizedPnlPct FROM paperPositions WHERE status = 'open' ORDER BY unrealizedPnlPct DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, entryPrice, currentPrice, unrealizedPnl, unrealizedPnlPct FROM paperPositions WHERE status = 'open' ORDER BY unrealizedPnlPct DESC LIMIT 10;",
+  "rows": [
+    {
+      "ticker": "MP",
+      "entryPrice": "59.2441863746643",
+      "currentPrice": "60.68",
+      "unrealizedPnl": "120.60834452819859",
+      "unrealizedPnlPct": "2.4235519351308388"
+    },
+    {
+      "ticker": "PANW",
+      "entryPrice": "234.89965827941893",
+      "currentPrice": "238.67",
+      "unrealizedPnl": "79.17717613220222",
+      "unrealizedPnlPct": "1.6050860815200265"
+    },
+    {
+      "ticker": "PSX",
+      "entryPrice": "172.6224469451904",
+      "currentPrice": "175.105",
+      "unrealizedPnl": "69.5114855346684",
+      "unrealizedPnlPct": "1.4381403454429218"
+    },
+    {
+      "ticker": "CRWD",
+      "entryPrice": "577.4543799438476",
+      "currentPrice": "584.323",
+      "unrealizedPnl": "54.94896044921916",
+      "unrealizedPnlPct": "1.1894654010279233"
+    },
+    {
+      "ticker": "DDOG",
+      "entryPrice": "203.41431645202636",
+      "currentPrice": "205",
+      "unrealizedPnl": "38.05640515136611",
+      "unrealizedPnlPct": "0.7795338969406109"
+    },
+    {
+      "ticker": "KMI",
+      "entryPrice": "33.38334847259521",
+      "currentPrice": "33.4",
+      "unrealizedPnl": "2.481077583313649",
+      "unrealizedPnlPct": "0.04987973995017015"
+    },
+    {
+      "ticker": "CVX",
+      "entryPrice": "189.123935",
+      "currentPrice": "189.123935",
+      "unrealizedPnl": "0",
+      "unrealizedPnlPct": "0"
+    },
+    {
+      "ticker": "ZIM",
+      "entryPrice": "25.620594999999994",
+      "currentPrice": "25.620594999999994",
+      "unrealizedPnl": "0",
+      "unrealizedPnlPct": "0"
+    },
+    {
+      "ticker": "NET",
+      "entryPrice": "197.573376",
+      "currentPrice": "197.573376",
+      "unrealizedPnl": "0",
+      "unrealizedPnlPct": "0"
+    },
+    {
+      "ticker": "JPM",
+      "entryPrice": "297.74744999999996",
+      "currentPrice": "297.6044006347656",
+      "unrealizedPnl": "-2.288789843750237",
+      "unrealizedPnlPct": "-0.048043859060552765"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tentryPrice\tcurrentPrice\tunrealizedPnl\tunrealizedPnlPct\nMP\t59.2441863746643\t60.68\t120.60834452819859\t2.4235519351308388\nPANW\t234.89965827941893\t238.67\t79.17717613220222\t1.6050860815200265\nPSX\t172.6224469451904\t175.105\t69.5114855346684\t1.4381403454429218\nCRWD\t577.4543799438476\t584.323\t54.94896044921916\t1.1894654010279233\nDDOG\t203.41431645202636\t205\t38.05640515136611\t0.7795338969406109\nKMI\t33.38334847259521\t33.4\t2.481077583313649\t0.04987973995017015\nCVX\t189.123935\t189.123935\t0\t0\nZIM\t25.620594999999994\t25.620594999999994\t0\t0\nNET\t197.573376\t197.573376\t0\t0\nJPM\t297.74744999999996\t297.6044006347656\t-2.288789843750237\t-0.048043859060552765\n",
+  "stderr": "",
+  "execution_time_ms": 1810
+}

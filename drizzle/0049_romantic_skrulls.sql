@@ -1,0 +1,1 @@
+ALTER TABLE `userAssets` MODIFY COLUMN `score` double;

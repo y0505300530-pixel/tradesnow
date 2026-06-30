@@ -1,0 +1,25 @@
+{
+  "query": "SHOW TABLES LIKE '%paper%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SHOW TABLES LIKE '%paper%';",
+  "rows": [
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (%paper%)": "paperEnginelock"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (%paper%)": "paperEquitySnapshots"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (%paper%)": "paperLedger"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (%paper%)": "paperPositions"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (%paper%)": "paperTrades"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_MmWmJbH77mYYXTZazVYpbM (%paper%)\npaperEnginelock\npaperEquitySnapshots\npaperLedger\npaperPositions\npaperTrades\n",
+  "stderr": "",
+  "execution_time_ms": 1754
+}

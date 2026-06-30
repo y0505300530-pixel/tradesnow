@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-06-26T12:58:23.822Z",
+  "total": 149,
+  "attempted": 2,
+  "succeeded": 0,
+  "failed": [
+    {
+      "ticker": "CYBR",
+      "bars": 0,
+      "ok": false,
+      "error": "Only 0 bars returned"
+    },
+    {
+      "ticker": "SPCX",
+      "bars": 9,
+      "ok": false,
+      "error": "Only 9 bars returned"
+    }
+  ],
+  "stillMissing": [
+    "CYBR",
+    "SPCX"
+  ],
+  "fullyHydrated": false
+}

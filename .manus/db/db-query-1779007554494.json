@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, level, category, message, LEFT(context, 200) as ctx, createdAt FROM systemLogs WHERE category IN ('SCAN', 'SIM', 'SYSTEM') ORDER BY id DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, level, category, message, LEFT(context, 200) as ctx, createdAt FROM systemLogs WHERE category IN ('SCAN', 'SIM', 'SYSTEM') ORDER BY id DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "161",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:45:46"
+    },
+    {
+      "id": "160",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:45:39"
+    },
+    {
+      "id": "159",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:45:31"
+    },
+    {
+      "id": "158",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:45:22"
+    },
+    {
+      "id": "157",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:45:16"
+    },
+    {
+      "id": "156",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:45:05"
+    },
+    {
+      "id": "155",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:45:02"
+    },
+    {
+      "id": "154",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:44:53"
+    },
+    {
+      "id": "153",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:44:46"
+    },
+    {
+      "id": "152",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:44:36"
+    },
+    {
+      "id": "151",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:44:28"
+    },
+    {
+      "id": "150",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:44:18"
+    },
+    {
+      "id": "149",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:44:12"
+    },
+    {
+      "id": "148",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:44:01"
+    },
+    {
+      "id": "147",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:43:56"
+    },
+    {
+      "id": "146",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:43:52"
+    },
+    {
+      "id": "145",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:43:49"
+    },
+    {
+      "id": "144",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:43:45"
+    },
+    {
+      "id": "143",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "Server started on port 3000",
+      "ctx": "{\"nodeEnv\":\"production\",\"port\":3000}",
+      "createdAt": "2026-05-17 08:43:45"
+    },
+    {
+      "id": "142",
+      "level": "info",
+      "category": "SYSTEM",
+      "message": "SIGTERM received — shutting down gracefully",
+      "ctx": "NULL",
+      "createdAt": "2026-05-17 08:43:43"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tlevel\tcategory\tmessage\tctx\tcreatedAt\n161\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:45:46\n160\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:45:39\n159\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:45:31\n158\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:45:22\n157\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:45:16\n156\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:45:05\n155\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:45:02\n154\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:44:53\n153\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:44:46\n152\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:44:36\n151\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:44:28\n150\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:44:18\n149\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:44:12\n148\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:44:01\n147\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:43:56\n146\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:43:52\n145\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:43:49\n144\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:43:45\n143\tinfo\tSYSTEM\tServer started on port 3000\t{\"nodeEnv\":\"production\",\"port\":3000}\t2026-05-17 08:43:45\n142\tinfo\tSYSTEM\tSIGTERM received — shutting down gracefully\tNULL\t2026-05-17 08:43:43\n",
+  "stderr": "",
+  "execution_time_ms": 1746
+}

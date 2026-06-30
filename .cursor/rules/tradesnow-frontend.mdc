@@ -1,0 +1,15 @@
+---
+description: Frontend agent scope — client React/TypeScript only
+globs: client/**/*
+alwaysApply: false
+---
+
+# Frontend Agent Rules
+
+Apply skill: `tradesnow-frontend-dev`
+
+- Edit only `client/` and `shared/` (types used by client)
+- Use `usePortfolioMetrics` for portfolio numbers — no duplicate P&L in cards
+- Order UX: `OrderStatusPopup`, `orderEventManager`, `zIndex.ts`
+- Before done: `cd client && npm run build`
+- Do not edit `server/` in the same task unless Orchestrator paired Backend

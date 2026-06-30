@@ -1,0 +1,1 @@
+ALTER TABLE `labSimulations` ADD `maxSinglePositionPct` int DEFAULT 20;

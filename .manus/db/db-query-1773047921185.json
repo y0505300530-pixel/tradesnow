@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE labSimulations ADD COLUMN IF NOT EXISTS targetAlphaMonthly INT DEFAULT 15; ALTER TABLE labSimulations ADD COLUMN IF NOT EXISTS partialLockGainThreshold INT DEFAULT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute ALTER TABLE labSimulations ADD COLUMN IF NOT EXISTS targetAlphaMonthly INT DEFAULT 15; ALTER TABLE labSimulations ADD COLUMN IF NOT EXISTS partialLockGainThreshold INT DEFAULT 50;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2707
+}

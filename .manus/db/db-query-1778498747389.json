@@ -1,0 +1,70 @@
+{
+  "query": "SELECT ticker, units, buyPrice, currentPrice FROM portfolioHoldings WHERE userId = 1 ORDER BY ticker LIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, units, buyPrice, currentPrice FROM portfolioHoldings WHERE userId = 1 ORDER BY ticker LIMIT 50;",
+  "rows": [
+    {
+      "ticker": "AAPL",
+      "units": "60",
+      "buyPrice": "293.220625",
+      "currentPrice": "294.10998535"
+    },
+    {
+      "ticker": "AMD",
+      "units": "70",
+      "buyPrice": "436.4357143",
+      "currentPrice": "462.6000061"
+    },
+    {
+      "ticker": "AVGO",
+      "units": "50",
+      "buyPrice": "423.19",
+      "currentPrice": "426.3999939"
+    },
+    {
+      "ticker": "GOOG",
+      "units": "78",
+      "buyPrice": "391.245",
+      "currentPrice": "393.1799927"
+    },
+    {
+      "ticker": "LUNR",
+      "units": "700",
+      "buyPrice": "27.74772855",
+      "currentPrice": "28.70000075"
+    },
+    {
+      "ticker": "MU",
+      "units": "30",
+      "buyPrice": "720.60093335",
+      "currentPrice": "778.7199707"
+    },
+    {
+      "ticker": "NVDA",
+      "units": "200",
+      "buyPrice": "215.9725",
+      "currentPrice": "214.1300049"
+    },
+    {
+      "ticker": "SNDK",
+      "units": "10",
+      "buyPrice": "1489.91",
+      "currentPrice": "1569.55004885"
+    },
+    {
+      "ticker": "STX",
+      "units": "20",
+      "buyPrice": "792.935",
+      "currentPrice": "783.02001955"
+    },
+    {
+      "ticker": "ZIM",
+      "units": "800",
+      "buyPrice": "26.7847",
+      "currentPrice": "26.62000085"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tunits\tbuyPrice\tcurrentPrice\nAAPL\t60\t293.220625\t294.10998535\nAMD\t70\t436.4357143\t462.6000061\nAVGO\t50\t423.19\t426.3999939\nGOOG\t78\t391.245\t393.1799927\nLUNR\t700\t27.74772855\t28.70000075\nMU\t30\t720.60093335\t778.7199707\nNVDA\t200\t215.9725\t214.1300049\nSNDK\t10\t1489.91\t1569.55004885\nSTX\t20\t792.935\t783.02001955\nZIM\t800\t26.7847\t26.62000085\n",
+  "stderr": "",
+  "execution_time_ms": 1746
+}

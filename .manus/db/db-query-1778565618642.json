@@ -1,0 +1,8242 @@
+{
+  "query": "SELECT ua.ticker, c.conid, c.exchange, c.currency \nFROM userAssets ua \nLEFT JOIN ibkrConidCache c ON c.symbol = ua.ticker \nWHERE ua.archived = 0\nORDER BY ua.ticker;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ua.ticker, c.conid, c.exchange, c.currency \nFROM userAssets ua \nLEFT JOIN ibkrConidCache c ON c.symbol = ua.ticker \nWHERE ua.archived = 0\nORDER BY ua.ticker;",
+  "rows": [
+    {
+      "ticker": "AA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AAPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ACCL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AFRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ALAB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMOT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AMZN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "APP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARYT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARYT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARYT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARYT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ARYT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ASTS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AUR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AUR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AUR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AUR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AUR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AURA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AURA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AURA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AURA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AURA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AVGO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AXON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AZRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AZRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AZRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AZRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "AZRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BAC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BAC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BAC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BAC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BAC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKNG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKNG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKNG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKNG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKNG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BKR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BLK",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BWY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BWY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BWY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "BWY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "C",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "C",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "C",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "C",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "C",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CAT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CEG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CELH",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CF",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CF",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CF",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CF",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CF",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CLS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CLS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CLS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CLS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CLS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMER.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMER.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMER.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMER.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMER.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CMG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COIN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "COP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CRWV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CSGP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CSGP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CSGP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CSGP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CSGP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "CVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "D",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "D",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "D",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "D",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "D",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DDOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DLEKG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DLEKG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DLEKG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DLEKG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DLEKG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DORL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DORL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DORL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DORL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DORL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DUOL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "DVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENERGEAN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENERGEAN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENERGEAN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENERGEAN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENERGEAN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENOG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENOG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENOG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENOG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENOG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ENVX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EOG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EQTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EQTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EQTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EQTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "EQTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ESTATE15.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ESTATE15.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ESTATE15.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ESTATE15.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ETN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ETN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ETN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ETN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ETN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FANG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FFIV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FFIV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FFIV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FFIV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FFIV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FIBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FIBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FIBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FIBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FIBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FOX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FOX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FOX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FOX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FOX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FVRR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FVRR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FVRR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FVRR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "FVRR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GAGR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GAGR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GAGR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GAGR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GAGR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GCT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GCT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GCT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GCT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GCT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLTL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GLW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GOOGL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "GS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HAL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HAL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HAL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HAL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HAL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HGGE.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HGGE.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HGGE.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HGGE.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HGGE.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIMS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HIPR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HLT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HLT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HLT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HLT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HLT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HOOD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HWM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HWM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HWM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HWM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "HWM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IBI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IGV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IGV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IGV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IGV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IGV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ILCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ILCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ILCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ILCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ILCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IMCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IMCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IMCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IMCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IMCO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "INTC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "INTC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "INTC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "INTC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "INTC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "IONQ",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ISRS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ISRS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ISRS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ISRS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ISRS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "JPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KEN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KEN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KEN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KEN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KEN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KRDI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KRDI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KRDI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KRDI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KRDI.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KSTN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KSTN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KSTN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KSTN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "KSTN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LITE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LLY",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMND",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMND",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMND",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMND",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMND",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LMT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "LUNR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MARA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "META",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGOR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGOR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGOR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGOR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGOR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MGR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MISH.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MISH.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MISH.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MISH.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MISH.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MLTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MLTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MLTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MLTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MLTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MNIF.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MNIF.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MNIF.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MNIF.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MNIF.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MPC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MPC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MPC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MPC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MPC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MRVL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSFT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MSTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MU",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MXL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MXL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MXL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MXL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "MXL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NBIS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NBIS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NBIS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NBIS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NBIS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NCMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NCMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NCMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NCMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NCMI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFLX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFTA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFTA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFTA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFTA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NFTA.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NIKE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NIKE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NIKE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NIKE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NIKE",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOFR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOFR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOFR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOFR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOFR.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NRG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NTO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NTO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NTO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NTO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NTO.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVDA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVPT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVPT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVPT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVPT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NVPT.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NWMD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NWMD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NWMD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NWMD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NWMD.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXPI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXPI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXPI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXPI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXPI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "NXTM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "O",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "O",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "O",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "O",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "O",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OKLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OKLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OKLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OKLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OKLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OPEN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OPEN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OPEN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OPEN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OPEN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "OPEN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ORCL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PANW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PEP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PHINERGY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PHINERGY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PHINERGY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PHINERGY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PHINERGY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PLTR",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PNRG.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "POET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "POET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "POET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "POET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "POET",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PRIM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PRIM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PRIM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PRIM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PRIM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PSX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PSX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PSX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PSX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PSX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PTON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PTON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PTON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PTON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PTON",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "PYPL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QCOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QCOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QCOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QCOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QCOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QLTU.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QLTU.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QLTU.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QLTU.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QLTU.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "QUBT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RBN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RBN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RBN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RBN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RDDT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "REGN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "REGN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "REGN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "REGN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "REGN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RGTI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RIVN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RKLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "RTX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "S",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SATL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SATL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SATL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SATL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SATL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SBUX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SBUX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SBUX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SBUX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SBUX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SEDG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SEDG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SEDG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SEDG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SEDG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOM.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SHOP",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SLB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SMCI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SMCI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SMCI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SMCI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SMCI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNDK",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNDK",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNDK",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNDK",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNDK",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SNOW",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFI",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFW.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFW.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFW.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFW.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOFW.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOUN",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOXX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOXX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOXX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOXX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SOXX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPG",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "SPOT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "STX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "STX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "STX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "STX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "STX",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-BANKS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-BANKS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-BANKS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-BANKS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-INS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-INS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-INS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TA-INS.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TBLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TBLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TBLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TBLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TBLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TEVA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TEVA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TEVA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TEVA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TEVA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TFC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TFC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TFC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TFC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TFC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TKO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TKO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TKO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TKO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TKO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TLSY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TLSY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TLSY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TLSY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TLSY.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TMC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TMC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TMC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TMC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TMC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TRX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TRX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TRX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TRX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TRX.TA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSLA",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TSM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "TTD",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UBER",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UPS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UPS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UPS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UPS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "UPS",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "USB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "USB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "USB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "USB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "USB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "V",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VLO",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VRT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VRT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VRT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VRT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VRT",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "VST",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "W",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "W",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "W",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "W",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "W",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WDC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WDC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WDC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WDC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WDC",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WMB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WMB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WMB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WMB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WMB",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "WPM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XEL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XEL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XEL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XEL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XEL",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XOM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "XPEV",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    },
+    {
+      "ticker": "ZIM",
+      "conid": "NULL",
+      "exchange": "NULL",
+      "currency": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tconid\texchange\tcurrency\nAA\tNULL\tNULL\tNULL\nAA\tNULL\tNULL\tNULL\nAA\tNULL\tNULL\tNULL\nAA\tNULL\tNULL\tNULL\nAA\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nAAPL\tNULL\tNULL\tNULL\nACCL.TA\tNULL\tNULL\tNULL\nACCL.TA\tNULL\tNULL\tNULL\nACCL.TA\tNULL\tNULL\tNULL\nACCL.TA\tNULL\tNULL\tNULL\nACCL.TA\tNULL\tNULL\tNULL\nAEP\tNULL\tNULL\tNULL\nAEP\tNULL\tNULL\tNULL\nAEP\tNULL\tNULL\tNULL\nAEP\tNULL\tNULL\tNULL\nAEP\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAFRM\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nAI\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nALAB\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMD\tNULL\tNULL\tNULL\nAMOT.TA\tNULL\tNULL\tNULL\nAMOT.TA\tNULL\tNULL\tNULL\nAMOT.TA\tNULL\tNULL\tNULL\nAMOT.TA\tNULL\tNULL\tNULL\nAMOT.TA\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAMZN\tNULL\tNULL\tNULL\nAON\tNULL\tNULL\tNULL\nAON\tNULL\tNULL\tNULL\nAON\tNULL\tNULL\tNULL\nAON\tNULL\tNULL\tNULL\nAON\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nAPP\tNULL\tNULL\tNULL\nARIN.TA\tNULL\tNULL\tNULL\nARIN.TA\tNULL\tNULL\tNULL\nARIN.TA\tNULL\tNULL\tNULL\nARIN.TA\tNULL\tNULL\tNULL\nARIN.TA\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARM\tNULL\tNULL\tNULL\nARYT.TA\tNULL\tNULL\tNULL\nARYT.TA\tNULL\tNULL\tNULL\nARYT.TA\tNULL\tNULL\tNULL\nARYT.TA\tNULL\tNULL\tNULL\nARYT.TA\tNULL\tNULL\tNULL\nAS\tNULL\tNULL\tNULL\nAS\tNULL\tNULL\tNULL\nAS\tNULL\tNULL\tNULL\nAS\tNULL\tNULL\tNULL\nAS\tNULL\tNULL\tNULL\nASTS\tNULL\tNULL\tNULL\nAUR\tNULL\tNULL\tNULL\nAUR\tNULL\tNULL\tNULL\nAUR\tNULL\tNULL\tNULL\nAUR\tNULL\tNULL\tNULL\nAUR\tNULL\tNULL\tNULL\nAURA.TA\tNULL\tNULL\tNULL\nAURA.TA\tNULL\tNULL\tNULL\nAURA.TA\tNULL\tNULL\tNULL\nAURA.TA\tNULL\tNULL\tNULL\nAURA.TA\tNULL\tNULL\tNULL\nAVGD.TA\tNULL\tNULL\tNULL\nAVGD.TA\tNULL\tNULL\tNULL\nAVGD.TA\tNULL\tNULL\tNULL\nAVGD.TA\tNULL\tNULL\tNULL\nAVGD.TA\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAVGO\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAXON\tNULL\tNULL\tNULL\nAZRG.TA\tNULL\tNULL\tNULL\nAZRG.TA\tNULL\tNULL\tNULL\nAZRG.TA\tNULL\tNULL\tNULL\nAZRG.TA\tNULL\tNULL\tNULL\nAZRG.TA\tNULL\tNULL\tNULL\nBA\tNULL\tNULL\tNULL\nBA\tNULL\tNULL\tNULL\nBA\tNULL\tNULL\tNULL\nBA\tNULL\tNULL\tNULL\nBA\tNULL\tNULL\tNULL\nBAC\tNULL\tNULL\tNULL\nBAC\tNULL\tNULL\tNULL\nBAC\tNULL\tNULL\tNULL\nBAC\tNULL\tNULL\tNULL\nBAC\tNULL\tNULL\tNULL\nBE\tNULL\tNULL\tNULL\nBE\tNULL\tNULL\tNULL\nBE\tNULL\tNULL\tNULL\nBE\tNULL\tNULL\tNULL\nBE\tNULL\tNULL\tNULL\nBKNG\tNULL\tNULL\tNULL\nBKNG\tNULL\tNULL\tNULL\nBKNG\tNULL\tNULL\tNULL\nBKNG\tNULL\tNULL\tNULL\nBKNG\tNULL\tNULL\tNULL\nBKR\tNULL\tNULL\tNULL\nBKR\tNULL\tNULL\tNULL\nBKR\tNULL\tNULL\tNULL\nBKR\tNULL\tNULL\tNULL\nBKR\tNULL\tNULL\tNULL\nBLK\tNULL\tNULL\tNULL\nBWY\tNULL\tNULL\tNULL\nBWY\tNULL\tNULL\tNULL\nBWY\tNULL\tNULL\tNULL\nBWY\tNULL\tNULL\tNULL\nC\tNULL\tNULL\tNULL\nC\tNULL\tNULL\tNULL\nC\tNULL\tNULL\tNULL\nC\tNULL\tNULL\tNULL\nC\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCAT\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCEG\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCELH\tNULL\tNULL\tNULL\nCF\tNULL\tNULL\tNULL\nCF\tNULL\tNULL\tNULL\nCF\tNULL\tNULL\tNULL\nCF\tNULL\tNULL\tNULL\nCF\tNULL\tNULL\tNULL\nCLS\tNULL\tNULL\tNULL\nCLS\tNULL\tNULL\tNULL\nCLS\tNULL\tNULL\tNULL\nCLS\tNULL\tNULL\tNULL\nCLS\tNULL\tNULL\tNULL\nCMER.TA\tNULL\tNULL\tNULL\nCMER.TA\tNULL\tNULL\tNULL\nCMER.TA\tNULL\tNULL\tNULL\nCMER.TA\tNULL\tNULL\tNULL\nCMER.TA\tNULL\tNULL\tNULL\nCMG\tNULL\tNULL\tNULL\nCMG\tNULL\tNULL\tNULL\nCMG\tNULL\tNULL\tNULL\nCMG\tNULL\tNULL\tNULL\nCMG\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOIN\tNULL\tNULL\tNULL\nCOP\tNULL\tNULL\tNULL\nCOP\tNULL\tNULL\tNULL\nCOP\tNULL\tNULL\tNULL\nCOP\tNULL\tNULL\tNULL\nCOP\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRM\tNULL\tNULL\tNULL\nCRNC\tNULL\tNULL\tNULL\nCRNC\tNULL\tNULL\tNULL\nCRNC\tNULL\tNULL\tNULL\nCRNC\tNULL\tNULL\tNULL\nCRNC\tNULL\tNULL\tNULL\nCRS\tNULL\tNULL\tNULL\nCRS\tNULL\tNULL\tNULL\nCRS\tNULL\tNULL\tNULL\nCRS\tNULL\tNULL\tNULL\nCRS\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWD\tNULL\tNULL\tNULL\nCRWV\tNULL\tNULL\tNULL\nCRWV\tNULL\tNULL\tNULL\nCRWV\tNULL\tNULL\tNULL\nCRWV\tNULL\tNULL\tNULL\nCRWV\tNULL\tNULL\tNULL\nCSGP\tNULL\tNULL\tNULL\nCSGP\tNULL\tNULL\tNULL\nCSGP\tNULL\tNULL\tNULL\nCSGP\tNULL\tNULL\tNULL\nCSGP\tNULL\tNULL\tNULL\nCVX\tNULL\tNULL\tNULL\nCVX\tNULL\tNULL\tNULL\nCVX\tNULL\tNULL\tNULL\nCVX\tNULL\tNULL\tNULL\nCVX\tNULL\tNULL\tNULL\nD\tNULL\tNULL\tNULL\nD\tNULL\tNULL\tNULL\nD\tNULL\tNULL\tNULL\nD\tNULL\tNULL\tNULL\nD\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDDOG\tNULL\tNULL\tNULL\nDLEKG.TA\tNULL\tNULL\tNULL\nDLEKG.TA\tNULL\tNULL\tNULL\nDLEKG.TA\tNULL\tNULL\tNULL\nDLEKG.TA\tNULL\tNULL\tNULL\nDLEKG.TA\tNULL\tNULL\tNULL\nDORL.TA\tNULL\tNULL\tNULL\nDORL.TA\tNULL\tNULL\tNULL\nDORL.TA\tNULL\tNULL\tNULL\nDORL.TA\tNULL\tNULL\tNULL\nDORL.TA\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDUOL\tNULL\tNULL\tNULL\nDVN\tNULL\tNULL\tNULL\nDVN\tNULL\tNULL\tNULL\nDVN\tNULL\tNULL\tNULL\nDVN\tNULL\tNULL\tNULL\nDVN\tNULL\tNULL\tNULL\nENERGEAN.TA\tNULL\tNULL\tNULL\nENERGEAN.TA\tNULL\tNULL\tNULL\nENERGEAN.TA\tNULL\tNULL\tNULL\nENERGEAN.TA\tNULL\tNULL\tNULL\nENERGEAN.TA\tNULL\tNULL\tNULL\nENLT.TA\tNULL\tNULL\tNULL\nENLT.TA\tNULL\tNULL\tNULL\nENLT.TA\tNULL\tNULL\tNULL\nENLT.TA\tNULL\tNULL\tNULL\nENLT.TA\tNULL\tNULL\tNULL\nENOG.TA\tNULL\tNULL\tNULL\nENOG.TA\tNULL\tNULL\tNULL\nENOG.TA\tNULL\tNULL\tNULL\nENOG.TA\tNULL\tNULL\tNULL\nENOG.TA\tNULL\tNULL\tNULL\nENVX\tNULL\tNULL\tNULL\nENVX\tNULL\tNULL\tNULL\nENVX\tNULL\tNULL\tNULL\nENVX\tNULL\tNULL\tNULL\nENVX\tNULL\tNULL\tNULL\nEOG\tNULL\tNULL\tNULL\nEOG\tNULL\tNULL\tNULL\nEOG\tNULL\tNULL\tNULL\nEOG\tNULL\tNULL\tNULL\nEOG\tNULL\tNULL\tNULL\nEQTL.TA\tNULL\tNULL\tNULL\nEQTL.TA\tNULL\tNULL\tNULL\nEQTL.TA\tNULL\tNULL\tNULL\nEQTL.TA\tNULL\tNULL\tNULL\nEQTL.TA\tNULL\tNULL\tNULL\nESTATE15.TA\tNULL\tNULL\tNULL\nESTATE15.TA\tNULL\tNULL\tNULL\nESTATE15.TA\tNULL\tNULL\tNULL\nESTATE15.TA\tNULL\tNULL\tNULL\nETN\tNULL\tNULL\tNULL\nETN\tNULL\tNULL\tNULL\nETN\tNULL\tNULL\tNULL\nETN\tNULL\tNULL\tNULL\nETN\tNULL\tNULL\tNULL\nFANG\tNULL\tNULL\tNULL\nFFIV\tNULL\tNULL\tNULL\nFFIV\tNULL\tNULL\tNULL\nFFIV\tNULL\tNULL\tNULL\nFFIV\tNULL\tNULL\tNULL\nFFIV\tNULL\tNULL\tNULL\nFIBI.TA\tNULL\tNULL\tNULL\nFIBI.TA\tNULL\tNULL\tNULL\nFIBI.TA\tNULL\tNULL\tNULL\nFIBI.TA\tNULL\tNULL\tNULL\nFIBI.TA\tNULL\tNULL\tNULL\nFOX.TA\tNULL\tNULL\tNULL\nFOX.TA\tNULL\tNULL\tNULL\nFOX.TA\tNULL\tNULL\tNULL\nFOX.TA\tNULL\tNULL\tNULL\nFOX.TA\tNULL\tNULL\tNULL\nFVRR\tNULL\tNULL\tNULL\nFVRR\tNULL\tNULL\tNULL\nFVRR\tNULL\tNULL\tNULL\nFVRR\tNULL\tNULL\tNULL\nFVRR\tNULL\tNULL\tNULL\nGAGR.TA\tNULL\tNULL\tNULL\nGAGR.TA\tNULL\tNULL\tNULL\nGAGR.TA\tNULL\tNULL\tNULL\nGAGR.TA\tNULL\tNULL\tNULL\nGAGR.TA\tNULL\tNULL\tNULL\nGCT.TA\tNULL\tNULL\tNULL\nGCT.TA\tNULL\tNULL\tNULL\nGCT.TA\tNULL\tNULL\tNULL\nGCT.TA\tNULL\tNULL\tNULL\nGCT.TA\tNULL\tNULL\tNULL\nGD\tNULL\tNULL\tNULL\nGD\tNULL\tNULL\tNULL\nGD\tNULL\tNULL\tNULL\nGD\tNULL\tNULL\tNULL\nGD\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGE\tNULL\tNULL\tNULL\nGLTL.TA\tNULL\tNULL\tNULL\nGLTL.TA\tNULL\tNULL\tNULL\nGLTL.TA\tNULL\tNULL\tNULL\nGLTL.TA\tNULL\tNULL\tNULL\nGLTL.TA\tNULL\tNULL\tNULL\nGLW\tNULL\tNULL\tNULL\nGLW\tNULL\tNULL\tNULL\nGLW\tNULL\tNULL\tNULL\nGLW\tNULL\tNULL\tNULL\nGLW\tNULL\tNULL\tNULL\nGM\tNULL\tNULL\tNULL\nGM\tNULL\tNULL\tNULL\nGM\tNULL\tNULL\tNULL\nGM\tNULL\tNULL\tNULL\nGM\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGOOGL\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nGS\tNULL\tNULL\tNULL\nHAL\tNULL\tNULL\tNULL\nHAL\tNULL\tNULL\tNULL\nHAL\tNULL\tNULL\tNULL\nHAL\tNULL\tNULL\tNULL\nHAL\tNULL\tNULL\tNULL\nHGGE.TA\tNULL\tNULL\tNULL\nHGGE.TA\tNULL\tNULL\tNULL\nHGGE.TA\tNULL\tNULL\tNULL\nHGGE.TA\tNULL\tNULL\tNULL\nHGGE.TA\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIMS\tNULL\tNULL\tNULL\nHIPR.TA\tNULL\tNULL\tNULL\nHIPR.TA\tNULL\tNULL\tNULL\nHIPR.TA\tNULL\tNULL\tNULL\nHIPR.TA\tNULL\tNULL\tNULL\nHIPR.TA\tNULL\tNULL\tNULL\nHLT\tNULL\tNULL\tNULL\nHLT\tNULL\tNULL\tNULL\nHLT\tNULL\tNULL\tNULL\nHLT\tNULL\tNULL\tNULL\nHLT\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHOOD\tNULL\tNULL\tNULL\nHWM\tNULL\tNULL\tNULL\nHWM\tNULL\tNULL\tNULL\nHWM\tNULL\tNULL\tNULL\nHWM\tNULL\tNULL\tNULL\nHWM\tNULL\tNULL\tNULL\nIBI.TA\tNULL\tNULL\tNULL\nIBI.TA\tNULL\tNULL\tNULL\nIBI.TA\tNULL\tNULL\tNULL\nIBI.TA\tNULL\tNULL\tNULL\nIBI.TA\tNULL\tNULL\tNULL\nIGV\tNULL\tNULL\tNULL\nIGV\tNULL\tNULL\tNULL\nIGV\tNULL\tNULL\tNULL\nIGV\tNULL\tNULL\tNULL\nIGV\tNULL\tNULL\tNULL\nILCO.TA\tNULL\tNULL\tNULL\nILCO.TA\tNULL\tNULL\tNULL\nILCO.TA\tNULL\tNULL\tNULL\nILCO.TA\tNULL\tNULL\tNULL\nILCO.TA\tNULL\tNULL\tNULL\nIMCO.TA\tNULL\tNULL\tNULL\nIMCO.TA\tNULL\tNULL\tNULL\nIMCO.TA\tNULL\tNULL\tNULL\nIMCO.TA\tNULL\tNULL\tNULL\nIMCO.TA\tNULL\tNULL\tNULL\nINTC\tNULL\tNULL\tNULL\nINTC\tNULL\tNULL\tNULL\nINTC\tNULL\tNULL\tNULL\nINTC\tNULL\tNULL\tNULL\nINTC\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nIONQ\tNULL\tNULL\tNULL\nISRS.TA\tNULL\tNULL\tNULL\nISRS.TA\tNULL\tNULL\tNULL\nISRS.TA\tNULL\tNULL\tNULL\nISRS.TA\tNULL\tNULL\tNULL\nISRS.TA\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nJPM\tNULL\tNULL\tNULL\nKEN.TA\tNULL\tNULL\tNULL\nKEN.TA\tNULL\tNULL\tNULL\nKEN.TA\tNULL\tNULL\tNULL\nKEN.TA\tNULL\tNULL\tNULL\nKEN.TA\tNULL\tNULL\tNULL\nKMI\tNULL\tNULL\tNULL\nKMI\tNULL\tNULL\tNULL\nKMI\tNULL\tNULL\tNULL\nKMI\tNULL\tNULL\tNULL\nKMI\tNULL\tNULL\tNULL\nKO\tNULL\tNULL\tNULL\nKO\tNULL\tNULL\tNULL\nKO\tNULL\tNULL\tNULL\nKO\tNULL\tNULL\tNULL\nKO\tNULL\tNULL\tNULL\nKRDI.TA\tNULL\tNULL\tNULL\nKRDI.TA\tNULL\tNULL\tNULL\nKRDI.TA\tNULL\tNULL\tNULL\nKRDI.TA\tNULL\tNULL\tNULL\nKRDI.TA\tNULL\tNULL\tNULL\nKSTN.TA\tNULL\tNULL\tNULL\nKSTN.TA\tNULL\tNULL\tNULL\nKSTN.TA\tNULL\tNULL\tNULL\nKSTN.TA\tNULL\tNULL\tNULL\nKSTN.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLAHAV.TA\tNULL\tNULL\tNULL\nLITE\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLLY\tNULL\tNULL\tNULL\nLMND\tNULL\tNULL\tNULL\nLMND\tNULL\tNULL\tNULL\nLMND\tNULL\tNULL\tNULL\nLMND\tNULL\tNULL\tNULL\nLMND\tNULL\tNULL\tNULL\nLMT\tNULL\tNULL\tNULL\nLMT\tNULL\tNULL\tNULL\nLMT\tNULL\tNULL\tNULL\nLMT\tNULL\tNULL\tNULL\nLMT\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nLUNR\tNULL\tNULL\tNULL\nMA\tNULL\tNULL\tNULL\nMA\tNULL\tNULL\tNULL\nMA\tNULL\tNULL\tNULL\nMA\tNULL\tNULL\tNULL\nMA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMARA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMETA\tNULL\tNULL\tNULL\nMGOR.TA\tNULL\tNULL\tNULL\nMGOR.TA\tNULL\tNULL\tNULL\nMGOR.TA\tNULL\tNULL\tNULL\nMGOR.TA\tNULL\tNULL\tNULL\nMGOR.TA\tNULL\tNULL\tNULL\nMGR\tNULL\tNULL\tNULL\nMGR\tNULL\tNULL\tNULL\nMGR\tNULL\tNULL\tNULL\nMGR\tNULL\tNULL\tNULL\nMGR\tNULL\tNULL\tNULL\nMISH.TA\tNULL\tNULL\tNULL\nMISH.TA\tNULL\tNULL\tNULL\nMISH.TA\tNULL\tNULL\tNULL\nMISH.TA\tNULL\tNULL\tNULL\nMISH.TA\tNULL\tNULL\tNULL\nMLTM.TA\tNULL\tNULL\tNULL\nMLTM.TA\tNULL\tNULL\tNULL\nMLTM.TA\tNULL\tNULL\tNULL\nMLTM.TA\tNULL\tNULL\tNULL\nMLTM.TA\tNULL\tNULL\tNULL\nMNIF.TA\tNULL\tNULL\tNULL\nMNIF.TA\tNULL\tNULL\tNULL\nMNIF.TA\tNULL\tNULL\tNULL\nMNIF.TA\tNULL\tNULL\tNULL\nMNIF.TA\tNULL\tNULL\tNULL\nMP\tNULL\tNULL\tNULL\nMP\tNULL\tNULL\tNULL\nMP\tNULL\tNULL\tNULL\nMP\tNULL\tNULL\tNULL\nMP\tNULL\tNULL\tNULL\nMPC\tNULL\tNULL\tNULL\nMPC\tNULL\tNULL\tNULL\nMPC\tNULL\tNULL\tNULL\nMPC\tNULL\tNULL\tNULL\nMPC\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMRVL\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSFT\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMSTR\tNULL\tNULL\tNULL\nMTAV.TA\tNULL\tNULL\tNULL\nMTAV.TA\tNULL\tNULL\tNULL\nMTAV.TA\tNULL\tNULL\tNULL\nMTAV.TA\tNULL\tNULL\tNULL\nMTAV.TA\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMU\tNULL\tNULL\tNULL\nMX\tNULL\tNULL\tNULL\nMX\tNULL\tNULL\tNULL\nMX\tNULL\tNULL\tNULL\nMX\tNULL\tNULL\tNULL\nMX\tNULL\tNULL\tNULL\nMXL\tNULL\tNULL\tNULL\nMXL\tNULL\tNULL\tNULL\nMXL\tNULL\tNULL\tNULL\nMXL\tNULL\tNULL\tNULL\nMXL\tNULL\tNULL\tNULL\nNBIS\tNULL\tNULL\tNULL\nNBIS\tNULL\tNULL\tNULL\nNBIS\tNULL\tNULL\tNULL\nNBIS\tNULL\tNULL\tNULL\nNBIS\tNULL\tNULL\tNULL\nNCMI\tNULL\tNULL\tNULL\nNCMI\tNULL\tNULL\tNULL\nNCMI\tNULL\tNULL\tNULL\nNCMI\tNULL\tNULL\tNULL\nNCMI\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNET\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFLX\tNULL\tNULL\tNULL\nNFTA.TA\tNULL\tNULL\tNULL\nNFTA.TA\tNULL\tNULL\tNULL\nNFTA.TA\tNULL\tNULL\tNULL\nNFTA.TA\tNULL\tNULL\tNULL\nNFTA.TA\tNULL\tNULL\tNULL\nNIKE\tNULL\tNULL\tNULL\nNIKE\tNULL\tNULL\tNULL\nNIKE\tNULL\tNULL\tNULL\nNIKE\tNULL\tNULL\tNULL\nNIKE\tNULL\tNULL\tNULL\nNOFR.TA\tNULL\tNULL\tNULL\nNOFR.TA\tNULL\tNULL\tNULL\nNOFR.TA\tNULL\tNULL\tNULL\nNOFR.TA\tNULL\tNULL\tNULL\nNOFR.TA\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNOW\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNRG\tNULL\tNULL\tNULL\nNTO.TA\tNULL\tNULL\tNULL\nNTO.TA\tNULL\tNULL\tNULL\nNTO.TA\tNULL\tNULL\tNULL\nNTO.TA\tNULL\tNULL\tNULL\nNTO.TA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVDA\tNULL\tNULL\tNULL\nNVPT.TA\tNULL\tNULL\tNULL\nNVPT.TA\tNULL\tNULL\tNULL\nNVPT.TA\tNULL\tNULL\tNULL\nNVPT.TA\tNULL\tNULL\tNULL\nNVPT.TA\tNULL\tNULL\tNULL\nNWMD.TA\tNULL\tNULL\tNULL\nNWMD.TA\tNULL\tNULL\tNULL\nNWMD.TA\tNULL\tNULL\tNULL\nNWMD.TA\tNULL\tNULL\tNULL\nNWMD.TA\tNULL\tNULL\tNULL\nNXPI\tNULL\tNULL\tNULL\nNXPI\tNULL\tNULL\tNULL\nNXPI\tNULL\tNULL\tNULL\nNXPI\tNULL\tNULL\tNULL\nNXPI\tNULL\tNULL\tNULL\nNXSN.TA\tNULL\tNULL\tNULL\nNXSN.TA\tNULL\tNULL\tNULL\nNXSN.TA\tNULL\tNULL\tNULL\nNXSN.TA\tNULL\tNULL\tNULL\nNXSN.TA\tNULL\tNULL\tNULL\nNXTM.TA\tNULL\tNULL\tNULL\nNXTM.TA\tNULL\tNULL\tNULL\nNXTM.TA\tNULL\tNULL\tNULL\nNXTM.TA\tNULL\tNULL\tNULL\nNXTM.TA\tNULL\tNULL\tNULL\nO\tNULL\tNULL\tNULL\nO\tNULL\tNULL\tNULL\nO\tNULL\tNULL\tNULL\nO\tNULL\tNULL\tNULL\nO\tNULL\tNULL\tNULL\nOKLO\tNULL\tNULL\tNULL\nOKLO\tNULL\tNULL\tNULL\nOKLO\tNULL\tNULL\tNULL\nOKLO\tNULL\tNULL\tNULL\nOKLO\tNULL\tNULL\tNULL\nOPEN\tNULL\tNULL\tNULL\nOPEN\tNULL\tNULL\tNULL\nOPEN\tNULL\tNULL\tNULL\nOPEN\tNULL\tNULL\tNULL\nOPEN\tNULL\tNULL\tNULL\nOPEN\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nORCL\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPANW\tNULL\tNULL\tNULL\nPEP\tNULL\tNULL\tNULL\nPEP\tNULL\tNULL\tNULL\nPEP\tNULL\tNULL\tNULL\nPEP\tNULL\tNULL\tNULL\nPEP\tNULL\tNULL\tNULL\nPHINERGY.TA\tNULL\tNULL\tNULL\nPHINERGY.TA\tNULL\tNULL\tNULL\nPHINERGY.TA\tNULL\tNULL\tNULL\nPHINERGY.TA\tNULL\tNULL\tNULL\nPHINERGY.TA\tNULL\tNULL\tNULL\nPL\tNULL\tNULL\tNULL\nPL\tNULL\tNULL\tNULL\nPL\tNULL\tNULL\tNULL\nPL\tNULL\tNULL\tNULL\nPL\tNULL\tNULL\tNULL\nPLD\tNULL\tNULL\tNULL\nPLD\tNULL\tNULL\tNULL\nPLD\tNULL\tNULL\tNULL\nPLD\tNULL\tNULL\tNULL\nPLD\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPLTR\tNULL\tNULL\tNULL\nPNC\tNULL\tNULL\tNULL\nPNC\tNULL\tNULL\tNULL\nPNC\tNULL\tNULL\tNULL\nPNC\tNULL\tNULL\tNULL\nPNC\tNULL\tNULL\tNULL\nPNRG.TA\tNULL\tNULL\tNULL\nPNRG.TA\tNULL\tNULL\tNULL\nPNRG.TA\tNULL\tNULL\tNULL\nPNRG.TA\tNULL\tNULL\tNULL\nPNRG.TA\tNULL\tNULL\tNULL\nPOET\tNULL\tNULL\tNULL\nPOET\tNULL\tNULL\tNULL\nPOET\tNULL\tNULL\tNULL\nPOET\tNULL\tNULL\tNULL\nPOET\tNULL\tNULL\tNULL\nPRIM.TA\tNULL\tNULL\tNULL\nPRIM.TA\tNULL\tNULL\tNULL\nPRIM.TA\tNULL\tNULL\tNULL\nPRIM.TA\tNULL\tNULL\tNULL\nPRIM.TA\tNULL\tNULL\tNULL\nPSX\tNULL\tNULL\tNULL\nPSX\tNULL\tNULL\tNULL\nPSX\tNULL\tNULL\tNULL\nPSX\tNULL\tNULL\tNULL\nPSX\tNULL\tNULL\tNULL\nPTON\tNULL\tNULL\tNULL\nPTON\tNULL\tNULL\tNULL\nPTON\tNULL\tNULL\tNULL\nPTON\tNULL\tNULL\tNULL\nPTON\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nPYPL\tNULL\tNULL\tNULL\nQCOM\tNULL\tNULL\tNULL\nQCOM\tNULL\tNULL\tNULL\nQCOM\tNULL\tNULL\tNULL\nQCOM\tNULL\tNULL\tNULL\nQCOM\tNULL\tNULL\tNULL\nQLTU.TA\tNULL\tNULL\tNULL\nQLTU.TA\tNULL\tNULL\tNULL\nQLTU.TA\tNULL\tNULL\tNULL\nQLTU.TA\tNULL\tNULL\tNULL\nQLTU.TA\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nQUBT\tNULL\tNULL\tNULL\nRBN\tNULL\tNULL\tNULL\nRBN\tNULL\tNULL\tNULL\nRBN\tNULL\tNULL\tNULL\nRBN\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nRDDT\tNULL\tNULL\tNULL\nREGN\tNULL\tNULL\tNULL\nREGN\tNULL\tNULL\tNULL\nREGN\tNULL\tNULL\tNULL\nREGN\tNULL\tNULL\tNULL\nREGN\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRGTI\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRIVN\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRKLB\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nRTX\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nS\tNULL\tNULL\tNULL\nSATL\tNULL\tNULL\tNULL\nSATL\tNULL\tNULL\tNULL\nSATL\tNULL\tNULL\tNULL\nSATL\tNULL\tNULL\tNULL\nSATL\tNULL\tNULL\tNULL\nSBUX\tNULL\tNULL\tNULL\nSBUX\tNULL\tNULL\tNULL\nSBUX\tNULL\tNULL\tNULL\nSBUX\tNULL\tNULL\tNULL\nSBUX\tNULL\tNULL\tNULL\nSEDG\tNULL\tNULL\tNULL\nSEDG\tNULL\tNULL\tNULL\nSEDG\tNULL\tNULL\tNULL\nSEDG\tNULL\tNULL\tNULL\nSEDG\tNULL\tNULL\tNULL\nSHOM.TA\tNULL\tNULL\tNULL\nSHOM.TA\tNULL\tNULL\tNULL\nSHOM.TA\tNULL\tNULL\tNULL\nSHOM.TA\tNULL\tNULL\tNULL\nSHOM.TA\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSHOP\tNULL\tNULL\tNULL\nSLARL.TA\tNULL\tNULL\tNULL\nSLARL.TA\tNULL\tNULL\tNULL\nSLARL.TA\tNULL\tNULL\tNULL\nSLARL.TA\tNULL\tNULL\tNULL\nSLARL.TA\tNULL\tNULL\tNULL\nSLB\tNULL\tNULL\tNULL\nSLB\tNULL\tNULL\tNULL\nSLB\tNULL\tNULL\tNULL\nSLB\tNULL\tNULL\tNULL\nSLB\tNULL\tNULL\tNULL\nSMCI\tNULL\tNULL\tNULL\nSMCI\tNULL\tNULL\tNULL\nSMCI\tNULL\tNULL\tNULL\nSMCI\tNULL\tNULL\tNULL\nSMCI\tNULL\tNULL\tNULL\nSNDK\tNULL\tNULL\tNULL\nSNDK\tNULL\tNULL\tNULL\nSNDK\tNULL\tNULL\tNULL\nSNDK\tNULL\tNULL\tNULL\nSNDK\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSNOW\tNULL\tNULL\tNULL\nSO\tNULL\tNULL\tNULL\nSO\tNULL\tNULL\tNULL\nSO\tNULL\tNULL\tNULL\nSO\tNULL\tNULL\tNULL\nSO\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFI\tNULL\tNULL\tNULL\nSOFW.TA\tNULL\tNULL\tNULL\nSOFW.TA\tNULL\tNULL\tNULL\nSOFW.TA\tNULL\tNULL\tNULL\nSOFW.TA\tNULL\tNULL\tNULL\nSOFW.TA\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOUN\tNULL\tNULL\tNULL\nSOXX\tNULL\tNULL\tNULL\nSOXX\tNULL\tNULL\tNULL\nSOXX\tNULL\tNULL\tNULL\nSOXX\tNULL\tNULL\tNULL\nSOXX\tNULL\tNULL\tNULL\nSPG\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSPOT\tNULL\tNULL\tNULL\nSTX\tNULL\tNULL\tNULL\nSTX\tNULL\tNULL\tNULL\nSTX\tNULL\tNULL\tNULL\nSTX\tNULL\tNULL\tNULL\nSTX\tNULL\tNULL\tNULL\nTA-BANKS.TA\tNULL\tNULL\tNULL\nTA-BANKS.TA\tNULL\tNULL\tNULL\nTA-BANKS.TA\tNULL\tNULL\tNULL\nTA-BANKS.TA\tNULL\tNULL\tNULL\nTA-INS.TA\tNULL\tNULL\tNULL\nTA-INS.TA\tNULL\tNULL\tNULL\nTA-INS.TA\tNULL\tNULL\tNULL\nTA-INS.TA\tNULL\tNULL\tNULL\nTBLA\tNULL\tNULL\tNULL\nTBLA\tNULL\tNULL\tNULL\nTBLA\tNULL\tNULL\tNULL\nTBLA\tNULL\tNULL\tNULL\nTBLA\tNULL\tNULL\tNULL\nTEVA\tNULL\tNULL\tNULL\nTEVA\tNULL\tNULL\tNULL\nTEVA\tNULL\tNULL\tNULL\nTEVA\tNULL\tNULL\tNULL\nTEVA\tNULL\tNULL\tNULL\nTFC\tNULL\tNULL\tNULL\nTFC\tNULL\tNULL\tNULL\nTFC\tNULL\tNULL\tNULL\nTFC\tNULL\tNULL\tNULL\nTFC\tNULL\tNULL\tNULL\nTKO\tNULL\tNULL\tNULL\nTKO\tNULL\tNULL\tNULL\nTKO\tNULL\tNULL\tNULL\nTKO\tNULL\tNULL\tNULL\nTKO\tNULL\tNULL\tNULL\nTLSY.TA\tNULL\tNULL\tNULL\nTLSY.TA\tNULL\tNULL\tNULL\nTLSY.TA\tNULL\tNULL\tNULL\nTLSY.TA\tNULL\tNULL\tNULL\nTLSY.TA\tNULL\tNULL\tNULL\nTMC\tNULL\tNULL\tNULL\nTMC\tNULL\tNULL\tNULL\nTMC\tNULL\tNULL\tNULL\nTMC\tNULL\tNULL\tNULL\nTMC\tNULL\tNULL\tNULL\nTRX.TA\tNULL\tNULL\tNULL\nTRX.TA\tNULL\tNULL\tNULL\nTRX.TA\tNULL\tNULL\tNULL\nTRX.TA\tNULL\tNULL\tNULL\nTRX.TA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSLA\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTSM\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nTTD\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUBER\tNULL\tNULL\tNULL\nUPS\tNULL\tNULL\tNULL\nUPS\tNULL\tNULL\tNULL\nUPS\tNULL\tNULL\tNULL\nUPS\tNULL\tNULL\tNULL\nUPS\tNULL\tNULL\tNULL\nUSB\tNULL\tNULL\tNULL\nUSB\tNULL\tNULL\tNULL\nUSB\tNULL\tNULL\tNULL\nUSB\tNULL\tNULL\tNULL\nUSB\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nV\tNULL\tNULL\tNULL\nVLO\tNULL\tNULL\tNULL\nVLO\tNULL\tNULL\tNULL\nVLO\tNULL\tNULL\tNULL\nVLO\tNULL\tNULL\tNULL\nVLO\tNULL\tNULL\tNULL\nVRT\tNULL\tNULL\tNULL\nVRT\tNULL\tNULL\tNULL\nVRT\tNULL\tNULL\tNULL\nVRT\tNULL\tNULL\tNULL\nVRT\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nVST\tNULL\tNULL\tNULL\nW\tNULL\tNULL\tNULL\nW\tNULL\tNULL\tNULL\nW\tNULL\tNULL\tNULL\nW\tNULL\tNULL\tNULL\nW\tNULL\tNULL\tNULL\nWDC\tNULL\tNULL\tNULL\nWDC\tNULL\tNULL\tNULL\nWDC\tNULL\tNULL\tNULL\nWDC\tNULL\tNULL\tNULL\nWDC\tNULL\tNULL\tNULL\nWMB\tNULL\tNULL\tNULL\nWMB\tNULL\tNULL\tNULL\nWMB\tNULL\tNULL\tNULL\nWMB\tNULL\tNULL\tNULL\nWMB\tNULL\tNULL\tNULL\nWPM\tNULL\tNULL\tNULL\nXEL\tNULL\tNULL\tNULL\nXEL\tNULL\tNULL\tNULL\nXEL\tNULL\tNULL\tNULL\nXEL\tNULL\tNULL\tNULL\nXEL\tNULL\tNULL\tNULL\nXOM\tNULL\tNULL\tNULL\nXOM\tNULL\tNULL\tNULL\nXOM\tNULL\tNULL\tNULL\nXOM\tNULL\tNULL\tNULL\nXOM\tNULL\tNULL\tNULL\nXPEV\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\nZIM\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1784
+}

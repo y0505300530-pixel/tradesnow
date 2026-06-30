@@ -1,0 +1,1 @@
+ALTER TABLE `portfolioSnapshots` ADD `h2Value` double;

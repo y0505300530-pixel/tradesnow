@@ -1,0 +1,1 @@
+ALTER TABLE `labDailyLogs` ADD `profitMissed` text;

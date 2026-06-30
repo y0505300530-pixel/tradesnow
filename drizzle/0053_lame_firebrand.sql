@@ -1,0 +1,1 @@
+ALTER TABLE `ibkrSettings` ADD `sessionCookie` text;

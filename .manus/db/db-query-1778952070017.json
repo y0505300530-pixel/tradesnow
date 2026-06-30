@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, name, tickers, status, startDate, endDate FROM labSimulations ORDER BY id DESC LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, tickers, status, startDate, endDate FROM labSimulations ORDER BY id DESC LIMIT 3;",
+  "rows": [
+    {
+      "id": "810001",
+      "name": "abcd",
+      "tickers": "[\"NVDA\",\"W\",\"LMND\",\"LMT\",\"CRS\",\"CVX\",\"AEP\",\"PL\",\"OPEN\",\"VRT\",\"REGN\",\"QCOM\",\"CMG\",\"INTC\",\"SBUX\",\"NXPI\",\"WDC\",\"SMCI\",\"MA\",\"FFIV\",\"BKNG\",\"CSGP\",\"POET\",\"UPS\",\"KO\",\"GLW\",\"GM\",\"ETN\",\"PTON\",\"SOXX\",\"IGV\",\"NIKE\",\"TKO\",\"CF\",\"AS\",\"LAHAV.TA\",\"NBIS\",\"HWM\",\"C\",\"CRWV\",\"NCMI\",\"AA\",\"MGR\",\"TSM\",\"AVGO\",\"MU\",\"ALAB\",\"AMD\",\"MRVL\",\"ARM\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"ORCL\",\"CRM\",\"PLTR\",\"APP\"]",
+      "status": "done",
+      "startDate": "2026-01-15 12:00:00",
+      "endDate": "2026-05-12 12:00:00"
+    },
+    {
+      "id": "780001",
+      "name": "Lab 30.4.2026",
+      "tickers": "[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\"]",
+      "status": "pending",
+      "startDate": "2023-01-15 12:00:00",
+      "endDate": "2026-04-30 12:00:00"
+    },
+    {
+      "id": "750007",
+      "name": "Lab 3/16/2026",
+      "tickers": "[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\",\"ORCL\",\"JPM\",\"GS\",\"V\",\"HIMS\",\"GE\",\"LLY\"]",
+      "status": "done",
+      "startDate": "2026-01-01 12:00:00",
+      "endDate": "2026-03-16 12:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttickers\tstatus\tstartDate\tendDate\n810001\tabcd\t[\"NVDA\",\"W\",\"LMND\",\"LMT\",\"CRS\",\"CVX\",\"AEP\",\"PL\",\"OPEN\",\"VRT\",\"REGN\",\"QCOM\",\"CMG\",\"INTC\",\"SBUX\",\"NXPI\",\"WDC\",\"SMCI\",\"MA\",\"FFIV\",\"BKNG\",\"CSGP\",\"POET\",\"UPS\",\"KO\",\"GLW\",\"GM\",\"ETN\",\"PTON\",\"SOXX\",\"IGV\",\"NIKE\",\"TKO\",\"CF\",\"AS\",\"LAHAV.TA\",\"NBIS\",\"HWM\",\"C\",\"CRWV\",\"NCMI\",\"AA\",\"MGR\",\"TSM\",\"AVGO\",\"MU\",\"ALAB\",\"AMD\",\"MRVL\",\"ARM\",\"AAPL\",\"MSFT\",\"META\",\"GOOGL\",\"AMZN\",\"NOW\",\"ORCL\",\"CRM\",\"PLTR\",\"APP\"]\tdone\t2026-01-15 12:00:00\t2026-05-12 12:00:00\n780001\tLab 30.4.2026\t[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\"]\tpending\t2023-01-15 12:00:00\t2026-04-30 12:00:00\n750007\tLab 3/16/2026\t[\"AVGO\",\"MU\",\"NVDA\",\"ALAB\",\"PLTR\",\"META\",\"GOOGL\",\"MSFT\",\"AAPL\",\"CAT\",\"TSM\",\"ZIM\",\"COIN\",\"LUNR\",\"MSTR\",\"HOOD\",\"IONQ\",\"CRWD\",\"QUBT\",\"NOW\",\"ORCL\",\"JPM\",\"GS\",\"V\",\"HIMS\",\"GE\",\"LLY\"]\tdone\t2026-01-01 12:00:00\t2026-03-16 12:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 1795
+}

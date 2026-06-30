@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, status, LENGTH(scanReport) as scanLen, DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i') as created FROM labSimulations WHERE status = 'done' ORDER BY updatedAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, name, status, LENGTH(scanReport) as scanLen, DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i') as created FROM labSimulations WHERE status = 'done' ORDER BY updatedAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "900010",
+      "name": "Lab 5/17/2026 08:50 AM",
+      "status": "done",
+      "scanLen": "NULL",
+      "created": "2026-05-17 05:50"
+    },
+    {
+      "id": "900009",
+      "name": "Lab 5/17/2026 08:46 AM",
+      "status": "done",
+      "scanLen": "NULL",
+      "created": "2026-05-17 05:46"
+    },
+    {
+      "id": "900011",
+      "name": "Lab 5/17/2026 08:51 AM",
+      "status": "done",
+      "scanLen": "NULL",
+      "created": "2026-05-17 05:51"
+    },
+    {
+      "id": "900007",
+      "name": "Lab 5/17/2026 08:11 AM",
+      "status": "done",
+      "scanLen": "NULL",
+      "created": "2026-05-17 05:11"
+    },
+    {
+      "id": "900006",
+      "name": "Lab 5/17/2026 08:08 AM",
+      "status": "done",
+      "scanLen": "NULL",
+      "created": "2026-05-17 05:08"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tstatus\tscanLen\tcreated\n900010\tLab 5/17/2026 08:50 AM\tdone\tNULL\t2026-05-17 05:50\n900009\tLab 5/17/2026 08:46 AM\tdone\tNULL\t2026-05-17 05:46\n900011\tLab 5/17/2026 08:51 AM\tdone\tNULL\t2026-05-17 05:51\n900007\tLab 5/17/2026 08:11 AM\tdone\tNULL\t2026-05-17 05:11\n900006\tLab 5/17/2026 08:08 AM\tdone\tNULL\t2026-05-17 05:08\n",
+  "stderr": "",
+  "execution_time_ms": 1778
+}

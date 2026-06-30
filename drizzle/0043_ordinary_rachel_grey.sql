@@ -1,0 +1,1 @@
+ALTER TABLE `userAssets` ADD `hotSignal` tinyint DEFAULT 0;

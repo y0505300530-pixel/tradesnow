@@ -1,0 +1,794 @@
+{
+  "query": "SELECT ticker, companyName FROM userAssets WHERE userId = 1 AND archived = 0 ORDER BY ticker LIMIT 200;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, companyName FROM userAssets WHERE userId = 1 AND archived = 0 ORDER BY ticker LIMIT 200;",
+  "rows": [
+    {
+      "ticker": "AA",
+      "companyName": "Alcoa Corporation"
+    },
+    {
+      "ticker": "AAPL",
+      "companyName": "Apple Inc."
+    },
+    {
+      "ticker": "ACCL.TA",
+      "companyName": "Accel"
+    },
+    {
+      "ticker": "AEP",
+      "companyName": "American Electric Power Company, Inc."
+    },
+    {
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings, Inc."
+    },
+    {
+      "ticker": "AI",
+      "companyName": "C3.ai, Inc."
+    },
+    {
+      "ticker": "ALAB",
+      "companyName": "Astera Labs, Inc."
+    },
+    {
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices, Inc."
+    },
+    {
+      "ticker": "AMOT.TA",
+      "companyName": "AMOT.TA"
+    },
+    {
+      "ticker": "AMZN",
+      "companyName": "Amazon.com, Inc."
+    },
+    {
+      "ticker": "AON",
+      "companyName": "AON"
+    },
+    {
+      "ticker": "APP",
+      "companyName": "AppLovin Corporation"
+    },
+    {
+      "ticker": "ARIN.TA",
+      "companyName": "Ari Real Estate (Arena) Investment Ltd"
+    },
+    {
+      "ticker": "ARM",
+      "companyName": "Arm Holdings plc"
+    },
+    {
+      "ticker": "ARYT.TA",
+      "companyName": "ARYT.TA"
+    },
+    {
+      "ticker": "AS",
+      "companyName": "Amer Sports, Inc."
+    },
+    {
+      "ticker": "AUR",
+      "companyName": "Aurora Innovation, Inc."
+    },
+    {
+      "ticker": "AURA.TA",
+      "companyName": "AURA.TA"
+    },
+    {
+      "ticker": "AVGD.TA",
+      "companyName": "Av-Gad Holdings Ltd"
+    },
+    {
+      "ticker": "AVGO",
+      "companyName": "Broadcom Inc."
+    },
+    {
+      "ticker": "AXON",
+      "companyName": "Axon Enterprise, Inc."
+    },
+    {
+      "ticker": "AZRG.TA",
+      "companyName": "AZRG.TA"
+    },
+    {
+      "ticker": "BA",
+      "companyName": "BA"
+    },
+    {
+      "ticker": "BAC",
+      "companyName": "BAC"
+    },
+    {
+      "ticker": "BE",
+      "companyName": "Bloom Energy Corporation"
+    },
+    {
+      "ticker": "BKNG",
+      "companyName": "Booking Holdings Inc."
+    },
+    {
+      "ticker": "BKR",
+      "companyName": "Baker Hughes Company"
+    },
+    {
+      "ticker": "C",
+      "companyName": "Citigroup Inc."
+    },
+    {
+      "ticker": "CAT",
+      "companyName": "Caterpillar Inc."
+    },
+    {
+      "ticker": "CEG",
+      "companyName": "Constellation Energy Corporation"
+    },
+    {
+      "ticker": "CELH",
+      "companyName": "Celsius Holdings, Inc."
+    },
+    {
+      "ticker": "CF",
+      "companyName": "CF Industries Holdings, Inc."
+    },
+    {
+      "ticker": "CLS",
+      "companyName": "Celestica Inc."
+    },
+    {
+      "ticker": "CMER.TA",
+      "companyName": "Cmer"
+    },
+    {
+      "ticker": "CMG",
+      "companyName": "Chipotle Mexican Grill, Inc."
+    },
+    {
+      "ticker": "COIN",
+      "companyName": "Coinbase Global, Inc."
+    },
+    {
+      "ticker": "COP",
+      "companyName": "ConocoPhillips"
+    },
+    {
+      "ticker": "CRM",
+      "companyName": "Salesforce, Inc."
+    },
+    {
+      "ticker": "CRNC",
+      "companyName": "Cerence Inc."
+    },
+    {
+      "ticker": "CRS",
+      "companyName": "CRS"
+    },
+    {
+      "ticker": "CRWD",
+      "companyName": "CrowdStrike Holdings, Inc."
+    },
+    {
+      "ticker": "CRWV",
+      "companyName": "CoreWeave, Inc."
+    },
+    {
+      "ticker": "CSGP",
+      "companyName": "CoStar Group, Inc."
+    },
+    {
+      "ticker": "CVX",
+      "companyName": "Chevron Corporation"
+    },
+    {
+      "ticker": "D",
+      "companyName": "D"
+    },
+    {
+      "ticker": "DDOG",
+      "companyName": "Datadog, Inc."
+    },
+    {
+      "ticker": "DLEKG.TA",
+      "companyName": "DLEKG.TA"
+    },
+    {
+      "ticker": "DORL.TA",
+      "companyName": "Doral Group Renewable Energy Resources Ltd"
+    },
+    {
+      "ticker": "DUOL",
+      "companyName": "Duolingo, Inc."
+    },
+    {
+      "ticker": "DVN",
+      "companyName": "Devon Energy Corporation"
+    },
+    {
+      "ticker": "ENERGEAN.TA",
+      "companyName": "ENERGEAN.TA"
+    },
+    {
+      "ticker": "ENLT.TA",
+      "companyName": "Enlight Renewable Energy Ltd"
+    },
+    {
+      "ticker": "ENOG.TA",
+      "companyName": "Energean plc"
+    },
+    {
+      "ticker": "ENVX",
+      "companyName": "Enovix Corporation"
+    },
+    {
+      "ticker": "EOG",
+      "companyName": "EOG Resources, Inc."
+    },
+    {
+      "ticker": "EQTL.TA",
+      "companyName": "EQTL.TA"
+    },
+    {
+      "ticker": "ETN",
+      "companyName": "Eaton Corporation plc"
+    },
+    {
+      "ticker": "FFIV",
+      "companyName": "F5, Inc."
+    },
+    {
+      "ticker": "FIBI.TA",
+      "companyName": "FIBI.TA"
+    },
+    {
+      "ticker": "FOX.TA",
+      "companyName": "Fox-Wizel Ltd."
+    },
+    {
+      "ticker": "FVRR",
+      "companyName": "Fiverr International Ltd."
+    },
+    {
+      "ticker": "GAGR.TA",
+      "companyName": "Gaon Group Ltd."
+    },
+    {
+      "ticker": "GCT.TA",
+      "companyName": "GCT.TA"
+    },
+    {
+      "ticker": "GD",
+      "companyName": "GD"
+    },
+    {
+      "ticker": "GE",
+      "companyName": "GE Aerospace"
+    },
+    {
+      "ticker": "GLTL.TA",
+      "companyName": "Gilat Telecom Global Ltd"
+    },
+    {
+      "ticker": "GLW",
+      "companyName": "Corning Incorporated"
+    },
+    {
+      "ticker": "GM",
+      "companyName": "General Motors Company"
+    },
+    {
+      "ticker": "GOOGL",
+      "companyName": "Alphabet Inc."
+    },
+    {
+      "ticker": "GS",
+      "companyName": "The Goldman Sachs Group, Inc."
+    },
+    {
+      "ticker": "HAL",
+      "companyName": "Halliburton Company"
+    },
+    {
+      "ticker": "HGGE.TA",
+      "companyName": "HGGE.TA"
+    },
+    {
+      "ticker": "HIMS",
+      "companyName": "Hims & Hers Health, Inc."
+    },
+    {
+      "ticker": "HIPR.TA",
+      "companyName": "Hiper Global Ltd."
+    },
+    {
+      "ticker": "HLT",
+      "companyName": "Hilton Worldwide Holdings Inc."
+    },
+    {
+      "ticker": "HOOD",
+      "companyName": "Robinhood Markets, Inc."
+    },
+    {
+      "ticker": "HWM",
+      "companyName": "Howmet Aerospace Inc."
+    },
+    {
+      "ticker": "IBI.TA",
+      "companyName": "I.B.I. Investment House Ltd"
+    },
+    {
+      "ticker": "IGV",
+      "companyName": "iShares Expanded Tech-Software Sector ETF"
+    },
+    {
+      "ticker": "ILCO.TA",
+      "companyName": "ILCO.TA"
+    },
+    {
+      "ticker": "IMCO.TA",
+      "companyName": "IMCO.TA"
+    },
+    {
+      "ticker": "INTC",
+      "companyName": "Intel Corporation"
+    },
+    {
+      "ticker": "IONQ",
+      "companyName": "IonQ, Inc."
+    },
+    {
+      "ticker": "ISRS.TA",
+      "companyName": "ISRS.TA"
+    },
+    {
+      "ticker": "JPM",
+      "companyName": "JPMorgan Chase & Co."
+    },
+    {
+      "ticker": "KEN.TA",
+      "companyName": "KEN.TA"
+    },
+    {
+      "ticker": "KMI",
+      "companyName": "KMI"
+    },
+    {
+      "ticker": "KO",
+      "companyName": "The Coca-Cola Company"
+    },
+    {
+      "ticker": "KRDI.TA",
+      "companyName": "KRDI.TA"
+    },
+    {
+      "ticker": "KSTN.TA",
+      "companyName": "Keystone Infra Ltd"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "companyName": "Lahav LR Real Estate Ltd"
+    },
+    {
+      "ticker": "LAHAV.TA",
+      "companyName": "Lahav LR Real Estate Ltd"
+    },
+    {
+      "ticker": "LLY",
+      "companyName": "Eli Lilly and Company"
+    },
+    {
+      "ticker": "LMND",
+      "companyName": "LMND"
+    },
+    {
+      "ticker": "LMT",
+      "companyName": "LMT"
+    },
+    {
+      "ticker": "LUNR",
+      "companyName": "Intuitive Machines, Inc."
+    },
+    {
+      "ticker": "MA",
+      "companyName": "Mastercard Incorporated"
+    },
+    {
+      "ticker": "MARA",
+      "companyName": "MARA Holdings, Inc."
+    },
+    {
+      "ticker": "META",
+      "companyName": "Meta Platforms, Inc."
+    },
+    {
+      "ticker": "MGOR.TA",
+      "companyName": "Mega Or Holdings Ltd"
+    },
+    {
+      "ticker": "MGR",
+      "companyName": "Affiliated Managers Group, Inc."
+    },
+    {
+      "ticker": "MISH.TA",
+      "companyName": "Mivtach Shamir Holdings Ltd"
+    },
+    {
+      "ticker": "MLTM.TA",
+      "companyName": "Malam - Team Ltd"
+    },
+    {
+      "ticker": "MNIF.TA",
+      "companyName": "Menif - Financial Services Ltd"
+    },
+    {
+      "ticker": "MP",
+      "companyName": "MP Materials Corp."
+    },
+    {
+      "ticker": "MPC",
+      "companyName": "Marathon Petroleum Corporation"
+    },
+    {
+      "ticker": "MRVL",
+      "companyName": "Marvell Technology, Inc."
+    },
+    {
+      "ticker": "MSFT",
+      "companyName": "Microsoft Corporation"
+    },
+    {
+      "ticker": "MSTR",
+      "companyName": "Strategy Inc"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "companyName": "Meitav Investment House Ltd"
+    },
+    {
+      "ticker": "MU",
+      "companyName": "Micron Technology, Inc."
+    },
+    {
+      "ticker": "MX",
+      "companyName": "Magnachip Semiconductor Corporation"
+    },
+    {
+      "ticker": "MXL",
+      "companyName": "MaxLinear, Inc."
+    },
+    {
+      "ticker": "NBIS",
+      "companyName": "Nebius Group N.V."
+    },
+    {
+      "ticker": "NCMI",
+      "companyName": "National CineMedia, Inc."
+    },
+    {
+      "ticker": "NET",
+      "companyName": "Cloudflare, Inc."
+    },
+    {
+      "ticker": "NFLX",
+      "companyName": "Netflix, Inc."
+    },
+    {
+      "ticker": "NFTA.TA",
+      "companyName": "NFTA.TA"
+    },
+    {
+      "ticker": "NIKE",
+      "companyName": "NIKE"
+    },
+    {
+      "ticker": "NOFR.TA",
+      "companyName": "NOFR.TA"
+    },
+    {
+      "ticker": "NOW",
+      "companyName": "ServiceNow, Inc."
+    },
+    {
+      "ticker": "NRG",
+      "companyName": "NRG Energy, Inc."
+    },
+    {
+      "ticker": "NTO.TA",
+      "companyName": "NTO.TA"
+    },
+    {
+      "ticker": "NVDA",
+      "companyName": "NVDA"
+    },
+    {
+      "ticker": "NVPT.TA",
+      "companyName": "Navitas Petroleum, Limited Partnership"
+    },
+    {
+      "ticker": "NWMD.TA",
+      "companyName": "NWMD.TA"
+    },
+    {
+      "ticker": "NXPI",
+      "companyName": "NXP Semiconductors N.V."
+    },
+    {
+      "ticker": "NXSN.TA",
+      "companyName": "NXSN.TA"
+    },
+    {
+      "ticker": "NXTM.TA",
+      "companyName": "Nextcom Ltd."
+    },
+    {
+      "ticker": "O",
+      "companyName": "Realty Income Corporation"
+    },
+    {
+      "ticker": "OKLO",
+      "companyName": "Oklo Inc."
+    },
+    {
+      "ticker": "OPEN",
+      "companyName": "Opendoor Technologies Inc."
+    },
+    {
+      "ticker": "ORCL",
+      "companyName": "Oracle Corporation"
+    },
+    {
+      "ticker": "PANW",
+      "companyName": "Palo Alto Networks, Inc."
+    },
+    {
+      "ticker": "PEP",
+      "companyName": "PEP"
+    },
+    {
+      "ticker": "PHINERGY.TA",
+      "companyName": "PHINERGY.TA"
+    },
+    {
+      "ticker": "PL",
+      "companyName": "Planet Labs PBC"
+    },
+    {
+      "ticker": "PLD",
+      "companyName": "PLD"
+    },
+    {
+      "ticker": "PLTR",
+      "companyName": "PLTR"
+    },
+    {
+      "ticker": "PNC",
+      "companyName": "PNC"
+    },
+    {
+      "ticker": "PNRG.TA",
+      "companyName": "PNRG.TA"
+    },
+    {
+      "ticker": "POET",
+      "companyName": "POET Technologies Inc."
+    },
+    {
+      "ticker": "PRIM.TA",
+      "companyName": "Prime Energy P.E. Ltd"
+    },
+    {
+      "ticker": "PSX",
+      "companyName": "Phillips 66"
+    },
+    {
+      "ticker": "PTON",
+      "companyName": "Peloton Interactive, Inc."
+    },
+    {
+      "ticker": "PYPL",
+      "companyName": "PayPal Holdings, Inc."
+    },
+    {
+      "ticker": "QCOM",
+      "companyName": "QUALCOMM Incorporated"
+    },
+    {
+      "ticker": "QLTU.TA",
+      "companyName": "Qualitau Ltd"
+    },
+    {
+      "ticker": "QUBT",
+      "companyName": "Quantum Computing Inc."
+    },
+    {
+      "ticker": "RDDT",
+      "companyName": "Reddit, Inc."
+    },
+    {
+      "ticker": "REGN",
+      "companyName": "Regeneron Pharmaceuticals, Inc."
+    },
+    {
+      "ticker": "RGTI",
+      "companyName": "Rigetti Computing, Inc."
+    },
+    {
+      "ticker": "RIVN",
+      "companyName": "Rivian Automotive, Inc."
+    },
+    {
+      "ticker": "RKLB",
+      "companyName": "Rocket Lab Corporation"
+    },
+    {
+      "ticker": "RTX",
+      "companyName": "RTX Corporation"
+    },
+    {
+      "ticker": "S",
+      "companyName": "SentinelOne, Inc."
+    },
+    {
+      "ticker": "SATL",
+      "companyName": "Satellogic Inc."
+    },
+    {
+      "ticker": "SBUX",
+      "companyName": "Starbucks Corporation"
+    },
+    {
+      "ticker": "SEDG",
+      "companyName": "SolarEdge Technologies, Inc."
+    },
+    {
+      "ticker": "SHOM.TA",
+      "companyName": "Shomera"
+    },
+    {
+      "ticker": "SHOP",
+      "companyName": "Shopify Inc."
+    },
+    {
+      "ticker": "SLARL.TA",
+      "companyName": "SLARL.TA"
+    },
+    {
+      "ticker": "SLB",
+      "companyName": "SLB N.V."
+    },
+    {
+      "ticker": "SMCI",
+      "companyName": "Super Micro Computer, Inc."
+    },
+    {
+      "ticker": "SNDK",
+      "companyName": "SNDK"
+    },
+    {
+      "ticker": "SNOW",
+      "companyName": "Snowflake Inc."
+    },
+    {
+      "ticker": "SO",
+      "companyName": "SO"
+    },
+    {
+      "ticker": "SOFI",
+      "companyName": "SoFi Technologies, Inc."
+    },
+    {
+      "ticker": "SOFW.TA",
+      "companyName": "SofWave Medical Ltd."
+    },
+    {
+      "ticker": "SOUN",
+      "companyName": "SoundHound AI, Inc."
+    },
+    {
+      "ticker": "SOXX",
+      "companyName": "iShares Semiconductor ETF"
+    },
+    {
+      "ticker": "SPOT",
+      "companyName": "Spotify Technology S.A."
+    },
+    {
+      "ticker": "STX",
+      "companyName": "Seagate Technology Holdings plc"
+    },
+    {
+      "ticker": "TBLA",
+      "companyName": "Taboola.com Ltd."
+    },
+    {
+      "ticker": "TEVA",
+      "companyName": "Teva Pharmaceutical Industries Limited"
+    },
+    {
+      "ticker": "TFC",
+      "companyName": "TFC"
+    },
+    {
+      "ticker": "TKO",
+      "companyName": "TKO Group Holdings, Inc."
+    },
+    {
+      "ticker": "TLSY.TA",
+      "companyName": "Telsys Ltd."
+    },
+    {
+      "ticker": "TMC",
+      "companyName": "TMC the metals company Inc."
+    },
+    {
+      "ticker": "TRX.TA",
+      "companyName": "Terminal X Online Ltd."
+    },
+    {
+      "ticker": "TSLA",
+      "companyName": "Tesla, Inc."
+    },
+    {
+      "ticker": "TSM",
+      "companyName": "Taiwan Semiconductor Manufacturing Company Limited"
+    },
+    {
+      "ticker": "TTD",
+      "companyName": "The Trade Desk, Inc."
+    },
+    {
+      "ticker": "UBER",
+      "companyName": "Uber Technologies, Inc."
+    },
+    {
+      "ticker": "UPS",
+      "companyName": "United Parcel Service, Inc."
+    },
+    {
+      "ticker": "USB",
+      "companyName": "USB"
+    },
+    {
+      "ticker": "V",
+      "companyName": "Visa Inc."
+    },
+    {
+      "ticker": "VLO",
+      "companyName": "VLO"
+    },
+    {
+      "ticker": "VRT",
+      "companyName": "Vertiv Holdings Co"
+    },
+    {
+      "ticker": "VST",
+      "companyName": "Vistra Corp."
+    },
+    {
+      "ticker": "W",
+      "companyName": "W"
+    },
+    {
+      "ticker": "WDC",
+      "companyName": "Western Digital Corporation"
+    },
+    {
+      "ticker": "WMB",
+      "companyName": "The Williams Companies, Inc."
+    },
+    {
+      "ticker": "XEL",
+      "companyName": "XEL"
+    },
+    {
+      "ticker": "XOM",
+      "companyName": "Exxon Mobil Corporation"
+    },
+    {
+      "ticker": "ZIM",
+      "companyName": "ZIM Integrated Shipping Services Ltd."
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tcompanyName\nAA\tAlcoa Corporation\nAAPL\tApple Inc.\nACCL.TA\tAccel\nAEP\tAmerican Electric Power Company, Inc.\nAFRM\tAffirm Holdings, Inc.\nAI\tC3.ai, Inc.\nALAB\tAstera Labs, Inc.\nAMD\tAdvanced Micro Devices, Inc.\nAMOT.TA\tAMOT.TA\nAMZN\tAmazon.com, Inc.\nAON\tAON\nAPP\tAppLovin Corporation\nARIN.TA\tAri Real Estate (Arena) Investment Ltd\nARM\tArm Holdings plc\nARYT.TA\tARYT.TA\nAS\tAmer Sports, Inc.\nAUR\tAurora Innovation, Inc.\nAURA.TA\tAURA.TA\nAVGD.TA\tAv-Gad Holdings Ltd\nAVGO\tBroadcom Inc.\nAXON\tAxon Enterprise, Inc.\nAZRG.TA\tAZRG.TA\nBA\tBA\nBAC\tBAC\nBE\tBloom Energy Corporation\nBKNG\tBooking Holdings Inc.\nBKR\tBaker Hughes Company\nC\tCitigroup Inc.\nCAT\tCaterpillar Inc.\nCEG\tConstellation Energy Corporation\nCELH\tCelsius Holdings, Inc.\nCF\tCF Industries Holdings, Inc.\nCLS\tCelestica Inc.\nCMER.TA\tCmer\nCMG\tChipotle Mexican Grill, Inc.\nCOIN\tCoinbase Global, Inc.\nCOP\tConocoPhillips\nCRM\tSalesforce, Inc.\nCRNC\tCerence Inc.\nCRS\tCRS\nCRWD\tCrowdStrike Holdings, Inc.\nCRWV\tCoreWeave, Inc.\nCSGP\tCoStar Group, Inc.\nCVX\tChevron Corporation\nD\tD\nDDOG\tDatadog, Inc.\nDLEKG.TA\tDLEKG.TA\nDORL.TA\tDoral Group Renewable Energy Resources Ltd\nDUOL\tDuolingo, Inc.\nDVN\tDevon Energy Corporation\nENERGEAN.TA\tENERGEAN.TA\nENLT.TA\tEnlight Renewable Energy Ltd\nENOG.TA\tEnergean plc\nENVX\tEnovix Corporation\nEOG\tEOG Resources, Inc.\nEQTL.TA\tEQTL.TA\nETN\tEaton Corporation plc\nFFIV\tF5, Inc.\nFIBI.TA\tFIBI.TA\nFOX.TA\tFox-Wizel Ltd.\nFVRR\tFiverr International Ltd.\nGAGR.TA\tGaon Group Ltd.\nGCT.TA\tGCT.TA\nGD\tGD\nGE\tGE Aerospace\nGLTL.TA\tGilat Telecom Global Ltd\nGLW\tCorning Incorporated\nGM\tGeneral Motors Company\nGOOGL\tAlphabet Inc.\nGS\tThe Goldman Sachs Group, Inc.\nHAL\tHalliburton Company\nHGGE.TA\tHGGE.TA\nHIMS\tHims & Hers Health, Inc.\nHIPR.TA\tHiper Global Ltd.\nHLT\tHilton Worldwide Holdings Inc.\nHOOD\tRobinhood Markets, Inc.\nHWM\tHowmet Aerospace Inc.\nIBI.TA\tI.B.I. Investment House Ltd\nIGV\tiShares Expanded Tech-Software Sector ETF\nILCO.TA\tILCO.TA\nIMCO.TA\tIMCO.TA\nINTC\tIntel Corporation\nIONQ\tIonQ, Inc.\nISRS.TA\tISRS.TA\nJPM\tJPMorgan Chase & Co.\nKEN.TA\tKEN.TA\nKMI\tKMI\nKO\tThe Coca-Cola Company\nKRDI.TA\tKRDI.TA\nKSTN.TA\tKeystone Infra Ltd\nLAHAV.TA\tLahav LR Real Estate Ltd\nLAHAV.TA\tLahav LR Real Estate Ltd\nLLY\tEli Lilly and Company\nLMND\tLMND\nLMT\tLMT\nLUNR\tIntuitive Machines, Inc.\nMA\tMastercard Incorporated\nMARA\tMARA Holdings, Inc.\nMETA\tMeta Platforms, Inc.\nMGOR.TA\tMega Or Holdings Ltd\nMGR\tAffiliated Managers Group, Inc.\nMISH.TA\tMivtach Shamir Holdings Ltd\nMLTM.TA\tMalam - Team Ltd\nMNIF.TA\tMenif - Financial Services Ltd\nMP\tMP Materials Corp.\nMPC\tMarathon Petroleum Corporation\nMRVL\tMarvell Technology, Inc.\nMSFT\tMicrosoft Corporation\nMSTR\tStrategy Inc\nMTAV.TA\tMeitav Investment House Ltd\nMU\tMicron Technology, Inc.\nMX\tMagnachip Semiconductor Corporation\nMXL\tMaxLinear, Inc.\nNBIS\tNebius Group N.V.\nNCMI\tNational CineMedia, Inc.\nNET\tCloudflare, Inc.\nNFLX\tNetflix, Inc.\nNFTA.TA\tNFTA.TA\nNIKE\tNIKE\nNOFR.TA\tNOFR.TA\nNOW\tServiceNow, Inc.\nNRG\tNRG Energy, Inc.\nNTO.TA\tNTO.TA\nNVDA\tNVDA\nNVPT.TA\tNavitas Petroleum, Limited Partnership\nNWMD.TA\tNWMD.TA\nNXPI\tNXP Semiconductors N.V.\nNXSN.TA\tNXSN.TA\nNXTM.TA\tNextcom Ltd.\nO\tRealty Income Corporation\nOKLO\tOklo Inc.\nOPEN\tOpendoor Technologies Inc.\nORCL\tOracle Corporation\nPANW\tPalo Alto Networks, Inc.\nPEP\tPEP\nPHINERGY.TA\tPHINERGY.TA\nPL\tPlanet Labs PBC\nPLD\tPLD\nPLTR\tPLTR\nPNC\tPNC\nPNRG.TA\tPNRG.TA\nPOET\tPOET Technologies Inc.\nPRIM.TA\tPrime Energy P.E. Ltd\nPSX\tPhillips 66\nPTON\tPeloton Interactive, Inc.\nPYPL\tPayPal Holdings, Inc.\nQCOM\tQUALCOMM Incorporated\nQLTU.TA\tQualitau Ltd\nQUBT\tQuantum Computing Inc.\nRDDT\tReddit, Inc.\nREGN\tRegeneron Pharmaceuticals, Inc.\nRGTI\tRigetti Computing, Inc.\nRIVN\tRivian Automotive, Inc.\nRKLB\tRocket Lab Corporation\nRTX\tRTX Corporation\nS\tSentinelOne, Inc.\nSATL\tSatellogic Inc.\nSBUX\tStarbucks Corporation\nSEDG\tSolarEdge Technologies, Inc.\nSHOM.TA\tShomera\nSHOP\tShopify Inc.\nSLARL.TA\tSLARL.TA\nSLB\tSLB N.V.\nSMCI\tSuper Micro Computer, Inc.\nSNDK\tSNDK\nSNOW\tSnowflake Inc.\nSO\tSO\nSOFI\tSoFi Technologies, Inc.\nSOFW.TA\tSofWave Medical Ltd.\nSOUN\tSoundHound AI, Inc.\nSOXX\tiShares Semiconductor ETF\nSPOT\tSpotify Technology S.A.\nSTX\tSeagate Technology Holdings plc\nTBLA\tTaboola.com Ltd.\nTEVA\tTeva Pharmaceutical Industries Limited\nTFC\tTFC\nTKO\tTKO Group Holdings, Inc.\nTLSY.TA\tTelsys Ltd.\nTMC\tTMC the metals company Inc.\nTRX.TA\tTerminal X Online Ltd.\nTSLA\tTesla, Inc.\nTSM\tTaiwan Semiconductor Manufacturing Company Limited\nTTD\tThe Trade Desk, Inc.\nUBER\tUber Technologies, Inc.\nUPS\tUnited Parcel Service, Inc.\nUSB\tUSB\nV\tVisa Inc.\nVLO\tVLO\nVRT\tVertiv Holdings Co\nVST\tVistra Corp.\nW\tW\nWDC\tWestern Digital Corporation\nWMB\tThe Williams Companies, Inc.\nXEL\tXEL\nXOM\tExxon Mobil Corporation\nZIM\tZIM Integrated Shipping Services Ltd.\n",
+  "stderr": "",
+  "execution_time_ms": 1786
+}

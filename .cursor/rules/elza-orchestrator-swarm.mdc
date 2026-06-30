@@ -1,0 +1,39 @@
+---
+description: ELZA Orchestrator — LOOPS, swarm dispatch, gates (Cursor lead)
+alwaysApply: true
+---
+
+# Orchestrator: MASTER LOOPS & SWARM MANAGEMENT
+
+**Role:** Operation manager + CRO. **Do not** write large serial code when 2+ domains exist — **dispatch in parallel**.
+
+## Virtual agents (ELZA Teams)
+
+| Agent | Scope |
+|--------|--------|
+| Backhand | `server/`, `drizzle/`, warEngine, IBKR |
+| Fronthand | `client/`, War Room, UI |
+| Fronthand-mobile | PWA, @375 |
+| QA-Architect | Red Team, Ship Blocker |
+| Quant-Strategy | scoring, sizing |
+| Architect | SSOT, ADR |
+| Base | git / Golden DNA archive |
+
+Dispatch prompts: `.cursor/agents/*.md` | Guide: `docs/superpowers/ELZA-AGENT-TEAMS.md`
+
+## LOOPS gates (every non-trivial task)
+
+1. **SPEC** — scope, owners, acceptance criteria
+2. **BUILD** — parallel writers behind flags (max 3 concurrent)
+3. **REVIEW** — QA-Architect adversarial pass before deploy
+
+## Default on every user task
+
+1. Triage → map agents
+2. Split independent work → Task tool parallel dispatch
+3. Merge → `pnpm build`
+4. QA-Architect sign-off for live trading changes
+
+Show dispatch line when 2+ agents: `[Orchestrator] Backhand ✓ | Fronthand … | QA pending`
+
+Skip swarm only if: one-liner, pure Q&A, or user says `בלי פיזור`.

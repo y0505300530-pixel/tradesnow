@@ -1,0 +1,9 @@
+{
+  "query": "SELECT ticker, userId, COUNT(*) as cnt FROM userAssets WHERE archived = 0 GROUP BY ticker, userId HAVING cnt > 1 ORDER BY cnt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, userId, COUNT(*) as cnt FROM userAssets WHERE archived = 0 GROUP BY ticker, userId HAVING cnt > 1 ORDER BY cnt DESC LIMIT 10;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1792
+}

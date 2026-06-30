@@ -1,0 +1,376 @@
+{
+  "query": "SELECT ua.ticker, ua.companyName, ua.sector, ua.sortOrder FROM userAssets ua WHERE ua.userId = (SELECT userId FROM userAssets GROUP BY userId ORDER BY COUNT(*) DESC LIMIT 1) ORDER BY ua.sortOrder, ua.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ua.ticker, ua.companyName, ua.sector, ua.sortOrder FROM userAssets ua WHERE ua.userId = (SELECT userId FROM userAssets GROUP BY userId ORDER BY COUNT(*) DESC LIMIT 1) ORDER BY ua.sortOrder, ua.id;",
+  "rows": [
+    {
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "sortOrder": "0"
+    },
+    {
+      "ticker": "TSM",
+      "companyName": "Taiwan Semiconductor Manufacturing Company Limited",
+      "sector": "Semiconductors",
+      "sortOrder": "1"
+    },
+    {
+      "ticker": "AVGO",
+      "companyName": "Broadcom Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "2"
+    },
+    {
+      "ticker": "MU",
+      "companyName": "Micron Technology, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "3"
+    },
+    {
+      "ticker": "ALAB",
+      "companyName": "Astera Labs, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "4"
+    },
+    {
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "5"
+    },
+    {
+      "ticker": "MRVL",
+      "companyName": "Marvell Technology, Inc.",
+      "sector": "Semiconductors",
+      "sortOrder": "6"
+    },
+    {
+      "ticker": "ARM",
+      "companyName": "Arm Holdings plc",
+      "sector": "Semiconductors",
+      "sortOrder": "7"
+    },
+    {
+      "ticker": "AAPL",
+      "companyName": "Apple Inc.",
+      "sector": "Technology",
+      "sortOrder": "8"
+    },
+    {
+      "ticker": "MSFT",
+      "companyName": "Microsoft Corporation",
+      "sector": "Technology",
+      "sortOrder": "9"
+    },
+    {
+      "ticker": "META",
+      "companyName": "Meta Platforms, Inc.",
+      "sector": "Technology",
+      "sortOrder": "10"
+    },
+    {
+      "ticker": "GOOGL",
+      "companyName": "Alphabet Inc.",
+      "sector": "Technology",
+      "sortOrder": "11"
+    },
+    {
+      "ticker": "AMZN",
+      "companyName": "Amazon.com, Inc.",
+      "sector": "Technology",
+      "sortOrder": "12"
+    },
+    {
+      "ticker": "NOW",
+      "companyName": "ServiceNow, Inc.",
+      "sector": "Technology",
+      "sortOrder": "13"
+    },
+    {
+      "ticker": "ORCL",
+      "companyName": "Oracle Corporation",
+      "sector": "Technology",
+      "sortOrder": "14"
+    },
+    {
+      "ticker": "CRM",
+      "companyName": "Salesforce, Inc.",
+      "sector": "Technology",
+      "sortOrder": "15"
+    },
+    {
+      "ticker": "PLTR",
+      "companyName": "Palantir Technologies Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "16"
+    },
+    {
+      "ticker": "APP",
+      "companyName": "AppLovin Corporation",
+      "sector": "AI / Data",
+      "sortOrder": "17"
+    },
+    {
+      "ticker": "SOUN",
+      "companyName": "SoundHound AI, Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "18"
+    },
+    {
+      "ticker": "AI",
+      "companyName": "C3.ai, Inc.",
+      "sector": "AI / Data",
+      "sortOrder": "19"
+    },
+    {
+      "ticker": "COIN",
+      "companyName": "Coinbase Global, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "20"
+    },
+    {
+      "ticker": "MSTR",
+      "companyName": "Strategy Inc",
+      "sector": "Crypto / Fin",
+      "sortOrder": "21"
+    },
+    {
+      "ticker": "MARA",
+      "companyName": "MARA Holdings, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "22"
+    },
+    {
+      "ticker": "HOOD",
+      "companyName": "Robinhood Markets, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "23"
+    },
+    {
+      "ticker": "PYPL",
+      "companyName": "PayPal Holdings, Inc.",
+      "sector": "Crypto / Fin",
+      "sortOrder": "24"
+    },
+    {
+      "ticker": "JPM",
+      "companyName": "JPMorgan Chase & Co.",
+      "sector": "Finance",
+      "sortOrder": "25"
+    },
+    {
+      "ticker": "GS",
+      "companyName": "The Goldman Sachs Group, Inc.",
+      "sector": "Finance",
+      "sortOrder": "26"
+    },
+    {
+      "ticker": "V",
+      "companyName": "Visa Inc.",
+      "sector": "Finance",
+      "sortOrder": "27"
+    },
+    {
+      "ticker": "SOFI",
+      "companyName": "SoFi Technologies, Inc.",
+      "sector": "Finance",
+      "sortOrder": "28"
+    },
+    {
+      "ticker": "LLY",
+      "companyName": "Eli Lilly and Company",
+      "sector": "Healthcare",
+      "sortOrder": "29"
+    },
+    {
+      "ticker": "HIMS",
+      "companyName": "Hims & Hers Health, Inc.",
+      "sector": "Healthcare",
+      "sortOrder": "30"
+    },
+    {
+      "ticker": "CELH",
+      "companyName": "Celsius Holdings, Inc.",
+      "sector": "Healthcare",
+      "sortOrder": "31"
+    },
+    {
+      "ticker": "TSLA",
+      "companyName": "Tesla, Inc.",
+      "sector": "EV / Auto",
+      "sortOrder": "32"
+    },
+    {
+      "ticker": "RIVN",
+      "companyName": "Rivian Automotive, Inc.",
+      "sector": "EV / Auto",
+      "sortOrder": "33"
+    },
+    {
+      "ticker": "RKLB",
+      "companyName": "Rocket Lab Corporation",
+      "sector": "Space",
+      "sortOrder": "34"
+    },
+    {
+      "ticker": "LUNR",
+      "companyName": "Intuitive Machines, Inc.",
+      "sector": "Space",
+      "sortOrder": "35"
+    },
+    {
+      "ticker": "AXON",
+      "companyName": "Axon Enterprise, Inc.",
+      "sector": "Defense Tech",
+      "sortOrder": "36"
+    },
+    {
+      "ticker": "IONQ",
+      "companyName": "IonQ, Inc.",
+      "sector": "Quantum",
+      "sortOrder": "37"
+    },
+    {
+      "ticker": "QUBT",
+      "companyName": "Quantum Computing Inc.",
+      "sector": "Quantum",
+      "sortOrder": "38"
+    },
+    {
+      "ticker": "RGTI",
+      "companyName": "Rigetti Computing, Inc.",
+      "sector": "Quantum",
+      "sortOrder": "39"
+    },
+    {
+      "ticker": "CEG",
+      "companyName": "Constellation Energy Corporation",
+      "sector": "Nuclear",
+      "sortOrder": "40"
+    },
+    {
+      "ticker": "VST",
+      "companyName": "Vistra Corp.",
+      "sector": "Energy",
+      "sortOrder": "41"
+    },
+    {
+      "ticker": "NRG",
+      "companyName": "NRG Energy, Inc.",
+      "sector": "Energy",
+      "sortOrder": "42"
+    },
+    {
+      "ticker": "CAT",
+      "companyName": "Caterpillar Inc.",
+      "sector": "Industrials",
+      "sortOrder": "43"
+    },
+    {
+      "ticker": "GE",
+      "companyName": "GE Aerospace",
+      "sector": "Industrials",
+      "sortOrder": "44"
+    },
+    {
+      "ticker": "RTX",
+      "companyName": "RTX Corporation",
+      "sector": "Defense",
+      "sortOrder": "45"
+    },
+    {
+      "ticker": "NFLX",
+      "companyName": "Netflix, Inc.",
+      "sector": "Media",
+      "sortOrder": "46"
+    },
+    {
+      "ticker": "SPOT",
+      "companyName": "Spotify Technology S.A.",
+      "sector": "Media",
+      "sortOrder": "47"
+    },
+    {
+      "ticker": "RDDT",
+      "companyName": "Reddit, Inc.",
+      "sector": "Social Media",
+      "sortOrder": "48"
+    },
+    {
+      "ticker": "CRWD",
+      "companyName": "CrowdStrike Holdings, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "49"
+    },
+    {
+      "ticker": "PANW",
+      "companyName": "Palo Alto Networks, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "50"
+    },
+    {
+      "ticker": "S",
+      "companyName": "SentinelOne, Inc.",
+      "sector": "Cybersecurity",
+      "sortOrder": "51"
+    },
+    {
+      "ticker": "DDOG",
+      "companyName": "Datadog, Inc.",
+      "sector": "SaaS",
+      "sortOrder": "52"
+    },
+    {
+      "ticker": "NET",
+      "companyName": "Cloudflare, Inc.",
+      "sector": "SaaS",
+      "sortOrder": "53"
+    },
+    {
+      "ticker": "SNOW",
+      "companyName": "Snowflake Inc.",
+      "sector": "SaaS",
+      "sortOrder": "54"
+    },
+    {
+      "ticker": "SHOP",
+      "companyName": "Shopify Inc.",
+      "sector": "E-Commerce",
+      "sortOrder": "55"
+    },
+    {
+      "ticker": "UBER",
+      "companyName": "Uber Technologies, Inc.",
+      "sector": "Technology",
+      "sortOrder": "56"
+    },
+    {
+      "ticker": "ZIM",
+      "companyName": "ZIM Integrated Shipping Services Ltd.",
+      "sector": "Shipping",
+      "sortOrder": "57"
+    },
+    {
+      "ticker": "DUOL",
+      "companyName": "Duolingo, Inc.",
+      "sector": "EdTech",
+      "sortOrder": "58"
+    },
+    {
+      "ticker": "TTD",
+      "companyName": "The Trade Desk, Inc.",
+      "sector": "Ad Tech",
+      "sortOrder": "59"
+    },
+    {
+      "ticker": "AFRM",
+      "companyName": "Affirm Holdings, Inc.",
+      "sector": "Fintech",
+      "sortOrder": "60"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tcompanyName\tsector\tsortOrder\nNVDA\tNVIDIA Corporation\tSemiconductors\t0\nTSM\tTaiwan Semiconductor Manufacturing Company Limited\tSemiconductors\t1\nAVGO\tBroadcom Inc.\tSemiconductors\t2\nMU\tMicron Technology, Inc.\tSemiconductors\t3\nALAB\tAstera Labs, Inc.\tSemiconductors\t4\nAMD\tAdvanced Micro Devices, Inc.\tSemiconductors\t5\nMRVL\tMarvell Technology, Inc.\tSemiconductors\t6\nARM\tArm Holdings plc\tSemiconductors\t7\nAAPL\tApple Inc.\tTechnology\t8\nMSFT\tMicrosoft Corporation\tTechnology\t9\nMETA\tMeta Platforms, Inc.\tTechnology\t10\nGOOGL\tAlphabet Inc.\tTechnology\t11\nAMZN\tAmazon.com, Inc.\tTechnology\t12\nNOW\tServiceNow, Inc.\tTechnology\t13\nORCL\tOracle Corporation\tTechnology\t14\nCRM\tSalesforce, Inc.\tTechnology\t15\nPLTR\tPalantir Technologies Inc.\tAI / Data\t16\nAPP\tAppLovin Corporation\tAI / Data\t17\nSOUN\tSoundHound AI, Inc.\tAI / Data\t18\nAI\tC3.ai, Inc.\tAI / Data\t19\nCOIN\tCoinbase Global, Inc.\tCrypto / Fin\t20\nMSTR\tStrategy Inc\tCrypto / Fin\t21\nMARA\tMARA Holdings, Inc.\tCrypto / Fin\t22\nHOOD\tRobinhood Markets, Inc.\tCrypto / Fin\t23\nPYPL\tPayPal Holdings, Inc.\tCrypto / Fin\t24\nJPM\tJPMorgan Chase & Co.\tFinance\t25\nGS\tThe Goldman Sachs Group, Inc.\tFinance\t26\nV\tVisa Inc.\tFinance\t27\nSOFI\tSoFi Technologies, Inc.\tFinance\t28\nLLY\tEli Lilly and Company\tHealthcare\t29\nHIMS\tHims & Hers Health, Inc.\tHealthcare\t30\nCELH\tCelsius Holdings, Inc.\tHealthcare\t31\nTSLA\tTesla, Inc.\tEV / Auto\t32\nRIVN\tRivian Automotive, Inc.\tEV / Auto\t33\nRKLB\tRocket Lab Corporation\tSpace\t34\nLUNR\tIntuitive Machines, Inc.\tSpace\t35\nAXON\tAxon Enterprise, Inc.\tDefense Tech\t36\nIONQ\tIonQ, Inc.\tQuantum\t37\nQUBT\tQuantum Computing Inc.\tQuantum\t38\nRGTI\tRigetti Computing, Inc.\tQuantum\t39\nCEG\tConstellation Energy Corporation\tNuclear\t40\nVST\tVistra Corp.\tEnergy\t41\nNRG\tNRG Energy, Inc.\tEnergy\t42\nCAT\tCaterpillar Inc.\tIndustrials\t43\nGE\tGE Aerospace\tIndustrials\t44\nRTX\tRTX Corporation\tDefense\t45\nNFLX\tNetflix, Inc.\tMedia\t46\nSPOT\tSpotify Technology S.A.\tMedia\t47\nRDDT\tReddit, Inc.\tSocial Media\t48\nCRWD\tCrowdStrike Holdings, Inc.\tCybersecurity\t49\nPANW\tPalo Alto Networks, Inc.\tCybersecurity\t50\nS\tSentinelOne, Inc.\tCybersecurity\t51\nDDOG\tDatadog, Inc.\tSaaS\t52\nNET\tCloudflare, Inc.\tSaaS\t53\nSNOW\tSnowflake Inc.\tSaaS\t54\nSHOP\tShopify Inc.\tE-Commerce\t55\nUBER\tUber Technologies, Inc.\tTechnology\t56\nZIM\tZIM Integrated Shipping Services Ltd.\tShipping\t57\nDUOL\tDuolingo, Inc.\tEdTech\t58\nTTD\tThe Trade Desk, Inc.\tAd Tech\t59\nAFRM\tAffirm Holdings, Inc.\tFintech\t60\n",
+  "stderr": "",
+  "execution_time_ms": 1602
+}

@@ -1,0 +1,9 @@
+{
+  "query": "\nALTER TABLE portfolioHoldings ADD COLUMN slMode VARCHAR(32) NULL;\nALTER TABLE portfolioHoldings ADD COLUMN tpMode VARCHAR(32) NULL;\nALTER TABLE holding2 ADD COLUMN slMode VARCHAR(32) NULL;\nALTER TABLE holding2 ADD COLUMN tpMode VARCHAR(32) NULL;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nALTER TABLE portfolioHoldings ADD COLUMN slMode VARCHAR(32) NULL;\nALTER TABLE portfolioHoldings ADD COLUMN tpMode VARCHAR(32) NULL;\nALTER TABLE holding2 ADD COLUMN slMode VARCHAR(32) NULL;\nALTER TABLE holding2 ADD COLUMN tpMode VARCHAR(32) NULL;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3104
+}

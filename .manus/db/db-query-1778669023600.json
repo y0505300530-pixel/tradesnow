@@ -1,0 +1,50 @@
+{
+  "query": "SELECT ticker, units, entryPrice, allocatedCapital, unrealizedPnl, currentPrice FROM paperPositions WHERE status='open' AND ticker LIKE '%.TA';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, units, entryPrice, allocatedCapital, unrealizedPnl, currentPrice FROM paperPositions WHERE status='open' AND ticker LIKE '%.TA';",
+  "rows": [
+    {
+      "ticker": "HIPR.TA",
+      "units": "569",
+      "entryPrice": "8.773142089675597",
+      "allocatedCapital": "4991.917849025414",
+      "unrealizedPnl": "-7.118096967836719",
+      "currentPrice": "8.760632253176762"
+    },
+    {
+      "ticker": "NXSN.TA",
+      "units": "48",
+      "entryPrice": "103.65751773538122",
+      "allocatedCapital": "4975.560851298298",
+      "unrealizedPnl": "-16.712406103905323",
+      "currentPrice": "103.30934260821653"
+    },
+    {
+      "ticker": "AURA.TA",
+      "units": "693",
+      "entryPrice": "7.204662855568564",
+      "allocatedCapital": "4992.831358909015",
+      "unrealizedPnl": "13.931959387069606",
+      "currentPrice": "7.224766693067943"
+    },
+    {
+      "ticker": "SLARL.TA",
+      "units": "1361",
+      "entryPrice": "3.6678283628349058",
+      "allocatedCapital": "4991.914401818307",
+      "unrealizedPnl": "-1.8465807008075457",
+      "currentPrice": "3.6664715805418804"
+    },
+    {
+      "ticker": "NTO.TA",
+      "units": "59",
+      "entryPrice": "92.58879437997176",
+      "allocatedCapital": "5462.738868418333",
+      "unrealizedPnl": "0",
+      "currentPrice": "92.58879437997176"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tunits\tentryPrice\tallocatedCapital\tunrealizedPnl\tcurrentPrice\nHIPR.TA\t569\t8.773142089675597\t4991.917849025414\t-7.118096967836719\t8.760632253176762\nNXSN.TA\t48\t103.65751773538122\t4975.560851298298\t-16.712406103905323\t103.30934260821653\nAURA.TA\t693\t7.204662855568564\t4992.831358909015\t13.931959387069606\t7.224766693067943\nSLARL.TA\t1361\t3.6678283628349058\t4991.914401818307\t-1.8465807008075457\t3.6664715805418804\nNTO.TA\t59\t92.58879437997176\t5462.738868418333\t0\t92.58879437997176\n",
+  "stderr": "",
+  "execution_time_ms": 1816
+}

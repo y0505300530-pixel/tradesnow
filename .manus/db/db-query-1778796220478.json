@@ -1,0 +1,50 @@
+{
+  "query": "SELECT userId, COUNT(*) as cnt FROM userAssets WHERE archived = 0 GROUP BY userId ORDER BY cnt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT userId, COUNT(*) as cnt FROM userAssets WHERE archived = 0 GROUP BY userId ORDER BY cnt DESC LIMIT 10;",
+  "rows": [
+    {
+      "userId": "9992132",
+      "cnt": "210"
+    },
+    {
+      "userId": "1",
+      "cnt": "201"
+    },
+    {
+      "userId": "1980365",
+      "cnt": "201"
+    },
+    {
+      "userId": "3180001",
+      "cnt": "200"
+    },
+    {
+      "userId": "7620254",
+      "cnt": "200"
+    },
+    {
+      "userId": "1740142",
+      "cnt": "63"
+    },
+    {
+      "userId": "692216",
+      "cnt": "61"
+    },
+    {
+      "userId": "1680140",
+      "cnt": "61"
+    },
+    {
+      "userId": "1230170",
+      "cnt": "61"
+    },
+    {
+      "userId": "2071394",
+      "cnt": "61"
+    }
+  ],
+  "messages": [],
+  "stdout": "userId\tcnt\n9992132\t210\n1\t201\n1980365\t201\n3180001\t200\n7620254\t200\n1740142\t63\n692216\t61\n1680140\t61\n1230170\t61\n2071394\t61\n",
+  "stderr": "",
+  "execution_time_ms": 1784
+}

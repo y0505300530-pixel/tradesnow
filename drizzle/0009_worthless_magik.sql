@@ -1,0 +1,1 @@
+ALTER TABLE `channelVideos` ADD `mentor` enum('cycles_trading','micha_stocks') DEFAULT 'cycles_trading' NOT NULL;

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TS — TradeSnow</title>
+    <meta name="description" content="פלטפורמת המסחר החכמה ביותר — סריקת 200+ נכסים, ניתוח סרטוני YouTube, ניהול פוזיציות, הכל במקום אחד." />
+    <meta name="theme-color" content="#0a0f1e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TS" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/pwa-192.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="tradesnow.vip — תסחר חכם יותר" />
+    <meta property="og:description" content="פלטפורמת המסחר החכמה ביותר — AI, סריקות, ניתוח YouTube, ניהול פוזיציות." />
+    <meta property="og:image" content="https://media.base44.com/images/public/6a2993f490ca3a7e90b24670/c081053ea_generated_image.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tradesnow.vip" />
+
+    <!-- DNS prefetch for API endpoints -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- HTTP/2 Server Push hints (Express will serve these as Link headers) -->
+    <meta name="x-preload-hint" content="fonts,icons" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(reg) {
+              console.log('[PWA] Service Worker registered:', reg.scope);
+            })
+            .catch(function(err) {
+              console.warn('[PWA] Service Worker registration failed:', err);
+            });
+        });
+      }
+    </script>
+  </body>
+
+</html>

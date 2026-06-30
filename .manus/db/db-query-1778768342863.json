@@ -1,0 +1,25 @@
+{
+  "query": "-- Final verification\nSELECT 'Ledger' as type, availableCash, sessionId FROM paperLedger WHERE userId = 1\nUNION ALL\nSELECT 'OpenPositions' as type, COUNT(*) as val, 0 FROM paperPositions WHERE userId = 1 AND status = 'open'\nUNION ALL\nSELECT 'RecentTrades_30d' as type, COUNT(*) as val, 0 FROM paperTrades WHERE userId = 1 AND closedAt >= DATE_SUB(NOW(), INTERVAL 30 DAY);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute -- Final verification\nSELECT 'Ledger' as type, availableCash, sessionId FROM paperLedger WHERE userId = 1\nUNION ALL\nSELECT 'OpenPositions' as type, COUNT(*) as val, 0 FROM paperPositions WHERE userId = 1 AND status = 'open'\nUNION ALL\nSELECT 'RecentTrades_30d' as type, COUNT(*) as val, 0 FROM paperTrades WHERE userId = 1 AND closedAt >= DATE_SUB(NOW(), INTERVAL 30 DAY);",
+  "rows": [
+    {
+      "type": "OpenPositions",
+      "availableCash": "20",
+      "sessionId": "0"
+    },
+    {
+      "type": "Ledger",
+      "availableCash": "6210.983178489115",
+      "sessionId": "20"
+    },
+    {
+      "type": "RecentTrades_30d",
+      "availableCash": "472",
+      "sessionId": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "type\tavailableCash\tsessionId\nOpenPositions\t20\t0\nLedger\t6210.983178489115\t20\nRecentTrades_30d\t472\t0\n",
+  "stderr": "",
+  "execution_time_ms": 1834
+}

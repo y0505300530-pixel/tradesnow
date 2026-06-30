@@ -1,0 +1,115 @@
+{
+  "query": "\nSELECT ticker, allocatedCapital, entryPrice, units, openedAt FROM paperPositions WHERE status='open' ORDER BY openedAt LIMIT 15;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT ticker, allocatedCapital, entryPrice, units, openedAt FROM paperPositions WHERE status='open' ORDER BY openedAt LIMIT 15;\n",
+  "rows": [
+    {
+      "ticker": "MU",
+      "allocatedCapital": "5980.4544604492185",
+      "entryPrice": "747.5568075561523",
+      "units": "8",
+      "openedAt": "2026-05-12 14:39:45"
+    },
+    {
+      "ticker": "AMD",
+      "allocatedCapital": "5923.38750177002",
+      "entryPrice": "455.6451924438477",
+      "units": "13",
+      "openedAt": "2026-05-12 14:39:46"
+    },
+    {
+      "ticker": "AAPL",
+      "allocatedCapital": "6165.879873962403",
+      "entryPrice": "293.61332733154296",
+      "units": "21",
+      "openedAt": "2026-05-12 14:39:47"
+    },
+    {
+      "ticker": "RKLB",
+      "allocatedCapital": "6123.377330871582",
+      "entryPrice": "105.57547122192382",
+      "units": "58",
+      "openedAt": "2026-05-12 14:39:52"
+    },
+    {
+      "ticker": "CRWD",
+      "allocatedCapital": "5811.275685058593",
+      "entryPrice": "528.2977895507812",
+      "units": "11",
+      "openedAt": "2026-05-12 14:39:55"
+    },
+    {
+      "ticker": "TBLA",
+      "allocatedCapital": "6206.450249999999",
+      "entryPrice": "5.255249999999999",
+      "units": "1181",
+      "openedAt": "2026-05-12 14:39:58"
+    },
+    {
+      "ticker": "BKR",
+      "allocatedCapital": "4988.40337234497",
+      "entryPrice": "63.95388938903808",
+      "units": "78",
+      "openedAt": "2026-05-12 14:41:39"
+    },
+    {
+      "ticker": "LLY",
+      "allocatedCapital": "12342.180008850095",
+      "entryPrice": "949.3984622192381",
+      "units": "13",
+      "openedAt": "2026-05-12 14:49:31"
+    },
+    {
+      "ticker": "ZIM",
+      "allocatedCapital": "13158.485641815181",
+      "entryPrice": "26.636610610961906",
+      "units": "494",
+      "openedAt": "2026-05-12 14:49:33"
+    },
+    {
+      "ticker": "SEDG",
+      "allocatedCapital": "13146.533157142638",
+      "entryPrice": "41.3412992362976",
+      "units": "318",
+      "openedAt": "2026-05-12 14:49:34"
+    },
+    {
+      "ticker": "AEP",
+      "allocatedCapital": "13159.306530242919",
+      "entryPrice": "130.29016366577147",
+      "units": "101",
+      "openedAt": "2026-05-12 14:49:36"
+    },
+    {
+      "ticker": "SLB",
+      "allocatedCapital": "13117.524532722471",
+      "entryPrice": "53.32327045822143",
+      "units": "246",
+      "openedAt": "2026-05-12 14:49:37"
+    },
+    {
+      "ticker": "WMB",
+      "allocatedCapital": "13109.816553207396",
+      "entryPrice": "72.03195908355713",
+      "units": "182",
+      "openedAt": "2026-05-12 14:49:38"
+    },
+    {
+      "ticker": "EOG",
+      "allocatedCapital": "13146.162906585692",
+      "entryPrice": "130.16002877807617",
+      "units": "101",
+      "openedAt": "2026-05-12 14:49:39"
+    },
+    {
+      "ticker": "FFIV",
+      "allocatedCapital": "13112.209064788816",
+      "entryPrice": "354.38402877807613",
+      "units": "37",
+      "openedAt": "2026-05-12 14:49:41"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tallocatedCapital\tentryPrice\tunits\topenedAt\nMU\t5980.4544604492185\t747.5568075561523\t8\t2026-05-12 14:39:45\nAMD\t5923.38750177002\t455.6451924438477\t13\t2026-05-12 14:39:46\nAAPL\t6165.879873962403\t293.61332733154296\t21\t2026-05-12 14:39:47\nRKLB\t6123.377330871582\t105.57547122192382\t58\t2026-05-12 14:39:52\nCRWD\t5811.275685058593\t528.2977895507812\t11\t2026-05-12 14:39:55\nTBLA\t6206.450249999999\t5.255249999999999\t1181\t2026-05-12 14:39:58\nBKR\t4988.40337234497\t63.95388938903808\t78\t2026-05-12 14:41:39\nLLY\t12342.180008850095\t949.3984622192381\t13\t2026-05-12 14:49:31\nZIM\t13158.485641815181\t26.636610610961906\t494\t2026-05-12 14:49:33\nSEDG\t13146.533157142638\t41.3412992362976\t318\t2026-05-12 14:49:34\nAEP\t13159.306530242919\t130.29016366577147\t101\t2026-05-12 14:49:36\nSLB\t13117.524532722471\t53.32327045822143\t246\t2026-05-12 14:49:37\nWMB\t13109.816553207396\t72.03195908355713\t182\t2026-05-12 14:49:38\nEOG\t13146.162906585692\t130.16002877807617\t101\t2026-05-12 14:49:39\nFFIV\t13112.209064788816\t354.38402877807613\t37\t2026-05-12 14:49:41\n",
+  "stderr": "",
+  "execution_time_ms": 1789
+}

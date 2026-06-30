@@ -1,0 +1,52 @@
+{
+  "query": "SELECT ticker, COUNT(*) as tradeCount, SUM(allocatedCapital) as totalAllocated, SUM(realizedPnl) as totalPnl FROM paperTrades GROUP BY ticker ORDER BY tradeCount DESC LIMIT 15;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, COUNT(*) as tradeCount, SUM(allocatedCapital) as totalAllocated, SUM(realizedPnl) as totalPnl FROM paperTrades GROUP BY ticker ORDER BY tradeCount DESC LIMIT 15;",
+  "rows": [
+    {
+      "ticker": "JPM",
+      "tradeCount": "24",
+      "totalAllocated": "185674.8931513061",
+      "totalPnl": "-869.3659139357798"
+    },
+    {
+      "ticker": "SEDG",
+      "tradeCount": "24",
+      "totalAllocated": "192774.4783388557",
+      "totalPnl": "-9631.145058855709"
+    },
+    {
+      "ticker": "AEP",
+      "tradeCount": "24",
+      "totalAllocated": "191656.83075234992",
+      "totalPnl": "1283.9402826501612"
+    },
+    {
+      "ticker": "WMB",
+      "tradeCount": "15",
+      "totalAllocated": "114314.71906560514",
+      "totalPnl": "3447.62320152832"
+    },
+    {
+      "ticker": "SLB",
+      "tradeCount": "15",
+      "totalAllocated": "113951.8289692192",
+      "totalPnl": "3825.572681768963"
+    },
+    {
+      "ticker": "GOOGL",
+      "tradeCount": "10",
+      "totalAllocated": "81443.75991949462",
+      "totalPnl": "-3002.464525354011"
+    },
+    {
+      "ticker": "ZIM",
+      "tradeCount": "10",
+      "totalAllocated": "83505.77426536559",
+      "totalPnl": "-3088.4171453655663"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\ttradeCount\ttotalAllocated\ttotalPnl\nJPM\t24\t185674.8931513061\t-869.3659139357798\nSEDG\t24\t192774.4783388557\t-9631.145058855709\nAEP\t24\t191656.83075234992\t1283.9402826501612\nWMB\t15\t114314.71906560514\t3447.62320152832\nSLB\t15\t113951.8289692192\t3825.572681768963\nGOOGL\t10\t81443.75991949462\t-3002.464525354011\nZIM\t10\t83505.77426536559\t-3088.4171453655663\n",
+  "stderr": "",
+  "execution_time_ms": 1778
+}

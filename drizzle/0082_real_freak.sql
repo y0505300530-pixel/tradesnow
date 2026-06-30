@@ -1,0 +1,2 @@
+DROP INDEX `portfolioHoldings_userId_ticker_idx` ON `portfolioHoldings`;--> statement-breakpoint
+ALTER TABLE `portfolioHoldings` ADD CONSTRAINT `portfolioHoldings_userId_ticker_idx` UNIQUE(`userId`,`ticker`);

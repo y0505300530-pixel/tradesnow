@@ -1,0 +1,15 @@
+---
+description: Mobile agent — 375px, touch, PWA on trading surfaces
+globs: client/src/**/*.{tsx,ts,css}
+alwaysApply: false
+---
+
+# Mobile Agent Rules
+
+Apply skill: `tradesnow-mobile-dev`
+
+- Design at **375px** width; min 44px touch targets on trade CTAs
+- Suppress PWA banner on `/trade`, `/war-room-live`, `/login`
+- Order stepper: compact on `< sm`
+- Verify: no horizontal scroll, no nav overlay eating taps (`GlobalNav` z-index)
+- Screenshots: `docs/superpowers/screenshots/mobile-375/`

@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, ticker, realizedPnl, realizedPnlPct, exitReason, closedAt FROM paperTrades ORDER BY id ASC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT id, ticker, realizedPnl, realizedPnlPct, exitReason, closedAt FROM paperTrades ORDER BY id ASC LIMIT 20;",
+  "rows": [
+    {
+      "id": "122",
+      "ticker": "LLY",
+      "realizedPnl": "174.4038639038098",
+      "realizedPnlPct": "3.7266515787332004",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:01:52"
+    },
+    {
+      "id": "123",
+      "ticker": "GE",
+      "realizedPnl": "-35.0257988281237",
+      "realizedPnlPct": "-0.6834365259553169",
+      "exitReason": "SL",
+      "closedAt": "2026-05-12 14:01:53"
+    },
+    {
+      "id": "124",
+      "ticker": "SEDG",
+      "realizedPnl": "-179.04510835571244",
+      "realizedPnlPct": "-3.558691341286836",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:01:53"
+    },
+    {
+      "id": "125",
+      "ticker": "AEP",
+      "realizedPnl": "-2.1425592993153373",
+      "realizedPnlPct": "0.007219527525250084",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:01:53"
+    },
+    {
+      "id": "126",
+      "ticker": "NVPT.TA",
+      "realizedPnl": "101.36224610793391",
+      "realizedPnlPct": "2.089653713800593",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:01:53"
+    },
+    {
+      "id": "127",
+      "ticker": "SLB",
+      "realizedPnl": "154.824337385407",
+      "realizedPnlPct": "3.1724602171653715",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:01:53"
+    },
+    {
+      "id": "128",
+      "ticker": "EOG",
+      "realizedPnl": "93.72155643310532",
+      "realizedPnlPct": "1.9454100046652207",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:01:53"
+    },
+    {
+      "id": "129",
+      "ticker": "LLY",
+      "realizedPnl": "171.63174865722794",
+      "realizedPnlPct": "3.6682542807198457",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:02:27"
+    },
+    {
+      "id": "130",
+      "ticker": "GE",
+      "realizedPnl": "-33.26742224609279",
+      "realizedPnlPct": "-0.6464892771300154",
+      "exitReason": "SL",
+      "closedAt": "2026-05-12 14:02:32"
+    },
+    {
+      "id": "131",
+      "ticker": "SEDG",
+      "realizedPnl": "-179.04510835571244",
+      "realizedPnlPct": "-3.558691341286836",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:02:38"
+    },
+    {
+      "id": "132",
+      "ticker": "AEP",
+      "realizedPnl": "-2.1425592993153373",
+      "realizedPnlPct": "0.007219527525250084",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:02:41"
+    },
+    {
+      "id": "133",
+      "ticker": "NVPT.TA",
+      "realizedPnl": "101.18779203304385",
+      "realizedPnlPct": "2.0861437896545003",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:02:43"
+    },
+    {
+      "id": "134",
+      "ticker": "SLB",
+      "realizedPnl": "158.54061738540707",
+      "realizedPnlPct": "3.247399356600394",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:02:45"
+    },
+    {
+      "id": "135",
+      "ticker": "EOG",
+      "realizedPnl": "101.50376643310602",
+      "realizedPnlPct": "2.1027509348437134",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:02:48"
+    },
+    {
+      "id": "136",
+      "ticker": "WMB",
+      "realizedPnl": "157.8291532345583",
+      "realizedPnlPct": "3.225805525777084",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:07:20"
+    },
+    {
+      "id": "137",
+      "ticker": "LLY",
+      "realizedPnl": "180.37288890381035",
+      "realizedPnlPct": "3.8523948833104553",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:07:23"
+    },
+    {
+      "id": "138",
+      "ticker": "SEDG",
+      "realizedPnl": "-165.85830835571159",
+      "realizedPnlPct": "-3.2928796662064266",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:07:25"
+    },
+    {
+      "id": "139",
+      "ticker": "AEP",
+      "realizedPnl": "-8.975719299315585",
+      "realizedPnlPct": "-0.13079549597360138",
+      "exitReason": "Force-Close",
+      "closedAt": "2026-05-12 14:07:26"
+    },
+    {
+      "id": "140",
+      "ticker": "NVPT.TA",
+      "realizedPnl": "101.18779203304385",
+      "realizedPnlPct": "2.0861437896545003",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:07:27"
+    },
+    {
+      "id": "141",
+      "ticker": "SLB",
+      "realizedPnl": "167.8313173854069",
+      "realizedPnlPct": "3.4347472051879437",
+      "exitReason": "TP",
+      "closedAt": "2026-05-12 14:07:29"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tticker\trealizedPnl\trealizedPnlPct\texitReason\tclosedAt\n122\tLLY\t174.4038639038098\t3.7266515787332004\tTP\t2026-05-12 14:01:52\n123\tGE\t-35.0257988281237\t-0.6834365259553169\tSL\t2026-05-12 14:01:53\n124\tSEDG\t-179.04510835571244\t-3.558691341286836\tForce-Close\t2026-05-12 14:01:53\n125\tAEP\t-2.1425592993153373\t0.007219527525250084\tForce-Close\t2026-05-12 14:01:53\n126\tNVPT.TA\t101.36224610793391\t2.089653713800593\tTP\t2026-05-12 14:01:53\n127\tSLB\t154.824337385407\t3.1724602171653715\tTP\t2026-05-12 14:01:53\n128\tEOG\t93.72155643310532\t1.9454100046652207\tForce-Close\t2026-05-12 14:01:53\n129\tLLY\t171.63174865722794\t3.6682542807198457\tTP\t2026-05-12 14:02:27\n130\tGE\t-33.26742224609279\t-0.6464892771300154\tSL\t2026-05-12 14:02:32\n131\tSEDG\t-179.04510835571244\t-3.558691341286836\tForce-Close\t2026-05-12 14:02:38\n132\tAEP\t-2.1425592993153373\t0.007219527525250084\tForce-Close\t2026-05-12 14:02:41\n133\tNVPT.TA\t101.18779203304385\t2.0861437896545003\tTP\t2026-05-12 14:02:43\n134\tSLB\t158.54061738540707\t3.247399356600394\tTP\t2026-05-12 14:02:45\n135\tEOG\t101.50376643310602\t2.1027509348437134\tForce-Close\t2026-05-12 14:02:48\n136\tWMB\t157.8291532345583\t3.225805525777084\tTP\t2026-05-12 14:07:20\n137\tLLY\t180.37288890381035\t3.8523948833104553\tTP\t2026-05-12 14:07:23\n138\tSEDG\t-165.85830835571159\t-3.2928796662064266\tForce-Close\t2026-05-12 14:07:25\n139\tAEP\t-8.975719299315585\t-0.13079549597360138\tForce-Close\t2026-05-12 14:07:26\n140\tNVPT.TA\t101.18779203304385\t2.0861437896545003\tTP\t2026-05-12 14:07:27\n141\tSLB\t167.8313173854069\t3.4347472051879437\tTP\t2026-05-12 14:07:29\n",
+  "stderr": "",
+  "execution_time_ms": 1740
+}

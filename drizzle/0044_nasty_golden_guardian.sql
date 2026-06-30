@@ -1,0 +1,1 @@
+ALTER TABLE `labSimulations` ADD `riskLevel` int DEFAULT 5;

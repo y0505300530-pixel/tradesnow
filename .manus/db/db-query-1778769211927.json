@@ -1,0 +1,80 @@
+{
+  "query": "\nSELECT \n  sessionId,\n  COUNT(*) as count,\n  SUM(realizedPnl) as totalRealizedPnl,\n  MIN(closedAt) as firstClose,\n  MAX(closedAt) as lastClose\nFROM paperTrades \nGROUP BY sessionId\nORDER BY sessionId DESC\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT \n  sessionId,\n  COUNT(*) as count,\n  SUM(realizedPnl) as totalRealizedPnl,\n  MIN(closedAt) as firstClose,\n  MAX(closedAt) as lastClose\nFROM paperTrades \nGROUP BY sessionId\nORDER BY sessionId DESC\nLIMIT 10;\n",
+  "rows": [
+    {
+      "sessionId": "21",
+      "count": "2",
+      "totalRealizedPnl": "2866399.2175291153",
+      "firstClose": "2026-05-14 14:24:25",
+      "lastClose": "2026-05-14 14:25:10"
+    },
+    {
+      "sessionId": "20",
+      "count": "22",
+      "totalRealizedPnl": "2736466.960139786",
+      "firstClose": "2026-05-14 14:21:03",
+      "lastClose": "2026-05-14 14:22:42"
+    },
+    {
+      "sessionId": "19",
+      "count": "26",
+      "totalRealizedPnl": "20823066932.10378",
+      "firstClose": "2026-03-15 14:18:45",
+      "lastClose": "2026-03-15 14:18:45"
+    },
+    {
+      "sessionId": "18",
+      "count": "8",
+      "totalRealizedPnl": "-896.2341352304765",
+      "firstClose": "2026-05-14 10:17:58",
+      "lastClose": "2026-05-14 10:17:58"
+    },
+    {
+      "sessionId": "17",
+      "count": "72",
+      "totalRealizedPnl": "-608.5734024327169",
+      "firstClose": "2026-05-13 17:54:52",
+      "lastClose": "2026-05-13 21:40:05"
+    },
+    {
+      "sessionId": "16",
+      "count": "41",
+      "totalRealizedPnl": "-291.8661747225268",
+      "firstClose": "2026-05-13 15:59:47",
+      "lastClose": "2026-05-13 17:50:58"
+    },
+    {
+      "sessionId": "15",
+      "count": "26",
+      "totalRealizedPnl": "-321.14695201171",
+      "firstClose": "2026-05-13 15:40:01",
+      "lastClose": "2026-05-13 15:57:57"
+    },
+    {
+      "sessionId": "14",
+      "count": "27",
+      "totalRealizedPnl": "-273.31325130467394",
+      "firstClose": "2026-05-13 15:09:13",
+      "lastClose": "2026-05-13 15:38:24"
+    },
+    {
+      "sessionId": "13",
+      "count": "25",
+      "totalRealizedPnl": "-204.9597699999925",
+      "firstClose": "2026-05-13 14:59:47",
+      "lastClose": "2026-05-13 15:08:26"
+    },
+    {
+      "sessionId": "12",
+      "count": "26",
+      "totalRealizedPnl": "-337.5181545357599",
+      "firstClose": "2026-05-13 14:48:18",
+      "lastClose": "2026-05-13 14:57:50"
+    }
+  ],
+  "messages": [],
+  "stdout": "sessionId\tcount\ttotalRealizedPnl\tfirstClose\tlastClose\n21\t2\t2866399.2175291153\t2026-05-14 14:24:25\t2026-05-14 14:25:10\n20\t22\t2736466.960139786\t2026-05-14 14:21:03\t2026-05-14 14:22:42\n19\t26\t20823066932.10378\t2026-03-15 14:18:45\t2026-03-15 14:18:45\n18\t8\t-896.2341352304765\t2026-05-14 10:17:58\t2026-05-14 10:17:58\n17\t72\t-608.5734024327169\t2026-05-13 17:54:52\t2026-05-13 21:40:05\n16\t41\t-291.8661747225268\t2026-05-13 15:59:47\t2026-05-13 17:50:58\n15\t26\t-321.14695201171\t2026-05-13 15:40:01\t2026-05-13 15:57:57\n14\t27\t-273.31325130467394\t2026-05-13 15:09:13\t2026-05-13 15:38:24\n13\t25\t-204.9597699999925\t2026-05-13 14:59:47\t2026-05-13 15:08:26\n12\t26\t-337.5181545357599\t2026-05-13 14:48:18\t2026-05-13 14:57:50\n",
+  "stderr": "",
+  "execution_time_ms": 1715
+}

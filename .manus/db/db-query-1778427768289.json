@@ -1,0 +1,138 @@
+{
+  "query": "SHOW COLUMNS FROM breakoutScans;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SHOW COLUMNS FROM breakoutScans;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "userId",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ticker",
+      "Type": "varchar(16)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "companyName",
+      "Type": "varchar(128)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "price",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "donchian20High",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ema50",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "zivScore",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "tier",
+      "Type": "varchar(32)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "volumeRatio",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "breakoutPct",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "alertSent",
+      "Type": "tinyint",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "scannedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "signalType",
+      "Type": "enum('BREAKOUT','RETEST')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "BREAKOUT",
+      "Extra": ""
+    },
+    {
+      "Field": "breakoutLevel",
+      "Type": "decimal(12,4)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "currentPrice",
+      "Type": "decimal(12,4)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\nuserId\tint\tNO\tMUL\tNULL\t\nticker\tvarchar(16)\tNO\t\tNULL\t\ncompanyName\tvarchar(128)\tYES\t\tNULL\t\nprice\tdouble\tNO\t\tNULL\t\ndonchian20High\tdouble\tYES\t\tNULL\t\nema50\tdouble\tYES\t\tNULL\t\nzivScore\tdouble\tYES\t\tNULL\t\ntier\tvarchar(32)\tYES\t\tNULL\t\nvolumeRatio\tdouble\tYES\t\tNULL\t\nbreakoutPct\tdouble\tYES\t\tNULL\t\nalertSent\ttinyint\tYES\t\t0\t\nscannedAt\ttimestamp\tNO\tMUL\tCURRENT_TIMESTAMP\t\nsignalType\tenum('BREAKOUT','RETEST')\tNO\t\tBREAKOUT\t\nbreakoutLevel\tdecimal(12,4)\tNO\t\t0\t\ncurrentPrice\tdecimal(12,4)\tNO\t\t0\t\n",
+  "stderr": "",
+  "execution_time_ms": 1893
+}

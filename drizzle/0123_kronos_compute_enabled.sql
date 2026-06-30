@@ -1,0 +1,1 @@
+ALTER TABLE `liveEngineConfig` ADD `kronosComputeEnabled` tinyint DEFAULT 0 NOT NULL;

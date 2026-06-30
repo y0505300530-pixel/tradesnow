@@ -1,0 +1,1142 @@
+diff --git a/client/src/components/DeepAnalysisModal.tsx b/client/src/components/DeepAnalysisModal.tsx
+index d9e78f7..bb6c006 100644
+--- a/client/src/components/DeepAnalysisModal.tsx
++++ b/client/src/components/DeepAnalysisModal.tsx
+@@ -28,11 +28,19 @@ import {
+ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+ import { toTradingViewSymbol } from "./TradingViewChart";
+ import { OrderStatusPopup } from "./OrderStatusPopup";
+-import { TradeActionGrid } from "./TradeActionGrid";
+ import ErrorBoundary from "./ErrorBoundary";
+ import { TradingCommandBar } from "./deep-analysis/TradingCommandBar";
+ import { ManualOrderDialog } from "./deep-analysis/ManualOrderDialog";
+ import { AdvancedDetails } from "./deep-analysis/AdvancedDetails";
++import { DeepAnalysisHeader } from "./deep-analysis/DeepAnalysisHeader";
++import { AiAnalysisPanel } from "./deep-analysis/AiAnalysisPanel";
++import { AdminSlTpPanel } from "./deep-analysis/AdminSlTpPanel";
++import { Z } from "@/lib/zIndex";
++import {
++  applyPositionMatch,
++  fetchIbkrPositionsCached,
++  matchTickerPosition,
++} from "@/hooks/useIbkrPositions";
+ import type { DeepAnalysisResult, HoldingContext, PrefetchedZivH } from "./deep-analysis/types";
+ export type { DeepAnalysisResult, HoldingContext, PrefetchedZivH } from "./deep-analysis/types";
+ export { ScoreBadge, TierBadge, RecommendationBadge } from "./deep-analysis/badges";
+@@ -229,6 +237,8 @@ export function DeepAnalysisModal({
+     estimatedValueUsd?: number | null;
+     clientOrderId?: string | null;
+     trackPositionClose?: boolean;
++    protection?: { stopLoss?: number | null; takeProfit?: number | null } | null;
++    immediateStatus?: "success" | "failed" | null;
+   } | null>(null);
+ 
+   const analyzeMut = trpc.portfolio.analyzeAsset.useMutation({
+@@ -322,6 +332,8 @@ export function DeepAnalysisModal({
+               orderType: string;
+               reason?: string | null;
+               ibkrMessage?: string | null;
++              stopLoss?: number | null;
++              takeProfit?: number | null;
+             }>;
+           };
+         };
+@@ -333,6 +345,10 @@ export function DeepAnalysisModal({
+       if (!data.success) {
+         throw new Error(data.reason ?? "הפקודה נדחתה");
+       }
++      const serverSl = data.stopLoss;
++      const serverTp = data.takeProfit;
++      const hasVerifiedProtection =
++        serverSl != null && serverTp != null && serverSl > 0 && serverTp > 0;
+       setOrderPopupData({
+         orderId: data.orderId ?? null,
+         ticker: data.ticker,
+@@ -345,15 +361,20 @@ export function DeepAnalysisModal({
+         estimatedValueUsd: estUsd,
+         clientOrderId,
+         trackPositionClose: input.intent === "close_long" || input.intent === "close_short",
++        protection: hasVerifiedProtection
++          ? { stopLoss: serverSl, takeProfit: serverTp, verified: true }
++          : undefined,
+       });
+       void utils.portfolio.getState.invalidate();
+       void utils.liveEngine.getStatus.invalidate();
+     } catch (e: unknown) {
+       const msg = e instanceof Error ? e.message : String(e);
+-      toast.error(msg);
+-      setOrderPopupOpen(false);
+-      setOrderPopupData(null);
+-      clearFlight(input.ticker, input.side);
++      setOrderPopupData((prev) => prev ? {
++        ...prev,
++        ibkrMessage: msg,
++        immediateStatus: "failed",
++        trackPositionClose: false,
++      } : null);
+     } finally {
+       setManualPending(false);
+     }
+@@ -419,61 +440,38 @@ export function DeepAnalysisModal({
+     if (isAdmin && ibkrSettingsQuery.data?.accountId) {
+       setIbkrAccountId(ibkrSettingsQuery.data.accountId);
+     }
++    if (conid && conid > 0) setIbkrConid(conid);
++
+     fetch("/api/ibind/health")
+       .then(r => r.json())
+       .then((data: { session_active?: boolean | string; status?: string }) => {
+         const ibindOk = (data.session_active === true || data.session_active === "true") && data.status === "ok";
+         setIbkrConnected(ibindOk);
+-        // Auto-resolve conid: if no conid yet and IBKR is connected, fetch live positions then fallback to contract search
+-        if (ibindOk && ticker && (!conid || conid <= 0)) {
+-          fetch("/api/ibind/positions")
+-            .then(r => r.json())
+-            .then((posData: { positions?: Array<{ ticker?: string; symbol?: string; conid?: number | null }> }) => {
+-              const positions = posData?.positions ?? [];
+-              const tickerUp = ticker.toUpperCase();
+-              const tickerBase = tickerUp.replace(/\.TA$/, ""); // strip .TA for TASE stocks
+-              const match = positions.find(
+-                p => {
+-                  const sym = (p.ticker ?? p.symbol ?? "").toUpperCase();
+-                  return sym === tickerUp || sym === tickerBase || sym.replace(/\.TA$/, "") === tickerBase;
+-                }
+-              );
+-              if (match?.conid && match.conid > 0) {
+-                setIbkrConid(match.conid);
+-              }
+-              const posQty = Math.abs(Number((match as { position?: number })?.position ?? 0));
+-              if (posQty > 0 && match) {
+-                const rawPos = Number((match as { position?: number }).position ?? 0);
+-                setIbkrPosition({ qty: posQty, side: rawPos < 0 ? "short" : "long" });
+-              } else {
+-                setIbkrPosition({ qty: 0, side: null });
+-              }
+-              if (!match?.conid || match.conid <= 0) {
+-                // Fallback: resolve via IBKR contract search (cache + /trsrv/stocks)
+-                resolveConidMut.mutateAsync({ symbol: tickerUp })
+-                  .then(resolved => {
+-                    if (resolved?.conid && resolved.conid > 0) {
+-                      setIbkrConid(resolved.conid);
+-                    }
+-                  })
+-                  .catch(() => {}); // silent
+-              }
+-            })
+-            .catch(() => {
+-              // Even if positions fetch fails, try contract search
+-              const tickerUp = (ticker ?? "").toUpperCase();
+-              resolveConidMut.mutateAsync({ symbol: tickerUp })
+-                .then(resolved => {
+-                  if (resolved?.conid && resolved.conid > 0) {
+-                    setIbkrConid(resolved.conid);
+-                  }
+-                })
+-                .catch(() => {});
+-            });
+-        }
+       })
+       .catch(() => setIbkrConnected(false));
+-  }, [open, ibkrSettingsQuery.data, ticker, conid]);
++  }, [open, ibkrSettingsQuery.data, conid, isAdmin]);
++
++  // Positions — async, cached 15s, 5s timeout; never blocks modal render
++  useEffect(() => {
++    if (!open || !ticker || !ibkrConnected) return;
++    let cancelled = false;
++    const tickerUp = ticker.toUpperCase();
++
++    void fetchIbkrPositionsCached().then((positions) => {
++      if (cancelled) return;
++      const match = matchTickerPosition(positions, tickerUp);
++      applyPositionMatch(match, setIbkrPosition, setIbkrConid, conid);
++      if (!match?.conid || match.conid <= 0) {
++        resolveConidMut.mutateAsync({ symbol: tickerUp })
++          .then((resolved) => {
++            if (!cancelled && resolved?.conid && resolved.conid > 0) setIbkrConid(resolved.conid);
++          })
++          .catch(() => {});
++      }
++    });
++
++    return () => { cancelled = true; };
++  }, [open, ticker, ibkrConnected, conid]);
+ 
+   // Load persisted chat history from DB when ticker changes
+   const chatHistoryQuery = trpc.ibkr.getChatHistory.useQuery(
+@@ -819,12 +817,15 @@ export function DeepAnalysisModal({
+       {/* Full-page overlay backdrop — hidden in pageMode */}
+       {!pageMode && (
+         <div
+-          className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm"
++          className="fixed inset-0 bg-white/60 backdrop-blur-sm"
++          style={{ zIndex: Z.analysisBackdrop }}
+           onClick={handleClose}
+         />
+       )}
+-      {/* Full-width panel */}
+-      <div className={pageMode ? "flex w-full" : "fixed inset-x-0 top-14 md:top-0 bottom-0 z-[60] flex"}>
++      <div
++        className={pageMode ? "flex w-full" : "fixed inset-x-0 top-14 md:top-0 bottom-0 flex"}
++        style={pageMode ? undefined : { zIndex: Z.analysisPanel }}
++      >
+         <div
+           className={pageMode
+             ? "relative w-full flex flex-col bg-background min-h-screen"
+@@ -832,60 +833,13 @@ export function DeepAnalysisModal({
+           }
+         >
+           {/* Header bar — sticky */}
+-          <div className="sticky top-0 z-[70] flex items-center justify-between px-3 sm:px-6 py-2 border-b bg-background/95 backdrop-blur shrink-0">
+-            <button
+-              type="button"
+-              onClick={handleClose}
+-              className="flex items-center gap-1 min-h-[44px] px-2 text-[11px] sm:text-sm font-semibold text-muted-foreground hover:text-foreground"
+-              aria-label="חזרה"
+-            >
+-              <ArrowLeft className="h-4 w-4 shrink-0" />
+-              <span className="hidden sm:inline">חזרה</span>
+-            </button>
+-            <div className="flex items-center gap-2 text-[11px] sm:text-base font-semibold min-w-0">
+-              <Zap className="h-4 w-4 text-[#2563EB] shrink-0" />
+-              <span className="truncate">{ticker}</span>
+-              {result && <span className="hidden md:inline text-xs font-normal text-muted-foreground truncate">— {result.company}</span>}
+-            </div>
+-            <div className="flex items-center gap-1 shrink-0">
+-              {navList && navList.length > 1 && onNavigate && (() => {
+-                const idx = ticker ? navList.indexOf(ticker) : -1;
+-                const prevTicker = idx > 0 ? navList[idx - 1] : null;
+-                const nextTicker = idx >= 0 && idx < navList.length - 1 ? navList[idx + 1] : null;
+-                return (
+-                  <>
+-                    <button
+-                      onClick={() => prevTicker && onNavigate(prevTicker)}
+-                      disabled={!prevTicker}
+-                      title={prevTicker ? `קודם: ${prevTicker}` : undefined}
+-                      className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+-                    >
+-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+-                      PREV
+-                    </button>
+-                    <span className="text-xs text-muted-foreground px-1">{idx + 1}/{navList.length}</span>
+-                    <button
+-                      onClick={() => nextTicker && onNavigate(nextTicker)}
+-                      disabled={!nextTicker}
+-                      title={nextTicker ? `הבא: ${nextTicker}` : undefined}
+-                      className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+-                    >
+-                      NEXT
+-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+-                    </button>
+-                  </>
+-                );
+-              })()}
+-              <button
+-                type="button"
+-                onClick={handleClose}
+-                aria-label="סגור"
+-                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground ml-1"
+-              >
+-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+-              </button>
+-            </div>
+-          </div>
++          <DeepAnalysisHeader
++            ticker={ticker}
++            company={result?.company}
++            navList={navList}
++            onNavigate={onNavigate}
++            onClose={handleClose}
++          />
+           {/* Scrollable content */}
+           <div ref={modalScrollRef} className={pageMode ? "flex-1 px-3 sm:px-6 py-4" : "flex-1 overflow-y-auto px-3 sm:px-6 py-4"}>
+         {/* ── Progressive loading: show quickStats immediately while full analysis runs ── */}
+@@ -1159,165 +1113,30 @@ export function DeepAnalysisModal({
+               zivHLoading={zivHQuery.isLoading && !prefetchedZivH}
+             />
+ 
+-            {/* AI text panels */}
+-            <div className="space-y-3">
+-              {/* AI Summary — streams chunk-by-chunk */}
+-              {/* ── Unified AI Analysis ── */}
+-              <div className="p-4 bg-muted/20 border rounded-xl">
+-                <div className="flex items-center gap-1.5 mb-3">
+-                  <Lightbulb className="h-4 w-4 text-[#2563EB]" />
+-                  <span className="text-sm font-semibold">AI Analysis</span>
+-                  {streamingText !== null && !(result.ai.summary && result.ai.positionRationale && result.ai.risks && result.ai.actionTrigger) && (
+-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-[#2563EB] ml-1" />
+-                  )}
+-                </div>
+-                {/* Show streaming text while LLM is writing */}
+-                {streamingText !== null && !result.ai.summary ? (
+-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">
+-                    {streamingText || <span className="text-muted-foreground animate-pulse">ה-AI מנתח עכשיו...</span>}
+-                  </p>
+-                ) : (
+-                  <div className="space-y-3 text-sm leading-relaxed">
+-                    {/* Summary */}
+-                    {result.ai.summary && (
+-                      <p className="text-foreground">{result.ai.summary}</p>
+-                    )}
+-                    {/* Position Rationale / Entry Rationale */}
+-                    {result.ai.positionRationale && (
+-                      <div>
+-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+-                          {holdingContext ? "ניתוח הפוזיציה" : "Entry Rationale"}
+-                        </span>
+-                        <p className="mt-1 text-foreground">{result.ai.positionRationale}</p>
+-                      </div>
+-                    )}
+-                    {/* Key Risks */}
+-                    {result.ai.risks && (
+-                      <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+-                        <span className="text-xs font-semibold text-amber-400 uppercase tracking-wide">Key Risks</span>
+-                        <p className="mt-1 text-amber-800">{result.ai.risks}</p>
+-                      </div>
+-                    )}
+-                    {/* Action Trigger */}
+-                    {result.ai.actionTrigger && (
+-                      <div className="flex items-start gap-1.5">
+-                        <Zap className="h-3.5 w-3.5 text-[#2563EB] mt-0.5 shrink-0" />
+-                        <div>
+-                          <span className="text-xs font-semibold text-blue-700">
+-                            {holdingContext ? "טריגר לפעולה הבאה" : "Ideal Entry Trigger"}
+-                          </span>
+-                          <p className="mt-0.5 text-blue-800">{result.ai.actionTrigger}</p>
+-                        </div>
+-                      </div>
+-                    )}
+-                    {/* Skeleton while waiting for remaining fields */}
+-                    {streamingText !== null && (!result.ai.positionRationale || !result.ai.risks || !result.ai.actionTrigger) && (
+-                      <div className="space-y-1.5">
+-                        <div className="h-3 bg-muted/60 rounded animate-pulse w-full" />
+-                        <div className="h-3 bg-muted/60 rounded animate-pulse w-4/5" />
+-                      </div>
+-                    )}
+-                  </div>
+-                )}
+-              </div>
+-            </div>
+-            {/* ── SL / TP Execution (admin) ── */}
+-            {result && isAdmin && (
+-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-muted/20 border rounded-xl">
+-                {/* TP Panel */}
+-                <div className="space-y-2">
+-                  <div className="flex items-center gap-1.5">
+-                    <Target className="h-4 w-4 text-[#65A30D]" />
+-                    <span className="text-xs font-semibold">Execute Take Profit — IBKR</span>
+-                    {ibkrConnected
+-                      ? <span className="ml-auto text-[10px] text-[#65A30D]">● Connected</span>
+-                      : <span className="ml-auto text-[10px] text-[#FF6B6B]">○ Offline</span>}
+-                  </div>
+-                  <div className="flex gap-2">
+-                    <Input type="number" step="0.01" min="0.01"
+-                      className="h-8 text-sm font-mono"
+-                      value={editedTP}
+-                      onChange={(e) => setEditedTP(e.target.value)}
+-                      placeholder={result.recommendedBuyPrice > 0 ? (result.recommendedBuyPrice * 1.15).toFixed(2) : "0.00"}
+-                    />
+-                    <Input type="number" step="1" min="1"
+-                      className="h-8 w-20 text-sm font-mono"
+-                      value={ibkrTpQty}
+-                      onChange={(e) => setIbkrTpQty(e.target.value)}
+-                      placeholder={holdingContext?.units?.toString() ?? "qty"}
+-                    />
+-                    <Button size="sm" className="h-8 bg-[#65A30D] hover:bg-[#17a87e] text-white gap-1 shrink-0"
+-                      disabled={!editedTP || !ibkrTpQty || placeLMTMut.isPending}
+-                      onClick={() => setTpDialogOpen(true)}
+-                    >
+-                      {placeLMTMut.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Target className="h-3.5 w-3.5" />}
+-                      LMT
+-                    </Button>
+-                  </div>
+-                  <p className="text-[11px] text-muted-foreground">Rec: {cs}{(result.recommendedBuyPrice * 1.15).toFixed(2)} · Qty: {holdingContext?.units ?? "—"}</p>
+-                  <p className="text-[11px] text-amber-700">כפתור LMT מושבת — TP יוגדר אוטומטית אחרי מילוי הפקודה (שרת Claude).</p>
+-                </div>
+-                {/* SL Panel */}
+-                <div className="space-y-2">
+-                  <div className="flex items-center gap-1.5">
+-                    <ShieldOff className="h-4 w-4 text-[#FF6B6B]" />
+-                    <span className="text-xs font-semibold">Execute Stop Loss — IBKR</span>
+-                    {ibkrConnected
+-                      ? <span className="ml-auto text-[10px] text-[#65A30D]">● Connected</span>
+-                      : <span className="ml-auto text-[10px] text-[#FF6B6B]">○ Offline</span>}
+-                  </div>
+-                  <div className="flex gap-2">
+-                    <Input type="number" step="0.01" min="0.01"
+-                      className="h-8 text-sm font-mono"
+-                      value={editedSL}
+-                      onChange={(e) => setEditedSL(e.target.value)}
+-                      placeholder={result.stopLoss.toFixed(2)}
+-                    />
+-                    <Input type="number" step="1" min="1"
+-                      className="h-8 w-20 text-sm font-mono"
+-                      value={ibkrQty}
+-                      onChange={(e) => setIbkrQty(e.target.value)}
+-                      placeholder={holdingContext?.units?.toString() ?? "qty"}
+-                    />
+-                    <Button size="sm" className="h-8 bg-[#FF6B6B] hover:bg-[#e05555] text-white gap-1 shrink-0"
+-                      disabled={!editedSL || !ibkrQty || placeSTPMut.isPending}
+-                      onClick={() => setSlDialogOpen(true)}
+-                    >
+-                      {placeSTPMut.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldOff className="h-3.5 w-3.5" />}
+-                      STP
+-                    </Button>
+-                  </div>
+-                  <p className="text-[11px] text-muted-foreground">Rec: {cs}{result.stopLoss.toFixed(2)} ({result.stopLossPct.toFixed(1)}% risk) · Qty: {holdingContext?.units ?? "—"}</p>
+-                  <p className="text-[11px] text-amber-700">כפתור STP מושבת — SL יוגדר אוטומטית אחרי מילוי הפקודה (שרת Claude).</p>
+-                </div>
+-                <div className="sm:col-span-2 pt-1 border-t">
+-                  <TradeActionGrid
+-                    ibkrConnected={ibkrConnected}
+-                    ibkrConid={ibkrConid}
+-                    manualPending={manualPending}
+-                    blockedBuy={ticker ? getBlockedSides(ticker).buy : false}
+-                    blockedSell={ticker ? getBlockedSides(ticker).sell : false}
+-                    longUnits={longUnits}
+-                    shortUnits={shortUnits}
+-                    onOpen={handleOpenManualOrder}
+-                  />
+-                  {ibkrConnected && (!ibkrConid || ibkrConid <= 0) && (
+-                    <button type="button" className="text-[10px] text-orange-600 border border-orange-400 rounded px-2 h-8"
+-                      disabled={syncConidLoading}
+-                      onClick={async () => {
+-                        setSyncConidLoading(true);
+-                        try {
+-                          const tickerUp = (ticker ?? "").toUpperCase();
+-                          const resolved = await resolveConidMut.mutateAsync({ symbol: tickerUp });
+-                          if (resolved?.conid && resolved.conid > 0) { setIbkrConid(resolved.conid); toast.success(`conid: ${resolved.conid}`); }
+-                        } catch { toast.error("Sync failed"); } finally { setSyncConidLoading(false); }
+-                      }}
+-                    >
+-                      {syncConidLoading ? <Loader2 className="h-2.5 w-2.5 animate-spin inline" /> : <RefreshCw className="h-2.5 w-2.5 inline" />} Sync conid
+-                    </button>
+-                  )}
+-                </div>
+-              </div>
++            <AiAnalysisPanel
++              result={result}
++              holdingContext={holdingContext}
++              streamingText={streamingText}
++            />
++            {isAdmin && (
++              <AdminSlTpPanel
++                result={result}
++                currencySymbol={cs}
++                ibkrConnected={ibkrConnected}
++                editedTP={editedTP}
++                onEditedTPChange={setEditedTP}
++                editedSL={editedSL}
++                onEditedSLChange={setEditedSL}
++                ibkrTpQty={ibkrTpQty}
++                onIbkrTpQtyChange={setIbkrTpQty}
++                ibkrQty={ibkrQty}
++                onIbkrQtyChange={setIbkrQty}
++                holdingContext={holdingContext}
++                placeLMTPending={placeLMTMut.isPending}
++                placeSTPPending={placeSTPMut.isPending}
++                onOpenTpDialog={() => setTpDialogOpen(true)}
++                onOpenSlDialog={() => setSlDialogOpen(true)}
++              />
+             )}
+ 
+             {/* Footer */}
+@@ -1344,7 +1163,7 @@ export function DeepAnalysisModal({
+ 
+       {/* ── SL Confirmation Dialog ── */}
+       <Dialog open={slDialogOpen} onOpenChange={(o) => { if (!o) setSlDialogOpen(false); }}>
+-        <DialogContent className="max-w-sm" style={{ zIndex: 9999 }}>
++        <DialogContent className="max-w-sm" style={{ zIndex: Z.dialog }}>
+           <DialogHeader>
+             <DialogTitle className="flex items-center gap-2 text-red-700">
+               <ShieldOff className="h-5 w-5" />
+@@ -1421,7 +1240,7 @@ export function DeepAnalysisModal({
+ 
+       {/* ── TP Confirmation Dialog ── */}
+       <Dialog open={tpDialogOpen} onOpenChange={(o) => { if (!o) setTpDialogOpen(false); }}>
+-        <DialogContent className="max-w-sm" style={{ zIndex: 9999 }}>
++        <DialogContent className="max-w-sm" style={{ zIndex: Z.dialog }}>
+           <DialogHeader>
+             <DialogTitle className="flex items-center gap-2 text-[#65A30D]">
+               <Target className="h-5 w-5" />
+@@ -1558,7 +1377,7 @@ export function DeepAnalysisModal({
+ 
+       {/* ── Quick Buy Dialog ── */}
+       <Dialog open={buyDialogOpen} onOpenChange={(o) => { if (!o) { setBuyDialogOpen(false); setBuyUnits(""); setBuyPrice(""); } }}>
+-        <DialogContent className="max-w-sm" style={{ zIndex: 9999 }}>
++        <DialogContent className="max-w-sm" style={{ zIndex: Z.dialog }}>
+           <DialogHeader>
+             <DialogTitle className="flex items-center gap-2 text-[#65A30D]">
+               <ShoppingCart className="h-5 w-5" />
+@@ -1623,7 +1442,7 @@ export function DeepAnalysisModal({
+ 
+       {/* ── Add to Holding Dialog ───────────────────────────────────────────── */}
+       <Dialog open={addToHoldingOpen} onOpenChange={(o) => { if (!o) { setAddToHoldingOpen(false); setAddToHoldingUnits(""); setAddToHoldingPrice(""); } }}>
+-        <DialogContent className="max-w-sm" style={{ zIndex: 9999 }}>
++        <DialogContent className="max-w-sm" style={{ zIndex: Z.dialog }}>
+           <DialogHeader>
+             <DialogTitle className="flex items-center gap-2 text-violet-700">
+               <PlusCircle className="h-5 w-5" />
+@@ -1811,6 +1630,8 @@ export function DeepAnalysisModal({
+             estimatedValueUsd={orderPopupData.estimatedValueUsd}
+             clientOrderId={orderPopupData.clientOrderId}
+             trackPositionClose={orderPopupData.trackPositionClose}
++            protection={orderPopupData.protection}
++            immediateStatus={orderPopupData.immediateStatus}
+             onComplete={() => {
+               if (orderPopupData) clearFlight(orderPopupData.ticker, orderPopupData.side);
+               void utils.portfolio.getState.invalidate();
+diff --git a/client/src/components/OrderStatusPopup.tsx b/client/src/components/OrderStatusPopup.tsx
+index 1bf606a..53ed4ba 100644
+--- a/client/src/components/OrderStatusPopup.tsx
++++ b/client/src/components/OrderStatusPopup.tsx
+@@ -1,21 +1,24 @@
+ /**
+- * OrderStatusPopup — Center-screen popup that shows real-time order status
+- * after placing a BUY/SELL order.
+- *
+- * Two modes:
+- * 1. Polling mode (Live Trading): Polls getOrderStatus every 3s while order is pending.
+- * 2. Immediate mode (Paper Lab): Shows success/failure immediately with IBKR message.
+- *
+- * Shows: ticker, side, qty, type, status, fill price, IBKR messages, edit/cancel for pending.
++ * Order Event Manager — 7-state popup after manual / live orders.
++ * submitting → pending → partial → filled → syncing → complete (+ stalled/rejected)
+  */
+-import { useState, useEffect, useCallback, Component, type ReactNode } from "react";
++import { useState, useEffect, useCallback } from "react";
+ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+ import { Button } from "@/components/ui/button";
+ import { Input } from "@/components/ui/input";
+ import { Badge } from "@/components/ui/badge";
+-import { Loader2, CheckCircle2, XCircle, Clock, Edit3, Trash2, AlertTriangle, Info, ExternalLink } from "lucide-react";
++import { Loader2, CheckCircle2, XCircle, Clock, Edit3, Trash2, AlertTriangle, Info, ExternalLink, Shield } from "lucide-react";
+ import { trpc } from "@/lib/trpc";
+ import { toast } from "sonner";
++import { Z } from "@/lib/zIndex";
++import {
++  type OrderEventPhase,
++  ORDER_EVENT_STEPS,
++  isTerminalPhase,
++  phaseLabelHe,
++  stepIndex,
++  mapIbkrToPhase,
++} from "@/lib/orderEventManager";
+ 
+ function friendlyApiError(message: string): string {
+   if (message.includes("Unexpected token") || message.includes("<html"))
+@@ -27,10 +30,16 @@ function friendlyApiError(message: string): string {
+ 
+ const STALLED_MS = 25_000;
+ const IBKR_PORTAL_URL = "https://www.interactivebrokers.com/portal";
+-const STALLED_HEADLINE = "אין תגובה מ-IBKR אחרי 25ש'";
+ const STALLED_BODY =
+   "ייתכן שההזמנה כן בוצעה — בדוק ב-IBKR לפני שליחה חוזרת. אל תלחץ שוב על BUY/SELL עד שתאמת.";
+ 
++export interface OrderProtection {
++  stopLoss?: number | null;
++  takeProfit?: number | null;
++  /** true only when SL/TP came from server response (not dialog estimate) */
++  verified?: boolean;
++}
++
+ interface OrderStatusPopupProps {
+   open: boolean;
+   onClose: () => void;
+@@ -38,25 +47,16 @@ interface OrderStatusPopupProps {
+   ticker: string;
+   side: "BUY" | "SELL";
+   quantity: number;
+-  orderType?: string; // MKT, LMT, STP
++  orderType?: string;
+   sentAt?: Date;
+-  /** Human label e.g. קניית לונג / חיסול מהיר */
+   intentLabel?: string | null;
+-  /** Estimated order value USD */
+   estimatedValueUsd?: number | null;
+-  /** Idempotency key — shown in STALLED so user can match in IBKR / server logs */
+   clientOrderId?: string | null;
+-  /** Immediate status — skips polling. Used for Paper Lab orders. */
+   immediateStatus?: "success" | "failed" | null;
+-  /** IBKR message/error to display */
+   ibkrMessage?: string | null;
+-  /** Wait until ticker gone from DB + IBKR (War Room exit) */
+   trackPositionClose?: boolean;
+-  /** Called when position fully closed */
+   onComplete?: () => void;
+-  /** Outcome when popup closes — parent uses this for clientOrderId lifecycle */
+   onCloseWithOutcome?: (outcome: "stalled" | "terminal" | "dismissed") => void;
+-  /** Additional execution details */
+   executionDetails?: {
+     exitPrice?: number;
+     realizedPnl?: number;
+@@ -66,6 +66,41 @@ interface OrderStatusPopupProps {
+     stopLoss?: number;
+     takeProfit?: number;
+   } | null;
++  /** SL/TP applied by server after entry fill */
++  protection?: OrderProtection | null;
++}
++
++function PhaseStepper({ phase }: { phase: OrderEventPhase }) {
++  if (phase === "stalled" || phase === "rejected" || phase === "cancelled") return null;
++  const active = stepIndex(phase);
++  const labels = ["שליחה", "ממתין", "חלקי", "בוצע", "סנכרון", "סיום"];
++  return (
++    <div className="flex items-center justify-between gap-0.5 px-1" aria-label="התקדמות פקודה">
++      {ORDER_EVENT_STEPS.map((step, i) => {
++        const done = i < active;
++        const current = i === active;
++        return (
++          <div key={step} className="flex flex-col items-center flex-1 min-w-0">
++            <div
++              className={`rounded-full mb-0.5 shrink-0 ${
++                done ? "w-2 h-2 bg-emerald-500" : current ? "w-2.5 h-2.5 bg-amber-500 animate-pulse" : "w-2 h-2 bg-slate-300"
++              }`}
++              title={labels[i]}
++            />
++            <span
++              className={`truncate w-full text-center leading-tight ${
++                current
++                  ? "text-[9px] sm:text-[9px] font-bold text-amber-800"
++                  : `hidden sm:inline text-[9px] ${done ? "text-emerald-700" : "text-slate-400"}`
++              }`}
++            >
++              {labels[i]}
++            </span>
++          </div>
++        );
++      })}
++    </div>
++  );
+ }
+ 
+ export function OrderStatusPopup({
+@@ -86,24 +121,38 @@ export function OrderStatusPopup({
+   onComplete,
+   onCloseWithOutcome,
+   executionDetails,
++  protection,
+ }: OrderStatusPopupProps) {
+-  const [status, setStatus] = useState<string>("pending");
+-  const [orderDetails, setOrderDetails] = useState<any>(null);
++  const [phase, setPhase] = useState<OrderEventPhase>("submitting");
++  const [orderDetails, setOrderDetails] = useState<Record<string, unknown> | null>(null);
+   const [editMode, setEditMode] = useState(false);
+   const [newPrice, setNewPrice] = useState("");
+   const [pollCount, setPollCount] = useState(0);
+-  const [exitPhase, setExitPhase] = useState<string>("submitting");
+   const [exitDone, setExitDone] = useState(false);
+   const [liveIbkrMessage, setLiveIbkrMessage] = useState<string | null>(ibkrMessage ?? null);
+ 
+-  // Immediate mode: set status directly from props
++  const sl = protection?.verified ? protection.stopLoss : undefined;
++  const tp = protection?.verified ? protection.takeProfit : undefined;
++  const showProtection =
++    protection?.verified === true
++    && (phase === "filled" || phase === "syncing" || phase === "complete")
++    && sl != null && tp != null && sl > 0 && tp > 0;
++
++  const awaitingProtectionVerify =
++    !protection?.verified
++    && (phase === "filled" || phase === "syncing")
++    && !trackPositionClose;
++
+   useEffect(() => {
+-    if (open && immediateStatus) {
+-      setStatus(immediateStatus === "success" ? "filled" : "rejected");
++    if (!open) return;
++    if (immediateStatus === "failed") {
++      setPhase("rejected");
++      if (ibkrMessage) setLiveIbkrMessage(ibkrMessage);
++    } else if (immediateStatus === "success") {
++      setPhase("filled");
+     }
+-  }, [open, immediateStatus]);
++  }, [open, immediateStatus, ibkrMessage]);
+ 
+-  // Poll exit progress (War Room — wait for DB + IBKR clear)
+   const exitProgressQuery = trpc.liveEngine.getExitProgress.useQuery(
+     { ticker, orderId: orderId ?? undefined },
+     {
+@@ -121,48 +170,59 @@ export function OrderStatusPopup({
+   useEffect(() => {
+     if (!exitProgressQuery.data || !trackPositionClose) return;
+     const d = exitProgressQuery.data;
+-    setExitPhase(d.phase);
+     if (d.ibkrMessage) setLiveIbkrMessage(d.ibkrMessage);
+     if (d.avgPrice && d.orderStatus === "filled") {
+-      setOrderDetails((prev: any) => ({ ...prev, avgPrice: d.avgPrice }));
++      setOrderDetails((prev) => ({ ...prev, avgPrice: d.avgPrice }));
+     }
+     if (d.orderStatus === "rejected" || d.orderStatus === "cancelled") {
+-      setStatus("rejected");
++      setPhase(d.orderStatus === "cancelled" ? "cancelled" : "rejected");
+     } else if (d.done) {
+-      setStatus("filled");
++      setPhase("complete");
+       setExitDone(true);
+       onComplete?.();
+     } else if (d.orderStatus === "filled" || d.orderStatus === "filled_or_gone") {
+-      setStatus("filled");
++      setPhase(d.dbOpen ? "syncing" : "filled");
+     } else if (d.orderFound || d.orderStatus === "pending") {
+-      setStatus("pending");
++      setPhase("pending");
++    } else if (phase === "submitting") {
++      setPhase("pending");
+     }
+-  }, [exitProgressQuery.data, trackPositionClose, onComplete]);
++  }, [exitProgressQuery.data, trackPositionClose, onComplete, phase]);
+ 
+-  // Poll order status (only in polling mode — no immediateStatus)
+   const statusQuery = trpc.ibkr.getOrderStatus.useQuery(
+     { orderId: orderId ?? "" },
+     {
+-      enabled: open && !!orderId && status === "pending" && !immediateStatus,
++      enabled: open && !!orderId && !isTerminalPhase(phase) && phase !== "stalled" && !immediateStatus,
+       refetchInterval: 3000,
+       refetchIntervalInBackground: false,
+     }
+   );
+ 
+   useEffect(() => {
+-    if (statusQuery.data) {
+-      setPollCount(c => c + 1);
+-      if (statusQuery.data.found && statusQuery.data.order) {
+-        setOrderDetails(statusQuery.data.order);
+-        setStatus(statusQuery.data.status);
+-      } else if (!statusQuery.data.found && statusQuery.data.status === "filled_or_cancelled") {
+-        // MKT orders often disappear immediately = filled
+-        if (orderType === "MKT" || pollCount >= 2) {
+-          setStatus("filled");
+-        }
++    if (!statusQuery.data) return;
++    setPollCount((c) => c + 1);
++    if (statusQuery.data.found && statusQuery.data.order) {
++      setOrderDetails(statusQuery.data.order);
++      const o = statusQuery.data.order;
++      const filledQty = Number(o.filledQty ?? 0);
++      const mapped = mapIbkrToPhase(statusQuery.data.status, filledQty, quantity);
++      setPhase(mapped);
++    } else if (!statusQuery.data.found && statusQuery.data.status === "filled_or_cancelled") {
++      if (orderType === "MKT" || pollCount >= 2) {
++        setPhase("filled");
+       }
+     }
+-  }, [statusQuery.data, orderType, pollCount]);
++  }, [statusQuery.data, orderType, pollCount, quantity]);
++
++  // filled → syncing → complete (opens — longer pause if server verified SL/TP)
++  useEffect(() => {
++    if (!open || trackPositionClose || immediateStatus) return;
++    if (phase !== "filled") return;
++    const delay = showProtection ? 2000 : 800;
++    setPhase("syncing");
++    const t = setTimeout(() => setPhase("complete"), delay);
++    return () => clearTimeout(t);
++  }, [open, phase, trackPositionClose, immediateStatus, showProtection]);
+ 
+   const pollError = exitProgressQuery.error?.message ?? statusQuery.error?.message ?? null;
+ 
+@@ -171,22 +231,21 @@ export function OrderStatusPopup({
+     onClose();
+   }, [onClose, onCloseWithOutcome]);
+ 
+-  const isTerminal =
+-    status === "filled" || status === "cancelled" || status === "rejected";
+-
+-  const isStalled = status === "stalled";
++  const isStalled = phase === "stalled";
++  const isTerminal = isTerminalPhase(phase);
++  const inFlight = phase === "submitting" || phase === "pending" || phase === "partial" || phase === "syncing";
+ 
+-  // STALLED: no response after 25s while still pending — never auto-assume filled
+   useEffect(() => {
+-    if (!open || immediateStatus || isStalled || isTerminal || status !== "pending") return;
+-    const timer = setTimeout(() => setStatus("stalled"), STALLED_MS);
++    if (!open || immediateStatus || isStalled || isTerminal) return;
++    if (phase !== "submitting" && phase !== "pending") return;
++    const timer = setTimeout(() => setPhase("stalled"), STALLED_MS);
+     return () => clearTimeout(timer);
+-  }, [open, immediateStatus, isStalled, isTerminal, status]);
++  }, [open, immediateStatus, isStalled, isTerminal, phase]);
+ 
+   const cancelMut = trpc.ibkr.cancelGenericOrder.useMutation({
+     onSuccess: () => {
+       toast.success("✅ הפקודה בוטלה");
+-      setStatus("cancelled");
++      setPhase("cancelled");
+     },
+     onError: (e) => toast.error(`שגיאה בביטול: ${e.message}`),
+   });
+@@ -210,97 +269,110 @@ export function OrderStatusPopup({
+       toast.error("מחיר לא תקין");
+       return;
+     }
+-    const oType = orderDetails?.orderType?.toUpperCase()?.includes("STP") ? "STP" : "LMT";
++    const oType = String(orderDetails?.orderType ?? "").toUpperCase().includes("STP") ? "STP" : "LMT";
+     modifyMut.mutate({ orderId, newPrice: price, orderType: oType as "LMT" | "STP" });
+   }, [orderId, newPrice, orderDetails, modifyMut]);
+ 
+-  // Reset state when popup opens
+   useEffect(() => {
+     if (open) {
+-      if (!immediateStatus) {
+-        setStatus("pending");
+-      }
++      setPhase(orderId ? "pending" : "submitting");
+       setOrderDetails(null);
+       setEditMode(false);
+       setNewPrice("");
+       setPollCount(0);
+       setExitDone(false);
+-      setExitPhase("submitting");
+       setLiveIbkrMessage(ibkrMessage ?? null);
++      if (immediateStatus === "success") setPhase("filled");
++      if (immediateStatus === "failed") setPhase("rejected");
+     }
+-  }, [open, immediateStatus, ibkrMessage]);
+-
+-  const phaseLabel = trackPositionClose
+-    ? exitPhase === "position_closed" ? "✅ הפוזיציה נסגרה — הנייר הוסר"
+-      : exitPhase === "filled" ? "פקודה בוצעה — ממתין לסנכרון..."
+-      : exitPhase === "failed" ? "❌ הפקודה נדחתה / בוטלה"
+-      : exitProgressQuery.data?.dbOpen
+-        ? `ממתין ל-IBKR... (DB: ${exitProgressQuery.data.dbStatus ?? "open"})`
+-        : exitProgressQuery.data?.ibkrQty
+-          ? `ממתין לסגירה ב-IBKR (${exitProgressQuery.data.ibkrQty} מניות)`
+-          : "שולח פקודה ל-IBKR..."
++  }, [open, orderId, immediateStatus, ibkrMessage]);
++
++  const exitPhaseLabel = trackPositionClose && exitProgressQuery.data
++    ? exitProgressQuery.data.done
++      ? "✅ הפוזיציה נסגרה — הנייר הוסר"
++      : exitProgressQuery.data.orderStatus === "filled"
++        ? "פקודה בוצעה — ממתין לסנכרון..."
++        : exitProgressQuery.data.dbOpen
++          ? `ממתין ל-IBKR... (DB: ${exitProgressQuery.data.dbStatus ?? "open"})`
++          : exitProgressQuery.data.ibkrQty
++            ? `ממתין לסגירה ב-IBKR (${exitProgressQuery.data.ibkrQty} מניות)`
++            : "שולח פקודה ל-IBKR..."
+     : null;
+ 
+-  const statusIcon = status === "filled" ? <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+-    : status === "stalled" ? <AlertTriangle className="h-6 w-6 text-orange-500" />
+-    : status === "cancelled" ? <XCircle className="h-6 w-6 text-red-500" />
+-    : status === "rejected" ? <XCircle className="h-6 w-6 text-red-500" />
++  const statusIcon = phase === "complete" || phase === "filled" ? <CheckCircle2 className="h-6 w-6 text-emerald-500" />
++    : phase === "stalled" ? <AlertTriangle className="h-6 w-6 text-orange-500" />
++    : phase === "cancelled" || phase === "rejected" ? <XCircle className="h-6 w-6 text-red-500" />
+     : <Clock className="h-6 w-6 text-amber-500 animate-pulse" />;
+ 
+-  const statusText = status === "stalled" ? STALLED_HEADLINE
+-    : !orderId && status === "pending"
+-    ? "שולח ל-IBKR..."
+-    : status === "filled" ? "בוצע ✅"
+-    : status === "cancelled" ? "בוטל"
+-    : status === "rejected" ? "נדחה ❌"
+-    : "ממתין לביצוע...";
+-
+-  const statusColor = status === "filled" ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+-    : status === "stalled" ? "bg-orange-100 text-orange-900 border-orange-400"
+-    : status === "cancelled" || status === "rejected" ? "bg-red-100 text-red-800 border-red-300"
++  const statusColor = phase === "complete" || phase === "filled" ? "bg-emerald-100 text-emerald-800 border-emerald-300"
++    : phase === "syncing" ? "bg-blue-100 text-blue-800 border-blue-300"
++    : phase === "partial" ? "bg-violet-100 text-violet-800 border-violet-300"
++    : phase === "stalled" ? "bg-orange-100 text-orange-900 border-orange-400"
++    : phase === "cancelled" || phase === "rejected" ? "bg-red-100 text-red-800 border-red-300"
+     : "bg-amber-100 text-amber-800 border-amber-300";
+ 
+   return (
+     <Dialog open={open} onOpenChange={(v) => {
+       if (!v) {
+-        if (status === "stalled") { handlePopupClose("stalled"); return; }
+-        if (trackPositionClose && !exitDone && status === "pending") return;
++        if (phase === "stalled") { handlePopupClose("stalled"); return; }
++        if (trackPositionClose && !exitDone && inFlight) return;
+         handlePopupClose(isTerminal ? "terminal" : "dismissed");
+       }
+     }}>
+-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => {
+-        if (status === "stalled") return;
+-        if (trackPositionClose && !exitDone && status === "pending") e.preventDefault();
+-      }}>
++      <DialogContent
++        className="sm:max-w-md"
++        style={{ zIndex: Z.orderEvent }}
++        onPointerDownOutside={(e) => {
++          if (phase === "stalled") return;
++          if (trackPositionClose && !exitDone && inFlight) e.preventDefault();
++        }}
++      >
+         <DialogHeader>
+           <DialogTitle className="flex items-center gap-2 text-lg">
+             {statusIcon}
+             <span className="text-[13px] sm:text-lg font-semibold">
+-              {intentLabel ? `${intentLabel} — ` : "סטטוס פקודה — "}{ticker}
++              {intentLabel ? `${intentLabel} — ` : "ניהול אירוע — "}{ticker}
+             </span>
+           </DialogTitle>
+         </DialogHeader>
+ 
+         <div className="space-y-4 py-2">
+-          {/* Status Badge */}
++          <PhaseStepper phase={phase} />
++
+           <div className="flex justify-center">
+             <Badge variant="outline" className={`text-base px-4 py-1.5 font-bold border-2 ${statusColor}`}>
+-              {statusText}
++              {phaseLabelHe(phase)}
+             </Badge>
+           </div>
+ 
+-          {phaseLabel && (
++          {showProtection && (
++            <div className="rounded-lg p-3 border bg-emerald-50 border-emerald-300 text-sm text-emerald-900 flex items-start gap-2">
++              <Shield className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600" />
++              <p className="font-semibold leading-snug">
++                ✅ {ticker} מוגן — SL ${Number(sl).toFixed(2)} · TP ${Number(tp).toFixed(2)}
++              </p>
++            </div>
++          )}
++
++          {awaitingProtectionVerify && (
++            <div className="rounded-lg p-3 border bg-slate-50 border-slate-200 text-[11px] text-slate-600 flex items-start gap-2">
++              <Loader2 className="h-4 w-4 shrink-0 mt-0.5 animate-spin text-slate-500" />
++              <p className="leading-snug">ממתין לאימות SL/TP מהשרת — בדוק ב-IBKR אם לא מתעדכן.</p>
++            </div>
++          )}
++
++          {exitPhaseLabel && (
+             <div className="text-center text-sm text-slate-600 bg-slate-50 rounded-lg py-2 px-3 border border-slate-200">
+               {exitProgressQuery.isFetching && !exitDone && (
+                 <Loader2 className="inline w-4 h-4 animate-spin mr-1 align-middle" />
+               )}
+-              {phaseLabel}
++              {exitPhaseLabel}
+             </div>
+           )}
+ 
+-          {status === "stalled" && (
++          {phase === "stalled" && (
+             <div className="rounded-lg p-3 border bg-orange-50 border-orange-300 text-sm text-orange-900">
+-              <p className="font-semibold mb-1">{STALLED_HEADLINE}</p>
++              <p className="font-semibold mb-1">{phaseLabelHe("stalled")}</p>
+               <p className="text-[11px] leading-snug">{STALLED_BODY}</p>
+             </div>
+           )}
+@@ -311,18 +383,17 @@ export function OrderStatusPopup({
+             </div>
+           )}
+ 
+-          {/* IBKR Message — shown prominently when available */}
+           {(liveIbkrMessage || ibkrMessage) && (
+-            <div className={`rounded-lg p-3 border ${status === "rejected" ? "bg-red-50 border-red-200" : "bg-blue-50 border-blue-200"}`}>
++            <div className={`rounded-lg p-3 border ${phase === "rejected" ? "bg-red-50 border-red-200" : "bg-blue-50 border-blue-200"}`}>
+               <div className="flex items-start gap-2">
+-                {status === "rejected" ? (
++                {phase === "rejected" ? (
+                   <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                 ) : (
+                   <Info className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                 )}
+                 <div>
+                   <p className="text-xs font-semibold text-gray-600 mb-1">סטטוס IBKR:</p>
+-                  <p className={`text-sm font-medium ${status === "rejected" ? "text-red-700" : "text-blue-700"}`}>
++                  <p className={`text-sm font-medium ${phase === "rejected" ? "text-red-700" : "text-blue-700"}`}>
+                     {liveIbkrMessage || ibkrMessage}
+                   </p>
+                 </div>
+@@ -330,7 +401,6 @@ export function OrderStatusPopup({
+             </div>
+           )}
+ 
+-          {/* Order Details Grid */}
+           <div className="grid grid-cols-2 gap-3 text-sm bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+             <div>
+               <span className="text-gray-500 text-xs">טיקר</span>
+@@ -344,7 +414,12 @@ export function OrderStatusPopup({
+             </div>
+             <div>
+               <span className="text-gray-500 text-[11px]">כמות</span>
+-              <p className="font-bold text-base">{quantity}{orderDetails?.filledQty > 0 && orderDetails.filledQty < quantity ? ` / ${orderDetails.filledQty}` : ""}</p>
++              <p className="font-bold text-base">
++                {quantity}
++                {orderDetails?.filledQty != null && Number(orderDetails.filledQty) > 0
++                  && Number(orderDetails.filledQty) < quantity
++                  ? ` / ${orderDetails.filledQty}` : ""}
++              </p>
+             </div>
+             {estimatedValueUsd != null && estimatedValueUsd > 0 && (
+               <div>
+@@ -368,40 +443,20 @@ export function OrderStatusPopup({
+                 <p className="font-mono text-[10px] break-all">{clientOrderId}</p>
+               </div>
+             )}
+-            {sentAt && sentAt instanceof Date && (
++            {sentAt instanceof Date && (
+               <div className="col-span-2">
+                 <span className="text-gray-500 text-xs">זמן שליחה</span>
+                 <p className="text-xs">{sentAt.toLocaleTimeString("he-IL")}</p>
+               </div>
+             )}
+-            {/* Fill Price */}
+-            {status === "filled" && orderDetails?.avgPrice != null && (
++            {(phase === "filled" || phase === "complete") && orderDetails?.avgPrice != null && (
+               <div className="col-span-2 bg-emerald-50 rounded p-2">
+                 <span className="text-gray-500 text-xs">שער ביצוע</span>
+                 <p className="font-bold text-lg text-emerald-700">${Number(orderDetails.avgPrice).toFixed(2)}</p>
+               </div>
+             )}
+-            {/* Execution Details (Paper Lab) */}
+-            {executionDetails && status === "filled" && (
++            {executionDetails && (phase === "filled" || phase === "complete") && (
+               <>
+-                {executionDetails.exitPrice != null && (
+-                  <div className="col-span-2 bg-emerald-50 dark:bg-emerald-950 rounded p-2">
+-                    <span className="text-gray-500 text-xs">שער יציאה</span>
+-                    <p className="font-bold text-lg text-emerald-700">${executionDetails.exitPrice.toFixed(2)}</p>
+-                  </div>
+-                )}
+-                {executionDetails.entryPrice != null && (
+-                  <div>
+-                    <span className="text-gray-500 text-xs">שער כניסה</span>
+-                    <p className="font-bold">${executionDetails.entryPrice.toFixed(2)}</p>
+-                  </div>
+-                )}
+-                {executionDetails.allocatedCapital != null && (
+-                  <div>
+-                    <span className="text-gray-500 text-xs">הקצאה</span>
+-                    <p className="font-bold">${executionDetails.allocatedCapital.toFixed(0)}</p>
+-                  </div>
+-                )}
+                 {executionDetails.realizedPnl != null && (
+                   <div>
+                     <span className="text-gray-500 text-xs">P&L</span>
+@@ -410,30 +465,9 @@ export function OrderStatusPopup({
+                     </p>
+                   </div>
+                 )}
+-                {executionDetails.realizedPnlPct != null && (
+-                  <div>
+-                    <span className="text-gray-500 text-xs">P&L %</span>
+-                    <p className={`font-bold ${executionDetails.realizedPnlPct >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+-                      {executionDetails.realizedPnlPct.toFixed(2)}%
+-                    </p>
+-                  </div>
+-                )}
+-                {executionDetails.stopLoss != null && (
+-                  <div>
+-                    <span className="text-gray-500 text-xs">SL</span>
+-                    <p className="font-bold text-red-600">${executionDetails.stopLoss.toFixed(2)}</p>
+-                  </div>
+-                )}
+-                {executionDetails.takeProfit != null && (
+-                  <div>
+-                    <span className="text-gray-500 text-xs">TP</span>
+-                    <p className="font-bold text-emerald-600">${executionDetails.takeProfit.toFixed(2)}</p>
+-                  </div>
+-                )}
+               </>
+             )}
+-            {/* Pending order price info */}
+-            {status === "pending" && orderDetails && (
++            {phase === "pending" && orderDetails && (
+               <>
+                 {orderDetails.limitPrice != null && (
+                   <div>
+@@ -441,33 +475,20 @@ export function OrderStatusPopup({
+                     <p className="font-bold">${Number(orderDetails.limitPrice).toFixed(2)}</p>
+                   </div>
+                 )}
+-                {orderDetails.stopPrice != null && (
+-                  <div>
+-                    <span className="text-gray-500 text-xs">Stop Price</span>
+-                    <p className="font-bold">${Number(orderDetails.stopPrice).toFixed(2)}</p>
+-                  </div>
+-                )}
+-                {orderDetails.filledQty > 0 && (
++                {orderDetails.filledQty != null && Number(orderDetails.filledQty) > 0 && (
+                   <div>
+                     <span className="text-gray-500 text-xs">מולא חלקית</span>
+-                    <p className="font-bold">{orderDetails.filledQty} / {quantity}</p>
++                    <p className="font-bold">{String(orderDetails.filledQty)} / {quantity}</p>
+                   </div>
+                 )}
+               </>
+             )}
+           </div>
+ 
+-          {/* Edit Price Section */}
+-          {status === "pending" && editMode && (
++          {phase === "pending" && editMode && (
+             <div className="flex gap-2 items-center">
+-              <Input
+-                type="number"
+-                step="0.01"
+-                placeholder="מחיר חדש"
+-                value={newPrice}
+-                onChange={(e) => setNewPrice(e.target.value)}
+-                className="flex-1"
+-              />
++              <Input type="number" step="0.01" placeholder="מחיר חדש" value={newPrice}
++                onChange={(e) => setNewPrice(e.target.value)} className="flex-1" />
+               <Button size="sm" onClick={handleModify} disabled={modifyMut.isPending}>
+                 {modifyMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "עדכן"}
+               </Button>
+@@ -477,7 +498,7 @@ export function OrderStatusPopup({
+         </div>
+ 
+         <DialogFooter className="flex gap-2">
+-          {status === "stalled" && (
++          {phase === "stalled" && (
+             <Button
+               variant="default"
+               className="min-h-[44px] text-[11px] sm:text-sm gap-1.5 flex-1 bg-orange-600 hover:bg-orange-700"
+@@ -490,36 +511,26 @@ export function OrderStatusPopup({
+               סגור / בדוק ב-IBKR
+             </Button>
+           )}
+-          {status === "pending" && !immediateStatus && !trackPositionClose && (
++          {phase === "pending" && !immediateStatus && !trackPositionClose && (
+             <>
+-              <Button
+-                variant="outline"
+-                size="sm"
+-                onClick={() => setEditMode(!editMode)}
+-                disabled={!orderId}
+-              >
+-                <Edit3 className="h-4 w-4 mr-1" />
+-                ערוך מחיר
++              <Button variant="outline" size="sm" onClick={() => setEditMode(!editMode)} disabled={!orderId}>
++                <Edit3 className="h-4 w-4 mr-1" /> ערוך מחיר
+               </Button>
+-              <Button
+-                variant="destructive"
+-                size="sm"
+-                onClick={handleCancel}
+-                disabled={cancelMut.isPending || !orderId}
+-              >
++              <Button variant="destructive" size="sm" onClick={handleCancel}
++                disabled={cancelMut.isPending || !orderId}>
+                 {cancelMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 mr-1" />}
+                 בטל פקודה
+               </Button>
+             </>
+           )}
+-          {status !== "stalled" && (
++          {phase !== "stalled" && (
+             <Button
+-              variant={status === "pending" && trackPositionClose && !exitDone ? "ghost" : "default"}
++              variant={trackPositionClose && !exitDone && inFlight ? "ghost" : "default"}
+               className="min-h-[44px] text-[11px] sm:text-sm"
+               onClick={() => handlePopupClose(isTerminal ? "terminal" : "dismissed")}
+-              disabled={trackPositionClose && !exitDone && status === "pending"}
++              disabled={trackPositionClose && !exitDone && inFlight}
+             >
+-              {exitDone || status === "filled" ? "סיום" : trackPositionClose ? "ממתין..." : "סגור"}
++              {exitDone || phase === "complete" ? "סיום" : trackPositionClose && inFlight ? "ממתין..." : "סגור"}
+             </Button>
+           )}
+         </DialogFooter>

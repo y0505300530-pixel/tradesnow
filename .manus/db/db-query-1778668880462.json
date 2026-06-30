@@ -1,0 +1,25 @@
+{
+  "query": "SELECT sessionId, snapshotTs, totalEquity FROM paperEquitySnapshots ORDER BY snapshotTs DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT sessionId, snapshotTs, totalEquity FROM paperEquitySnapshots ORDER BY snapshotTs DESC LIMIT 20;",
+  "rows": [
+    {
+      "sessionId": "5",
+      "snapshotTs": "1778666400000",
+      "totalEquity": "100263.20722404298"
+    },
+    {
+      "sessionId": "5",
+      "snapshotTs": "1778616000000",
+      "totalEquity": "100263.20722404298"
+    },
+    {
+      "sessionId": "5",
+      "snapshotTs": "1778612400000",
+      "totalEquity": "99878.86854993165"
+    }
+  ],
+  "messages": [],
+  "stdout": "sessionId\tsnapshotTs\ttotalEquity\n5\t1778666400000\t100263.20722404298\n5\t1778616000000\t100263.20722404298\n5\t1778612400000\t99878.86854993165\n",
+  "stderr": "",
+  "execution_time_ms": 1735
+}

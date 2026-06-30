@@ -1,0 +1,70 @@
+{
+  "query": "SELECT ticker, realizedPnl, closedAt, sessionId FROM paperTrades WHERE sessionId = 5 ORDER BY closedAt DESC LIMIT 15;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, realizedPnl, closedAt, sessionId FROM paperTrades WHERE sessionId = 5 ORDER BY closedAt DESC LIMIT 15;",
+  "rows": [
+    {
+      "ticker": "MTAV.TA",
+      "realizedPnl": "9830.065935466631",
+      "closedAt": "2026-05-13 10:36:25",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "MTAV.TA",
+      "realizedPnl": "9832.823175466632",
+      "closedAt": "2026-05-13 10:35:27",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "BKR",
+      "realizedPnl": "49.842290000000375",
+      "closedAt": "2026-05-12 19:45:39",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "USB",
+      "realizedPnl": "-12.478149999999538",
+      "closedAt": "2026-05-12 18:42:58",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "BAC",
+      "realizedPnl": "-11.421089999998955",
+      "closedAt": "2026-05-12 18:42:58",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "O",
+      "realizedPnl": "-12.783824999999538",
+      "closedAt": "2026-05-12 18:41:41",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "DVN",
+      "realizedPnl": "-12.463999999999373",
+      "closedAt": "2026-05-12 18:41:41",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "AS",
+      "realizedPnl": "-12.478359999999306",
+      "closedAt": "2026-05-12 18:41:41",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "ETN",
+      "realizedPnl": "-12.739240000000109",
+      "closedAt": "2026-05-12 18:41:41",
+      "sessionId": "5"
+    },
+    {
+      "ticker": "GM",
+      "realizedPnl": "-13.093049999999167",
+      "closedAt": "2026-05-12 18:41:40",
+      "sessionId": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\trealizedPnl\tclosedAt\tsessionId\nMTAV.TA\t9830.065935466631\t2026-05-13 10:36:25\t5\nMTAV.TA\t9832.823175466632\t2026-05-13 10:35:27\t5\nBKR\t49.842290000000375\t2026-05-12 19:45:39\t5\nUSB\t-12.478149999999538\t2026-05-12 18:42:58\t5\nBAC\t-11.421089999998955\t2026-05-12 18:42:58\t5\nO\t-12.783824999999538\t2026-05-12 18:41:41\t5\nDVN\t-12.463999999999373\t2026-05-12 18:41:41\t5\nAS\t-12.478359999999306\t2026-05-12 18:41:41\t5\nETN\t-12.739240000000109\t2026-05-12 18:41:41\t5\nGM\t-13.093049999999167\t2026-05-12 18:41:40\t5\n",
+  "stderr": "",
+  "execution_time_ms": 1853
+}

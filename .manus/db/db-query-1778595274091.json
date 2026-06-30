@@ -1,0 +1,24 @@
+{
+  "query": "SELECT * FROM paperEquitySnapshots ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT * FROM paperEquitySnapshots ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "6",
+      "userId": "1",
+      "totalEquity": "100900.76589213681",
+      "snapshotTs": "1778594400000",
+      "createdAt": "2026-05-12 14:01:54"
+    },
+    {
+      "id": "5",
+      "userId": "1",
+      "totalEquity": "100080.86915466306",
+      "snapshotTs": "1778590800000",
+      "createdAt": "2026-05-12 13:56:49"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\ttotalEquity\tsnapshotTs\tcreatedAt\n6\t1\t100900.76589213681\t1778594400000\t2026-05-12 14:01:54\n5\t1\t100080.86915466306\t1778590800000\t2026-05-12 13:56:49\n",
+  "stderr": "",
+  "execution_time_ms": 1816
+}

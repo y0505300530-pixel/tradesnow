@@ -1,0 +1,1 @@
+ALTER TABLE `localUsers` ADD `telegramChatId` varchar(64);

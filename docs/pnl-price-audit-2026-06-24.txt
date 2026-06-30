@@ -1,0 +1,207 @@
+================================================================================
+TradeSnow — דוח ביקורת P&L / מחירים / תשואה
+================================================================================
+תאריך: 24.06.2026
+דרישה: IBKR = Holding 1 (H1) = War Room — אותם מספרים
+
+================================================================================
+סיכום מנהלים — מה ראינו בצילומים
+================================================================================
+
+מקור                  | Daily $      | Daily %   | NLV
+----------------------|--------------|-----------|----------
+IBKR mobile (אמת)     | -$6,080      | -5.48%    | $104.9K
+War Room — header     | -$6,300      | -5.63%    | ~$104.9K  ✓
+War Room — footer     | +$3,600      | +2.00%    | —         ✗
+Holding 1             | -$1,052      | -0.64%    | —
+Overview — H1         | -$1,110      | -1.04%    | —
+
+מסקנה: War Room header תואם ל-IBKR. Holding 1, Overview ו-footer של War Room לא —
+בגלל נוסחאות שונות, מקורות נתונים שונים, ו-DB לא מסונכרן.
+
+================================================================================
+מקורות נתונים (4 ערוצים במקביל)
+================================================================================
+
+IBKR /positions  → mktPrice, position (signed), unrealizedPnl, mktValue
+IBKR /quotes     → current_price, prior_close, change (via PriceService)
+IBKR /pnl        → dailyPnl (חשבון — כולל realized, עמלות, FX)
+DB portfolioHoldings → currentPrice, dailyChangePercent, dailyBasePrice (23:30 IL)
+DB livePositions → units (חיובי), direction, entryPrice
+Yahoo fallback   → כש-IBIND offline
+
+מסך                  | מחיר נוכחי        | Daily $              | Daily % חשבון
+---------------------|-------------------|----------------------|------------------
+War Room header      | /quotes           | /pnl                 | NLV-based
+War Room footer (לפני תיקון) | /quotes   | סכום שורות           | ממוצע %
+H1 Trade Manager     | /positions+quotes | computeTodayPnl      | accountTodayPct
+Overview H1 (לפני)   | DB + /quotes      | computeTodayPnl      | accountTodayPct
+
+================================================================================
+מה IBKR באמת מחשב
+================================================================================
+
+Account Daily $  = /pnl → שינוי NLV (כולל realized ~-$6.96K, עמלות, FX)
+Account Daily %  = dailyPnl / (NLV - dailyPnl) × 100
+Stock CHG%       = (last - prior_close) / prior_close × 100
+
+הבדל קריטי: IBKR /pnl ≠ סכום (price - prevClose) × units על פוזיציות פתוחות בלבד.
+
+================================================================================
+ראיות per-ticker מהצילומים (24.06 ~20:16)
+================================================================================
+
+Ticker | IBKR CHG% | War Room Today% | H1 Today%
+-------|-----------|-----------------|----------
+GLW    | +7.85%    | +8.11%          | -1.58%   ← H1 הפוך
+NET    | -0.46%    | +0.18%          | +0.18%   ← סימן הפוך
+TSM    | +0.47%    | +0.94%          | -0.19%
+NVMI   | -1.68%    | -1.22%          | -0.59%
+
+================================================================================
+רשימת באגים (17)
+================================================================================
+
+--- P0 — חוסם אמון ---
+
+BUG-WR-001 | War Room: header (-$6.3K) סותר footer (+$3.6K)
+  מיקום: client/src/pages/WarRoomLive.tsx (header ~1099, footer ~1019-1370)
+  שורש: Header = summ.dailyPnlUsd מ-/pnl; Footer = סכום שורות + ממוצע %
+  תיקון: Footer = summ.dailyPnlUsd + summ.dailyPnlPct
+
+BUG-H1-001 | H1 מתעלם מ-IBKR /pnl כשיש quotes
+  מיקום: client/src/hooks/usePortfolioMetrics.ts (~261)
+  שורש: hasH1LivePrices ? sumRows : ibkr.dailyPnl — תמיד sumRows כשיש quotes
+  תיקון: כש-ibkr.isLive && dailyPnl != null → h1TodayPnlFinal = ibkr.dailyPnl
+
+BUG-H1-002 | Overview טוען H1 מ-DB בלבד
+  מיקום: client/src/pages/PortfolioOverview.tsx (~127)
+  שורש: אין overlay של IBKR positions כמו Trade Manager
+  תיקון: h1HoldingsLive מ-ibkrPositionsData
+
+BUG-SYNC-001 | syncFromIbkr מעדיף units מ-livePositions על פני IBKR
+  מיקום: server/portfolioHoldingsSync.ts mergeIbkrHoldingWithLive (~68-94)
+  שורש: units מ-Elza DB במקום ibkr.position (למשל GLW 91 vs 230)
+  תיקון: units = ibkr.position, buyPrice = ibkr.avgCost; SL/TP מ-Elza בלבד
+
+--- P1 ---
+
+BUG-H1-003 | HoldingRow: Today % מ-dailyChangePercent ישן ב-DB
+  מיקום: client/src/pages/TradeManager/components/HoldingRow.tsx (~156)
+  תיקון: prevClose מ-holdingLivePriceMap
+
+BUG-WR-002 | Footer War Room: ממוצע % לא משקף חשבון
+  מיקום: WarRoomLive.tsx (~1020)
+  תיקון: summ.dailyPnlPct
+
+BUG-SSOT-001 | שני מודלים ל-shorts (direction+abs vs units<0)
+  מיקום: positionDisplay.ts, positionMath.ts, PnlService.ts
+  תיקון: SSOT מרכזי בשרת
+
+BUG-WR-003 | War Room דורס mktPrice מ-positions במחיר quotes
+  מיקום: server/routers/liveEngine.ts (~263-286)
+  תיקון: ל-IBKR_LIVE — אל תדרוס mktPrice
+
+BUG-H1-004 | dailyBasePrice (23:30 IL) מעוות Daily
+  מיקום: usePortfolioMetrics.ts computeTodayPnl (~180)
+  תיקון: דלג על dailyBasePrice כשיש live.prevClose
+
+BUG-H1-005 | Holdings footer לא משתמש ב-/pnl (במכוון בקוד הישן)
+  מיקום: HoldingsSection.tsx (~385)
+  תיקון: header/footer = /pnl; טבלה = per-ticker
+
+BUG-SYNC-002 | ibkrSync מעדכן livePositions אך לא portfolioHoldings
+  מיקום: server/ibkrSync.ts (~278-334)
+  תיקון: reconcileHoldingFromLivePosition אחרי units reconcile
+
+--- P2 ---
+
+BUG-UI-001   | תווית "IBKR live" על סכום שאינו מ-/pnl — CapitalSummaryCards.tsx
+BUG-PD-001   | positionDailyPnlUsd מדלג על dailyChange === 0 — positionDisplay.ts:36
+BUG-PD-002   | sumDailyPnlFromPositions fallback שגוי ל-shorts — liveEngine.ts:54
+BUG-MD-001   | change ?? 0 חוסם fallback ל-prevClose — marketData.ts, HoldingsSection
+BUG-H2-001   | H2 totalCost לא short-aware — TradeManager.tsx:686
+BUG-WR-004   | pnlPct costBasis ללא abs — WarRoomLive.tsx:963
+
+================================================================================
+נוסחאות בקוד
+================================================================================
+
+שרת (positionDisplay.ts):
+  signedUnits      = short ? -abs(units) : +abs(units)
+  dailyPnlUsd      = dailyChange × signedUnits
+  dailyPctPosition = dailyPnlUsd / (prevClose × abs(units)) × 100
+
+Client H1 (positionMath.ts + computeTodayPnl):
+  todayPnl  = change × units  (units שלילי לשורט)
+  todayPct  = todayPnl / (prevClose × abs(units)) × 100
+  accountTodayPct = dailyPnl / (NLV - dailyPnl) × 100
+
+================================================================================
+Shorts
+================================================================================
+
+portfolioHoldings     | units < 0           | נכון ב-positionMath
+livePositions         | direction + units>0 | נכון בשרת
+syncFromIbkr + Elza   | IBKR מוחלף ב-DB     | באג P0 (תוקן)
+War Room SL map       | רק SELL             | שורט: SL=BUY — לא מוצג
+
+================================================================================
+תיקונים שיושמו בקוד (24.06.2026)
+================================================================================
+
+קובץ                                              | שינוי
+--------------------------------------------------|------------------------------------------
+server/portfolioHoldingsSync.ts                   | units+avgCost מ-IBKR; SL/TP מ-Elza
+client/src/hooks/usePortfolioMetrics.ts           | h1TodayPnlFinal = ibkr.dailyPnl כש-live
+server/services/positionDisplay.ts                | dailyChange=0 מותר
+client/src/pages/WarRoomLive.tsx                  | footer = accountDailyUsd/Pct מ-/pnl
+client/src/pages/PortfolioOverview.tsx            | h1HoldingsLive overlay מ-IBKR
+client/src/pages/TradeManager/components/HoldingRow.tsx | prevClose מ-quotes
+client/src/pages/TradeManager/sections/HoldingsSection.tsx | תיקון change fallback
+client/src/pages/TradeManager/sections/CapitalSummaryCards.tsx | תווית "IBKR /pnl"
+server/ibkrSync.ts                                | reconcile portfolioHoldings אחרי units
+
+npm run build — עבר (24.06.2026)
+pm2 restart — נדרש לפריסה ל-production
+
+================================================================================
+תיקונים שנותרו (P1/P2)
+================================================================================
+
+1. War Room: אל תדרוס mktPrice מ-positions (liveEngine.ts)
+2. SSOT אחד ל-shorts ב-API
+3. sumDailyPnlFromPositions fallback (liveEngine.ts)
+4. H2 totalCost short-aware (TradeManager.tsx)
+5. War Room SL badge לשורטים (BUY orders)
+
+================================================================================
+קבצי מפתח
+================================================================================
+
+server/services/positionDisplay.ts    — SSOT שרת per-position
+server/routers/liveEngine.ts          — War Room enrichment + /pnl
+server/portfolioHoldingsSync.ts       — סנכרון units H1
+server/ibkrSync.ts                    — reconcile units
+client/src/hooks/usePortfolioMetrics.ts — Daily חשבון H1
+client/src/pages/WarRoomLive.tsx      — War Room UI
+client/src/pages/PortfolioOverview.tsx — Overview
+client/src/lib/positionMath.ts        — SSOT client
+
+================================================================================
+באג נפרד (NFLX/ACHR) — תוקן בנפרד
+================================================================================
+
+שורש: SL_TP_ENFORCEMENT ביטל bracket entries כ"יתומים"
+תיקון: isBracketLeg / isOrphanProtectiveOrder ב-liveSlTpEnforcement.ts
+פרוס: npm run build && pm2 restart tradesnow-app
+
+================================================================================
+שורה תחתונה
+================================================================================
+
+IBKR תקין. הבעיה בשכבת התצוגה: 4 נוסחאות ל-"היום", DB units לא מסונכרן,
+וסתירה פנימית ב-War Room. אחרי deploy של תיקוני P&L — Daily חשבון אמור
+להתיישר ל-~-$6.3K בכל המסכים; שורות טבלה = per-ticker בלבד (ללא realized).
+
+================================================================================

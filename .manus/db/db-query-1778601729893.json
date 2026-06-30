@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as totalTrades, SUM(realizedPnl) as totalRealizedPnl, SUM(CASE WHEN realizedPnl > 0 THEN 1 ELSE 0 END) as wins FROM paperTrades;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT COUNT(*) as totalTrades, SUM(realizedPnl) as totalRealizedPnl, SUM(CASE WHEN realizedPnl > 0 THEN 1 ELSE 0 END) as wins FROM paperTrades;",
+  "rows": [
+    {
+      "totalTrades": "116",
+      "totalRealizedPnl": "-6697.552443696898",
+      "wins": "52"
+    }
+  ],
+  "messages": [],
+  "stdout": "totalTrades\ttotalRealizedPnl\twins\n116\t-6697.552443696898\t52\n",
+  "stderr": "",
+  "execution_time_ms": 1821
+}

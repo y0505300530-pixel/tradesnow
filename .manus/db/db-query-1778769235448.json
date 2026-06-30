@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Move session 20 and 21 trades to 60 days ago (out of all yield windows)\nUPDATE paperTrades \nSET closedAt = DATE_SUB(NOW(), INTERVAL 60 DAY)\nWHERE sessionId IN (20, 21);\n\n-- Close all open positions in sessions 20 and 21 (if any)\nUPDATE paperPositions \nSET status = 'closed', closedAt = DATE_SUB(NOW(), INTERVAL 60 DAY)\nWHERE sessionId IN (20, 21) AND status = 'open';\n\n-- Reset ledger to session 22 with $100K fresh\nUPDATE paperLedger \nSET sessionId = 22, availableCash = 100000, initialCapital = 100000\nWHERE userId = 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \n-- Move session 20 and 21 trades to 60 days ago (out of all yield windows)\nUPDATE paperTrades \nSET closedAt = DATE_SUB(NOW(), INTERVAL 60 DAY)\nWHERE sessionId IN (20, 21);\n\n-- Close all open positions in sessions 20 and 21 (if any)\nUPDATE paperPositions \nSET status = 'closed', closedAt = DATE_SUB(NOW(), INTERVAL 60 DAY)\nWHERE sessionId IN (20, 21) AND status = 'open';\n\n-- Reset ledger to session 22 with $100K fresh\nUPDATE paperLedger \nSET sessionId = 22, availableCash = 100000, initialCapital = 100000\nWHERE userId = 1;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2379
+}

@@ -1,0 +1,26 @@
+{
+  "query": "\nSELECT 'paperPositions' as tbl, COUNT(*) as cnt FROM paperPositions\nUNION ALL\nSELECT 'paperTrades', COUNT(*) FROM paperTrades\nUNION ALL\nSELECT 'paperEquitySnapshots', COUNT(*) FROM paperEquitySnapshots\nUNION ALL\nSELECT 'paperLedger_cash', availableCash FROM paperLedger WHERE userId = 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute \nSELECT 'paperPositions' as tbl, COUNT(*) as cnt FROM paperPositions\nUNION ALL\nSELECT 'paperTrades', COUNT(*) FROM paperTrades\nUNION ALL\nSELECT 'paperEquitySnapshots', COUNT(*) FROM paperEquitySnapshots\nUNION ALL\nSELECT 'paperLedger_cash', availableCash FROM paperLedger WHERE userId = 1;\n",
+  "rows": [
+    {
+      "tbl": "paperEquitySnapshots",
+      "cnt": "0"
+    },
+    {
+      "tbl": "paperPositions",
+      "cnt": "9"
+    },
+    {
+      "tbl": "paperTrades",
+      "cnt": "0"
+    },
+    {
+      "tbl": "paperLedger_cash",
+      "cnt": "52010.13620205654"
+    }
+  ],
+  "messages": [],
+  "stdout": "tbl\tcnt\npaperEquitySnapshots\t0\npaperPositions\t9\npaperTrades\t0\npaperLedger_cash\t52010.13620205654\n",
+  "stderr": "",
+  "execution_time_ms": 1796
+}

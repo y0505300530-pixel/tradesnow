@@ -1,0 +1,1 @@
+ALTER TABLE `holding2` ADD `prevClose` double;

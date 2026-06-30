@@ -1,0 +1,627 @@
+{
+  "meta": {
+    "generatedAt": "2026-06-27T21:16:36.638Z",
+    "model": "Elza full USA — War Engine LONG+SHORT + live leverage config",
+    "period": {
+      "start": "2026-01-01",
+      "end": "2026-06-25",
+      "lookbackFrom": "2025-09-01"
+    },
+    "universe": {
+      "catalogueUsa": 149,
+      "withData": 147
+    },
+    "liveConfig": {
+      "totalNlv": 109801.15625,
+      "allocatedPct": 100,
+      "cashBudget": 109801.15625,
+      "intradayMultiplier": 1.8,
+      "overnightMultiplier": 1.8,
+      "allocatedCapital": 197642.08125000002,
+      "positionSizePct": 50,
+      "perPositionUsd": 54900.578125,
+      "minPositionUsd": 20000,
+      "maxPositionUsd": 85000,
+      "maxLongPositions": 12,
+      "maxShortPositions": 12
+    },
+    "warGates": {
+      "kronosOn": false,
+      "zivStructuralCap": 7.5,
+      "zivStructuralFloor": 6.5,
+      "zivOnlyFloor": 7.5,
+      "combinedGate": 8,
+      "goldBreakoutEnabled": false,
+      "bearBreakdownEnabled": false,
+      "weeklyAnchorEnabled": true,
+      "zonesGateEnabled": false,
+      "retestV2Enabled": true,
+      "volumeConfirmEnabled": true,
+      "cyclePhaseGateEnabled": false,
+      "breadthThreshold": 0.55,
+      "riskSizingEnabled": true,
+      "structuralExitsEnabled": true
+    },
+    "rulesIncluded": [
+      "Ziv LONG + Bear SHORT scoring with zivOnlyFloor/combinedGate from liveEngineConfig",
+      "SPY regime (BULL/NEUTRAL/BEAR) + breadth-aware longOk/shortOk",
+      "goldBreakout kill-switch (ON — blocks raw Gold Breakout unless נמ\"ס)",
+      "bearBreakdown kill-switch (ON)",
+      "cyclePhase gate (OFF)",
+      "weeklyAnchor HARD gate (WK-L/WK-S)",
+      "volumeConfirm נמ\"ס for breakout bypass",
+      "weeklyAligned + confluence + liquidity + correlation + sector caps",
+      "Partial TP 1.5R/2.5R, breakeven, trailing, score-decay exits",
+      "signalBias REJECTED slang guard",
+      "Live leverage/position sizing from liveEngineConfig"
+    ],
+    "rulesOmitted": [
+      "Kronos conviction addon (weight=0 in live config — no historical cache for 2026)",
+      "Mentor pattern boost (requires live mentorPatterns DB; not replayed historically)",
+      "gapGuard (intraday live-price chase guard — daily close entry only)",
+      "riskSizing + heatMaxPct (flag ON but legacy fixed-capital sizing used in backtest)",
+      "structuralExits Phase 5 (flag ON but legacy R-multiple exits used in backtest)"
+    ],
+    "assumptions": [
+      "All USA catalogue tickers with ≥50 bars",
+      "Daily bar simulation at close; commission $2.50/leg; 0.1% slippage",
+      "Gate flags read from liveEngineConfig userId=1 (or schema defaults if DB unavailable)"
+    ],
+    "missingData": [
+      "SPCX",
+      "CYBR"
+    ]
+  },
+  "performance": {
+    "startingCapital": 109801.15625,
+    "finalEquity": 138447.63,
+    "totalPnl": 28646.47,
+    "totalReturnPct": 26.09,
+    "roundTrips": 21,
+    "closedLegs": 27,
+    "maxDrawdownPct": 17.14,
+    "spyBuyAndHoldPct": 8.2,
+    "alphaVsSpyPct": 17.89,
+    "longLegsPnl": 41318.23,
+    "shortLegsPnl": -12671.76
+  },
+  "weeklyEquity": [
+    {
+      "weekStart": "2025-12-29",
+      "weekEnd": "2026-01-02",
+      "equity": 109604.48,
+      "returnFromStartPct": -0.18,
+      "wowChangePct": 0,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-01-05",
+      "weekEnd": "2026-01-09",
+      "equity": 119430.2,
+      "returnFromStartPct": 8.77,
+      "wowChangePct": 8.96,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-01-12",
+      "weekEnd": "2026-01-16",
+      "equity": 128946.75,
+      "returnFromStartPct": 17.44,
+      "wowChangePct": 7.97,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-01-19",
+      "weekEnd": "2026-01-23",
+      "equity": 136029.62,
+      "returnFromStartPct": 23.89,
+      "wowChangePct": 5.49,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-01-26",
+      "weekEnd": "2026-01-30",
+      "equity": 142699.6,
+      "returnFromStartPct": 29.96,
+      "wowChangePct": 4.9,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-02-02",
+      "weekEnd": "2026-02-06",
+      "equity": 142922.38,
+      "returnFromStartPct": 30.16,
+      "wowChangePct": 0.16,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-02-09",
+      "weekEnd": "2026-02-13",
+      "equity": 151944.78,
+      "returnFromStartPct": 38.38,
+      "wowChangePct": 6.31,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-02-16",
+      "weekEnd": "2026-02-20",
+      "equity": 155627.02,
+      "returnFromStartPct": 41.74,
+      "wowChangePct": 2.42,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-02-23",
+      "weekEnd": "2026-02-27",
+      "equity": 150060.88,
+      "returnFromStartPct": 36.67,
+      "wowChangePct": -3.58,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-03-02",
+      "weekEnd": "2026-03-06",
+      "equity": 130402.56,
+      "returnFromStartPct": 18.76,
+      "wowChangePct": -13.1,
+      "positions": 4,
+      "longs": 3,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-03-09",
+      "weekEnd": "2026-03-13",
+      "equity": 144138.22,
+      "returnFromStartPct": 31.27,
+      "wowChangePct": 10.53,
+      "positions": 4,
+      "longs": 4,
+      "shorts": 0
+    },
+    {
+      "weekStart": "2026-03-16",
+      "weekEnd": "2026-03-20",
+      "equity": 153358.73,
+      "returnFromStartPct": 39.67,
+      "wowChangePct": 6.4,
+      "positions": 5,
+      "longs": 4,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-03-23",
+      "weekEnd": "2026-03-27",
+      "equity": 153594.99,
+      "returnFromStartPct": 39.88,
+      "wowChangePct": 0.15,
+      "positions": 5,
+      "longs": 4,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-03-30",
+      "weekEnd": "2026-04-02",
+      "equity": 146293.97,
+      "returnFromStartPct": 33.24,
+      "wowChangePct": -4.75,
+      "positions": 5,
+      "longs": 3,
+      "shorts": 2
+    },
+    {
+      "weekStart": "2026-04-06",
+      "weekEnd": "2026-04-10",
+      "equity": 157454.59,
+      "returnFromStartPct": 43.4,
+      "wowChangePct": 7.63,
+      "positions": 5,
+      "longs": 3,
+      "shorts": 2
+    },
+    {
+      "weekStart": "2026-04-13",
+      "weekEnd": "2026-04-17",
+      "equity": 152996.49,
+      "returnFromStartPct": 39.34,
+      "wowChangePct": -2.83,
+      "positions": 5,
+      "longs": 3,
+      "shorts": 2
+    },
+    {
+      "weekStart": "2026-04-20",
+      "weekEnd": "2026-04-24",
+      "equity": 155226.16,
+      "returnFromStartPct": 41.37,
+      "wowChangePct": 1.46,
+      "positions": 5,
+      "longs": 4,
+      "shorts": 1
+    },
+    {
+      "weekStart": "2026-04-27",
+      "weekEnd": "2026-05-01",
+      "equity": 142482.71,
+      "returnFromStartPct": 29.76,
+      "wowChangePct": -8.21,
+      "positions": 5,
+      "longs": 3,
+      "shorts": 2
+    },
+    {
+      "weekStart": "2026-05-04",
+      "weekEnd": "2026-05-08",
+      "equity": 141952.46,
+      "returnFromStartPct": 29.28,
+      "wowChangePct": -0.37,
+      "positions": 5,
+      "longs": 3,
+      "shorts": 2
+    },
+    {
+      "weekStart": "2026-05-11",
+      "weekEnd": "2026-05-15",
+      "equity": 142758.16,
+      "returnFromStartPct": 30.02,
+      "wowChangePct": 0.57,
+      "positions": 5,
+      "longs": 3,
+      "shorts": 2
+    }
+  ],
+  "improvementInsights": [
+    "תשואה 26.1% עוקפת SPY B&H 8.2%",
+    "SHORT הפסיד $12672 — שקול להדק כניסות short ב-BULL tape",
+    "יציאות score_decay גבוהות (26) — Ziv יורד מהר מדי וסוגר מוקדם",
+    "שבוע גרוע ביותר: 2026-03-02 (-13.1% WoW)",
+    "Win rate כולל: 67% (18W/9L על legs)"
+  ],
+  "exitReasonBreakdown": {
+    "partial_tp_1.5R": 4,
+    "score_decay_X": 13,
+    "breakeven_stop": 1,
+    "partial_tp_2.5R": 2,
+    "take_profit": 2,
+    "end_of_backtest": 5
+  },
+  "trades": [
+    {
+      "ticker": "ASML",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-01-26",
+      "entryPrice": 1164.9438093261717,
+      "exitPrice": 1418.44014,
+      "pnl": 2278.966976064454,
+      "pnlPct": 21.76039124328717,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "NFLX",
+      "direction": "short",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-02-25",
+      "entryPrice": 90.89900786590574,
+      "exitPrice": 82.78269694519042,
+      "pnl": 4891.635485191338,
+      "pnlPct": 9.804356731804775,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.96
+    },
+    {
+      "ticker": "GENI",
+      "direction": "short",
+      "entryDate": "2026-02-25",
+      "exitDate": "2026-02-26",
+      "entryPrice": 5.914080076217651,
+      "exitPrice": 6.396389866352081,
+      "pnl": -4479.781781817912,
+      "pnlPct": -7.5403438535164735,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.91
+    },
+    {
+      "ticker": "SOFI",
+      "direction": "short",
+      "entryDate": "2026-02-26",
+      "exitDate": "2026-03-13",
+      "entryPrice": 19.080900381088256,
+      "exitPrice": 17.777760229110715,
+      "pnl": 3746.6342172393847,
+      "pnlPct": 7.330170590576857,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.99
+    },
+    {
+      "ticker": "MU",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-03-18",
+      "entryPrice": 315.73543344116206,
+      "exitPrice": 467.87165999999996,
+      "pnl": 8669.26491385376,
+      "pnlPct": 48.184717470802596,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "IRDM",
+      "direction": "long",
+      "entryDate": "2026-03-13",
+      "exitDate": "2026-03-25",
+      "entryPrice": 24.88486061096191,
+      "exitPrice": 29.780189999999997,
+      "pnl": 3556.4044658306907,
+      "pnlPct": 19.671918061223415,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 8.89
+    },
+    {
+      "ticker": "VFS",
+      "direction": "short",
+      "entryDate": "2026-03-18",
+      "exitDate": "2026-03-26",
+      "entryPrice": 2.8071899428367613,
+      "exitPrice": 3.223220028638839,
+      "pnl": -4341.277764829867,
+      "pnlPct": -12.907281603662856,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "MU",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-03-31",
+      "entryPrice": 315.73543344116206,
+      "exitPrice": 316.05053740373637,
+      "pnl": 34.05205965862024,
+      "pnlPct": 0.09980000000000544,
+      "exitReason": "breakeven_stop",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "FOUR",
+      "direction": "short",
+      "entryDate": "2026-03-31",
+      "exitDate": "2026-04-02",
+      "entryPrice": 43.68626954269409,
+      "exitPrice": 42.80275831985473,
+      "pnl": 744.066983299259,
+      "pnlPct": 2.0641455306153134,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.89
+    },
+    {
+      "ticker": "IRDM",
+      "direction": "long",
+      "entryDate": "2026-03-13",
+      "exitDate": "2026-04-06",
+      "entryPrice": 24.88486061096191,
+      "exitPrice": 33.066900000000004,
+      "pnl": 5945.842635830695,
+      "pnlPct": 32.87958697841316,
+      "exitReason": "partial_tp_2.5R",
+      "entryScore": 8.89
+    },
+    {
+      "ticker": "IRDM",
+      "direction": "long",
+      "entryDate": "2026-03-13",
+      "exitDate": "2026-04-06",
+      "entryPrice": 24.88486061096191,
+      "exitPrice": 33.1668,
+      "pnl": 6225.518420556647,
+      "pnlPct": 33.281035881671194,
+      "exitReason": "take_profit",
+      "entryScore": 8.89
+    },
+    {
+      "ticker": "META",
+      "direction": "short",
+      "entryDate": "2026-03-26",
+      "exitDate": "2026-04-08",
+      "entryPrice": 546.9924380493164,
+      "exitPrice": 613.0324028930663,
+      "pnl": -5681.936976562491,
+      "pnlPct": -10.772671156057879,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "CELH",
+      "direction": "short",
+      "entryDate": "2026-04-08",
+      "exitDate": "2026-04-15",
+      "entryPrice": 35.98398045730591,
+      "exitPrice": 35.31527877807617,
+      "pnl": 874.8366031494206,
+      "pnlPct": 1.8935194690997914,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.96
+    },
+    {
+      "ticker": "ZS",
+      "direction": "short",
+      "entryDate": "2026-04-02",
+      "exitDate": "2026-04-17",
+      "entryPrice": 138.42143756103516,
+      "exitPrice": 134.814672668457,
+      "pnl": 956.8994614257894,
+      "pnlPct": 2.675350405996313,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.92
+    },
+    {
+      "ticker": "CHKP",
+      "direction": "short",
+      "entryDate": "2026-04-17",
+      "exitDate": "2026-04-21",
+      "entryPrice": 136.29356268310548,
+      "exitPrice": 140.22008183288574,
+      "pnl": -1580.9606982116652,
+      "pnlPct": -2.8002544988241285,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.99
+    },
+    {
+      "ticker": "AXON",
+      "direction": "short",
+      "entryDate": "2026-04-17",
+      "exitDate": "2026-04-24",
+      "entryPrice": 402.4471560974121,
+      "exitPrice": 397.5171151123046,
+      "pnl": 352.4629509277397,
+      "pnlPct": 1.2402084835302363,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.97
+    },
+    {
+      "ticker": "TSM",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-04-24",
+      "entryPrice": 319.929595336914,
+      "exitPrice": 392.92668,
+      "pnl": 4085.3367411328136,
+      "pnlPct": 22.816608943668882,
+      "exitReason": "partial_tp_1.5R",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "CHKP",
+      "direction": "short",
+      "entryDate": "2026-04-24",
+      "exitDate": "2026-04-29",
+      "entryPrice": 134.53532817077635,
+      "exitPrice": 140.09996672058105,
+      "pnl": -1944.5588538818397,
+      "pnlPct": -3.971905689958477,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 8.99
+    },
+    {
+      "ticker": "RDW",
+      "direction": "long",
+      "entryDate": "2026-04-21",
+      "exitDate": "2026-04-29",
+      "entryPrice": 10.320310420036314,
+      "exitPrice": 8.591400381088256,
+      "pnl": -9198.572497164721,
+      "pnlPct": -16.752500347193767,
+      "exitReason": "score_decay_2.6",
+      "entryScore": 7.87
+    },
+    {
+      "ticker": "CELH",
+      "direction": "short",
+      "entryDate": "2026-04-29",
+      "exitDate": "2026-05-07",
+      "entryPrice": 32.6273398475647,
+      "exitPrice": 34.294258319854734,
+      "pnl": -2806.2568703918396,
+      "pnlPct": -4.860634269279329,
+      "exitReason": "score_decay_0.0",
+      "entryScore": 7.97
+    },
+    {
+      "ticker": "ASML",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-05-08",
+      "entryPrice": 1164.9438093261717,
+      "exitPrice": 1588.2102,
+      "pnl": 3806.897516064454,
+      "pnlPct": 36.333631483792736,
+      "exitReason": "partial_tp_2.5R",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "ASML",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-05-08",
+      "entryPrice": 1164.9438093261717,
+      "exitPrice": 1587.411,
+      "pnl": 4222.171906738284,
+      "pnlPct": 36.26502731648424,
+      "exitReason": "take_profit",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "TSM",
+      "direction": "long",
+      "entryDate": "2026-01-02",
+      "exitDate": "2026-05-15",
+      "entryPrice": 319.929595336914,
+      "exitPrice": 403.9456560974121,
+      "pnl": 9659.346987457278,
+      "exitReason": "end_of_backtest",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "BWXT",
+      "direction": "long",
+      "entryDate": "2026-04-06",
+      "exitDate": "2026-05-15",
+      "entryPrice": 216.19597572326654,
+      "exitPrice": 204.51528121948243,
+      "pnl": -1988.2180656432988,
+      "exitReason": "end_of_backtest",
+      "entryScore": 8.93
+    },
+    {
+      "ticker": "CHKP",
+      "direction": "short",
+      "entryDate": "2026-04-30",
+      "exitDate": "2026-05-15",
+      "entryPrice": 112.35753121948242,
+      "exitPrice": 124.15402877807615,
+      "pnl": -4945.232477050772,
+      "exitReason": "end_of_backtest",
+      "entryScore": 9.99
+    },
+    {
+      "ticker": "ALNY",
+      "direction": "short",
+      "entryDate": "2026-05-07",
+      "exitDate": "2026-05-15",
+      "entryPrice": 295.61409365844725,
+      "exitPrice": 287.2669909973144,
+      "pnl": 1541.7139923095774,
+      "exitReason": "end_of_backtest",
+      "entryScore": 7.96
+    },
+    {
+      "ticker": "RKLB",
+      "direction": "long",
+      "entryDate": "2026-05-08",
+      "exitDate": "2026-05-15",
+      "entryPrice": 105.57547122192382,
+      "exitPrice": 124.64522664642334,
+      "pnl": 4021.2183945693987,
+      "exitReason": "end_of_backtest",
+      "entryScore": 9.99
+    }
+  ],
+  "tradeCount": 27
+}

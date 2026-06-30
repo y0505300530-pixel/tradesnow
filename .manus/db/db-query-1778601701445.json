@@ -1,0 +1,194 @@
+{
+  "query": "DESCRIBE paperPositions;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute DESCRIBE paperPositions;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "userId",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ticker",
+      "Type": "varchar(16)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "companyName",
+      "Type": "varchar(128)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "signal",
+      "Type": "varchar(32)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "zivScore",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "units",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "entryPrice",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "rawEntryPrice",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "allocatedCapital",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "initialSl",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "initialTp",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "currentSl",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "currentTp",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "currentPrice",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "unrealizedPnl",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "unrealizedPnlPct",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "zivHScore",
+      "Type": "double",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "varchar(16)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "open",
+      "Extra": ""
+    },
+    {
+      "Field": "openedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "closedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "slHitCount",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "positionSizeUsd",
+      "Type": "double",
+      "Null": "NO",
+      "Key": "",
+      "Default": "5000",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\nuserId\tint\tNO\tMUL\tNULL\t\nticker\tvarchar(16)\tNO\t\tNULL\t\ncompanyName\tvarchar(128)\tYES\t\tNULL\t\nsignal\tvarchar(32)\tNO\t\tNULL\t\nzivScore\tdouble\tYES\t\tNULL\t\nunits\tint\tNO\t\tNULL\t\nentryPrice\tdouble\tNO\t\tNULL\t\nrawEntryPrice\tdouble\tNO\t\tNULL\t\nallocatedCapital\tdouble\tNO\t\tNULL\t\ninitialSl\tdouble\tNO\t\tNULL\t\ninitialTp\tdouble\tNO\t\tNULL\t\ncurrentSl\tdouble\tNO\t\tNULL\t\ncurrentTp\tdouble\tNO\t\tNULL\t\ncurrentPrice\tdouble\tYES\t\tNULL\t\nunrealizedPnl\tdouble\tYES\t\t0\t\nunrealizedPnlPct\tdouble\tYES\t\t0\t\nzivHScore\tdouble\tYES\t\tNULL\t\nstatus\tvarchar(16)\tNO\tMUL\topen\t\nopenedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nclosedAt\ttimestamp\tYES\t\tNULL\t\nslHitCount\tint\tNO\t\t0\t\npositionSizeUsd\tdouble\tNO\t\t5000\t\n",
+  "stderr": "",
+  "execution_time_ms": 1847
+}

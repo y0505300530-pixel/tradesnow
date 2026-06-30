@@ -1,0 +1,8 @@
+{
+  "query": "SELECT ticker, signal, zivScoreAtEntry, entryPrice, exitPrice, exitReason, realizedPnl, realizedPnlPct, openedAt, closedAt, TIMESTAMPDIFF(MINUTE, openedAt, closedAt) as holdMinutes FROM paperTrades WHERE sessionId = 25 ORDER BY realizedPnl DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, signal, zivScoreAtEntry, entryPrice, exitPrice, exitReason, realizedPnl, realizedPnlPct, openedAt, closedAt, TIMESTAMPDIFF(MINUTE, openedAt, closedAt) as holdMinutes FROM paperTrades WHERE sessionId = 25 ORDER BY realizedPnl DESC LIMIT 20;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'zivscoreatentry' in 'field list'"
+  ]
+}

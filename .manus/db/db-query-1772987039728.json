@@ -1,0 +1,25 @@
+{
+  "query": "SHOW TABLES LIKE 'portfolio%'; SHOW TABLES LIKE 'capitalEvents';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SHOW TABLES LIKE 'portfolio%'; SHOW TABLES LIKE 'capitalEvents';",
+  "rows": [
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (portfolio%)": "portfolioAccounts"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (portfolio%)": "portfolioAnalysis"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (portfolio%)": "portfolioHoldings"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (portfolio%)": "Tables_in_MmWmJbH77mYYXTZazVYpbM (capitalEvents)"
+    },
+    {
+      "Tables_in_MmWmJbH77mYYXTZazVYpbM (portfolio%)": "capitalEvents"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_MmWmJbH77mYYXTZazVYpbM (portfolio%)\nportfolioAccounts\nportfolioAnalysis\nportfolioHoldings\nTables_in_MmWmJbH77mYYXTZazVYpbM (capitalEvents)\ncapitalEvents\n",
+  "stderr": "",
+  "execution_time_ms": 1728
+}

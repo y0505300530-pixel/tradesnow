@@ -1,0 +1,58 @@
+{
+  "query": "SELECT exitReason, signal, COUNT(*) as count, ROUND(AVG(realizedPnlPct),2) as avgPnlPct, ROUND(SUM(realizedPnl),2) as totalPnl, ROUND(AVG(TIMESTAMPDIFF(MINUTE, openedAt, closedAt)),0) as avgHoldMin FROM paperTrades WHERE sessionId = 25 GROUP BY exitReason, signal ORDER BY totalPnl DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT exitReason, signal, COUNT(*) as count, ROUND(AVG(realizedPnlPct),2) as avgPnlPct, ROUND(SUM(realizedPnl),2) as totalPnl, ROUND(AVG(TIMESTAMPDIFF(MINUTE, openedAt, closedAt)),0) as avgHoldMin FROM paperTrades WHERE sessionId = 25 GROUP BY exitReason, signal ORDER BY totalPnl DESC;",
+  "rows": [
+    {
+      "exitReason": "TP",
+      "signal": "Gold Retest",
+      "count": "12",
+      "avgPnlPct": "0.51",
+      "totalPnl": "269.58",
+      "avgHoldMin": "15"
+    },
+    {
+      "exitReason": "TP-Gap",
+      "signal": "Gold Retest",
+      "count": "5",
+      "avgPnlPct": "0.59",
+      "totalPnl": "134.96",
+      "avgHoldMin": "5"
+    },
+    {
+      "exitReason": "Force-Close",
+      "signal": "Gold Breakout",
+      "count": "3",
+      "avgPnlPct": "-1.21",
+      "totalPnl": "-183.84",
+      "avgHoldMin": "61"
+    },
+    {
+      "exitReason": "SL-Gap",
+      "signal": "Gold Retest",
+      "count": "2",
+      "avgPnlPct": "-2.7",
+      "totalPnl": "-230.68",
+      "avgHoldMin": "261"
+    },
+    {
+      "exitReason": "SL",
+      "signal": "Gold Retest",
+      "count": "6",
+      "avgPnlPct": "-1.12",
+      "totalPnl": "-343.07",
+      "avgHoldMin": "104"
+    },
+    {
+      "exitReason": "Force-Close",
+      "signal": "Gold Retest",
+      "count": "52",
+      "avgPnlPct": "-0.21",
+      "totalPnl": "-646.39",
+      "avgHoldMin": "54"
+    }
+  ],
+  "messages": [],
+  "stdout": "exitReason\tsignal\tcount\tavgPnlPct\ttotalPnl\tavgHoldMin\nTP\tGold Retest\t12\t0.51\t269.58\t15\nTP-Gap\tGold Retest\t5\t0.59\t134.96\t5\nForce-Close\tGold Breakout\t3\t-1.21\t-183.84\t61\nSL-Gap\tGold Retest\t2\t-2.7\t-230.68\t261\nSL\tGold Retest\t6\t-1.12\t-343.07\t104\nForce-Close\tGold Retest\t52\t-0.21\t-646.39\t54\n",
+  "stderr": "",
+  "execution_time_ms": 1805
+}

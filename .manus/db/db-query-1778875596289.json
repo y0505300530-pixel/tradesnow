@@ -1,0 +1,230 @@
+{
+  "query": "SELECT ticker, entryPrice, exitPrice, realizedPnl, realizedPnlPct, holdTimeMinutes, exitReason, openedAt, closedAt FROM paperTrades WHERE sessionId = 25 ORDER BY holdTimeMinutes ASC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2fRMU9WuDe4UzGh.6d94b4c6929d --database MmWmJbH77mYYXTZazVYpbM --execute SELECT ticker, entryPrice, exitPrice, realizedPnl, realizedPnlPct, holdTimeMinutes, exitReason, openedAt, closedAt FROM paperTrades WHERE sessionId = 25 ORDER BY holdTimeMinutes ASC LIMIT 20;",
+  "rows": [
+    {
+      "ticker": "XEL",
+      "entryPrice": "79.96988938903807",
+      "exitPrice": "79.38054",
+      "realizedPnl": "-39.03966212036076",
+      "realizedPnlPct": "-0.7369641167952675",
+      "holdTimeMinutes": "3",
+      "exitReason": "SL",
+      "openedAt": "2026-05-15 16:40:33",
+      "closedAt": "2026-05-15 16:43:14"
+    },
+    {
+      "ticker": "GD",
+      "entryPrice": "335.19485999999995",
+      "exitPrice": "337.07259000000005",
+      "realizedPnl": "23.788220000001388",
+      "realizedPnlPct": "0.5601905709413622",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:17:10",
+      "closedAt": "2026-05-15 19:19:50"
+    },
+    {
+      "ticker": "BA",
+      "entryPrice": "223.1229",
+      "exitPrice": "226.86291",
+      "realizedPnl": "79.78022000000027",
+      "realizedPnlPct": "1.6762107340842256",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 17:20:26",
+      "closedAt": "2026-05-15 17:23:47"
+    },
+    {
+      "ticker": "BKR",
+      "entryPrice": "64.26920683288573",
+      "exitPrice": "64.40553",
+      "realizedPnl": "7.996883867798786",
+      "realizedPnlPct": "0.21211272681292082",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:17:07",
+      "closedAt": "2026-05-15 19:19:50"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "75.29522122192382",
+      "exitPrice": "75.80411725616455",
+      "realizedPnl": "31.087138259887553",
+      "realizedPnlPct": "0.6758676393828622",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP-Gap",
+      "openedAt": "2026-05-15 16:39:55",
+      "closedAt": "2026-05-15 16:43:14"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "75.420345",
+      "exitPrice": "75.80411725616455",
+      "realizedPnl": "22.828968906860155",
+      "realizedPnlPct": "0.5088444718259348",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP-Gap",
+      "openedAt": "2026-05-15 19:17:08",
+      "closedAt": "2026-05-15 19:19:50"
+    },
+    {
+      "ticker": "XEL",
+      "entryPrice": "78.09801999999999",
+      "exitPrice": "79.38054",
+      "realizedPnl": "79.58128000000033",
+      "realizedPnlPct": "1.642192721403187",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 17:20:18",
+      "closedAt": "2026-05-15 17:23:46"
+    },
+    {
+      "ticker": "GD",
+      "entryPrice": "337.031695",
+      "exitPrice": "337.07259000000005",
+      "realizedPnl": "-1.9274699999995164",
+      "realizedPnlPct": "0.012133873640588771",
+      "holdTimeMinutes": "3",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 16:40:08",
+      "closedAt": "2026-05-15 16:43:14"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "75.34526999999999",
+      "exitPrice": "75.80411725616455",
+      "realizedPnl": "27.783918906860976",
+      "realizedPnlPct": "0.6089927823797836",
+      "holdTimeMinutes": "4",
+      "exitReason": "TP-Gap",
+      "openedAt": "2026-05-15 17:14:43",
+      "closedAt": "2026-05-15 17:18:49"
+    },
+    {
+      "ticker": "GD",
+      "entryPrice": "336.60827199999994",
+      "exitPrice": "337.07259000000005",
+      "realizedPnl": "4.000452000001474",
+      "realizedPnlPct": "0.13794016327682682",
+      "holdTimeMinutes": "4",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 17:04:47",
+      "closedAt": "2026-05-15 17:08:31"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "75.45537999999999",
+      "exitPrice": "75.80411725616455",
+      "realizedPnl": "20.516658906860584",
+      "realizedPnlPct": "0.4621767939735435",
+      "holdTimeMinutes": "4",
+      "exitReason": "TP-Gap",
+      "openedAt": "2026-05-15 16:59:40",
+      "closedAt": "2026-05-15 17:03:48"
+    },
+    {
+      "ticker": "BKR",
+      "entryPrice": "64.28421999999999",
+      "exitPrice": "64.40553",
+      "realizedPnl": "6.840870000000635",
+      "realizedPnlPct": "0.18870883087639276",
+      "holdTimeMinutes": "11",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:40:55",
+      "closedAt": "2026-05-15 19:51:46"
+    },
+    {
+      "ticker": "GD",
+      "entryPrice": "335.05472",
+      "exitPrice": "337.07259000000005",
+      "realizedPnl": "25.750180000001023",
+      "realizedPnlPct": "0.6022508800950702",
+      "holdTimeMinutes": "12",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:40:58",
+      "closedAt": "2026-05-15 19:53:21"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "75.27019499999999",
+      "exitPrice": "75.80411725616455",
+      "realizedPnl": "32.73886890686086",
+      "realizedPnlPct": "0.7093408701339999",
+      "holdTimeMinutes": "12",
+      "exitReason": "TP-Gap",
+      "openedAt": "2026-05-15 19:40:56",
+      "closedAt": "2026-05-15 19:52:42"
+    },
+    {
+      "ticker": "D",
+      "entryPrice": "61.93186999999999",
+      "exitPrice": "61.88805",
+      "realizedPnl": "-6.005599999999163",
+      "realizedPnlPct": "-0.07075517015712515",
+      "holdTimeMinutes": "13",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:19:54",
+      "closedAt": "2026-05-15 19:33:23"
+    },
+    {
+      "ticker": "XEL",
+      "entryPrice": "78.08300499999999",
+      "exitPrice": "79.38054",
+      "realizedPnl": "80.54224000000067",
+      "realizedPnlPct": "1.6617380440212448",
+      "holdTimeMinutes": "14",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:19:55",
+      "closedAt": "2026-05-15 19:34:00"
+    },
+    {
+      "ticker": "BA",
+      "entryPrice": "231.17595233154293",
+      "exitPrice": "226.86291",
+      "realizedPnl": "-93.07388896240155",
+      "realizedPnlPct": "-1.8656967941705915",
+      "holdTimeMinutes": "22",
+      "exitReason": "SL",
+      "openedAt": "2026-05-15 15:35:10",
+      "closedAt": "2026-05-15 15:57:38"
+    },
+    {
+      "ticker": "GM",
+      "entryPrice": "78.50342805480956",
+      "exitPrice": "75.80411725616455",
+      "realizedPnl": "-172.556580314636",
+      "realizedPnlPct": "-3.438462326460966",
+      "holdTimeMinutes": "23",
+      "exitReason": "SL-Gap",
+      "openedAt": "2026-05-15 15:34:46",
+      "closedAt": "2026-05-15 15:57:35"
+    },
+    {
+      "ticker": "XEL",
+      "entryPrice": "79.96988938903807",
+      "exitPrice": "79.38054",
+      "realizedPnl": "-39.03966212036076",
+      "realizedPnlPct": "-0.7369641167952675",
+      "holdTimeMinutes": "23",
+      "exitReason": "SL",
+      "openedAt": "2026-05-15 15:35:06",
+      "closedAt": "2026-05-15 15:57:37"
+    },
+    {
+      "ticker": "XOM",
+      "entryPrice": "157.302145",
+      "exitPrice": "156.36348",
+      "realizedPnl": "-31.59861499999957",
+      "realizedPnlPct": "-0.5967273999982556",
+      "holdTimeMinutes": "32",
+      "exitReason": "TP",
+      "openedAt": "2026-05-15 19:17:05",
+      "closedAt": "2026-05-15 19:49:33"
+    }
+  ],
+  "messages": [],
+  "stdout": "ticker\tentryPrice\texitPrice\trealizedPnl\trealizedPnlPct\tholdTimeMinutes\texitReason\topenedAt\tclosedAt\nXEL\t79.96988938903807\t79.38054\t-39.03966212036076\t-0.7369641167952675\t3\tSL\t2026-05-15 16:40:33\t2026-05-15 16:43:14\nGD\t335.19485999999995\t337.07259000000005\t23.788220000001388\t0.5601905709413622\t3\tTP\t2026-05-15 19:17:10\t2026-05-15 19:19:50\nBA\t223.1229\t226.86291\t79.78022000000027\t1.6762107340842256\t3\tTP\t2026-05-15 17:20:26\t2026-05-15 17:23:47\nBKR\t64.26920683288573\t64.40553\t7.996883867798786\t0.21211272681292082\t3\tTP\t2026-05-15 19:17:07\t2026-05-15 19:19:50\nGM\t75.29522122192382\t75.80411725616455\t31.087138259887553\t0.6758676393828622\t3\tTP-Gap\t2026-05-15 16:39:55\t2026-05-15 16:43:14\nGM\t75.420345\t75.80411725616455\t22.828968906860155\t0.5088444718259348\t3\tTP-Gap\t2026-05-15 19:17:08\t2026-05-15 19:19:50\nXEL\t78.09801999999999\t79.38054\t79.58128000000033\t1.642192721403187\t3\tTP\t2026-05-15 17:20:18\t2026-05-15 17:23:46\nGD\t337.031695\t337.07259000000005\t-1.9274699999995164\t0.012133873640588771\t3\tTP\t2026-05-15 16:40:08\t2026-05-15 16:43:14\nGM\t75.34526999999999\t75.80411725616455\t27.783918906860976\t0.6089927823797836\t4\tTP-Gap\t2026-05-15 17:14:43\t2026-05-15 17:18:49\nGD\t336.60827199999994\t337.07259000000005\t4.000452000001474\t0.13794016327682682\t4\tTP\t2026-05-15 17:04:47\t2026-05-15 17:08:31\nGM\t75.45537999999999\t75.80411725616455\t20.516658906860584\t0.4621767939735435\t4\tTP-Gap\t2026-05-15 16:59:40\t2026-05-15 17:03:48\nBKR\t64.28421999999999\t64.40553\t6.840870000000635\t0.18870883087639276\t11\tTP\t2026-05-15 19:40:55\t2026-05-15 19:51:46\nGD\t335.05472\t337.07259000000005\t25.750180000001023\t0.6022508800950702\t12\tTP\t2026-05-15 19:40:58\t2026-05-15 19:53:21\nGM\t75.27019499999999\t75.80411725616455\t32.73886890686086\t0.7093408701339999\t12\tTP-Gap\t2026-05-15 19:40:56\t2026-05-15 19:52:42\nD\t61.93186999999999\t61.88805\t-6.005599999999163\t-0.07075517015712515\t13\tTP\t2026-05-15 19:19:54\t2026-05-15 19:33:23\nXEL\t78.08300499999999\t79.38054\t80.54224000000067\t1.6617380440212448\t14\tTP\t2026-05-15 19:19:55\t2026-05-15 19:34:00\nBA\t231.17595233154293\t226.86291\t-93.07388896240155\t-1.8656967941705915\t22\tSL\t2026-05-15 15:35:10\t2026-05-15 15:57:38\nGM\t78.50342805480956\t75.80411725616455\t-172.556580314636\t-3.438462326460966\t23\tSL-Gap\t2026-05-15 15:34:46\t2026-05-15 15:57:35\nXEL\t79.96988938903807\t79.38054\t-39.03966212036076\t-0.7369641167952675\t23\tSL\t2026-05-15 15:35:06\t2026-05-15 15:57:37\nXOM\t157.302145\t156.36348\t-31.59861499999957\t-0.5967273999982556\t32\tTP\t2026-05-15 19:17:05\t2026-05-15 19:49:33\n",
+  "stderr": "",
+  "execution_time_ms": 1760
+}

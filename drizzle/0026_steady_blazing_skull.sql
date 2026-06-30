@@ -1,0 +1,1 @@
+ALTER TABLE `labTrades` ADD `zivFormation` varchar(32);
