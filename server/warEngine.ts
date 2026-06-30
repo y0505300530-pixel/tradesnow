@@ -158,6 +158,19 @@ export interface WarEngineScan {
    * inert watcher flag is 0 (the gate is skipped); never sizes or stops an order.
    */
   donchian20High?: number | null;
+  /**
+   * THE RETEST FIX (2026-06-30 owner-ratified) — the SSOT evaluateRetestV2 outputs for a
+   * Gold-Retest candidate, threaded to the persisted `war_upcoming_signals` item so the
+   * Waiter consumes ONE retest reference (not a duplicated ×1.02 path):
+   *   • retestValid       = evaluateRetestV2(...).valid (the execution-window ARM gate).
+   *   • retestLimitPrice  = evaluateRetestV2(...).limitPrice (level×1.0075, FOMO-capped).
+   *   • retestStructLevel = the structural `level` evaluateRetestV2 used (FOMO-cap basis).
+   * Computed from the SAME `bars`+`zones` already loaded — NO extra fetch. Null/false when
+   * not a Gold-Retest setup or no qualifying zone. Waiter/display-only — never gates here.
+   */
+  retestValid?: boolean;
+  retestLimitPrice?: number | null;
+  retestStructLevel?: number | null;
 }
 
 /**
@@ -407,7 +420,17 @@ export async function runWarEngineCycle(
     return { scanned: 0, entered: 0, managed: 0, skipped: 0, regimeDecision: "busy", topCandidates: [], liveSignals: [] };
   }
   const minGapMs = opts?.manual ? WAR_MANUAL_GAP_MS : WAR_MIN_GAP_MS;
-  if (Date.now() - _lastWarCycleAt < minGapMs) {
+  const sinceLastMs = Date.now() - _lastWarCycleAt;
+  if (sinceLastMs < minGapMs) {
+    // Vuln#1 visibility: WITHOUT this log a stale cooldown silently swallows a confirmed
+    // Armed-Watcher breakout — the operator sees entered=0 scanned=0 and cannot tell a
+    // cooldown skip from "scanned, found nothing". Log the skip explicitly (mirrors the
+    // running-lock "Already running" log above).
+    dbLog("info", "SYSTEM",
+      `[WarEngine] Cooldown skip (${opts?.manual ? "manual" : "auto"}) — ` +
+      `${(sinceLastMs / 1000).toFixed(1)}s since last cycle < ${(minGapMs / 1000).toFixed(0)}s gap. ` +
+      `NO scan, NO entries this call.`
+    );
     return {
       scanned: 0, entered: 0, managed: 0, skipped: 0,
       regimeDecision: opts?.manual ? "manual_cooldown" : "cooldown",
@@ -913,6 +936,26 @@ export async function runWarEngineCycle(
         // ── LONG scan ──────────────────────────────────────────────────────
         if (regime.longOk) {
           const ziv     = calcZivEngineScore(bars);
+
+          // ── THE RETEST FIX (SSOT) — evaluateRetestV2 once, for Gold-Retest names ──────
+          // The Waiter consumes ONE retest reference: evaluateRetestV2(...).limitPrice (NOT
+          // a duplicated ×1.02 ambush). Compute it HERE (zones + bars already in scope, NO
+          // extra fetch) for a Gold-Retest candidate and thread .valid / .limitPrice / .level
+          // onto the persisted item. Mirrors the gate's own evaluateRetestV2 call (~L1099):
+          // proximal zone via evaluateZoneGate, role-reversal override = ziv.retestLevel.
+          let _retestV2: { valid: boolean; limitPrice: number; level: number } | null = null;
+          if (ziv.tier === "Gold Retest") {
+            try {
+              const _zg = evaluateZoneGate(zones, bars[bars.length - 1].close, "long");
+              if (_zg.zone != null) {
+                const _rt = evaluateRetestV2(
+                  { zone: _zg.zone, direction: "long", priceAtSignal: bars[bars.length - 1].close, isFirstRetest: true },
+                  bars, ziv.retestLevel ?? null,
+                );
+                _retestV2 = { valid: _rt.valid, limitPrice: _rt.limitPrice, level: _rt.level };
+              }
+            } catch { _retestV2 = null; }
+          }
           // Phase 1: pull confidence score from most recent analysis for this ticker
           const tickerAssetConf = assets.find(a => a.ticker.toUpperCase() === ticker) as any;
           const confScore: number | undefined = tickerAssetConf?.score ?? undefined;
@@ -954,6 +997,11 @@ export async function runWarEngineCycle(
             // breakLevel = donchian20High × 1.005 is read off this in the entry loop.
             // Same Math.max-of-last-20-highs the v45 candidate cache surfaces (_d20High).
             donchian20High: bars.length ? Math.max(...bars.slice(-20).map(b => b.high)) : null,
+            // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs for the Waiter (null/false
+            // when not a Gold-Retest setup / no qualifying zone). Threaded → persisted item.
+            retestValid: _retestV2?.valid ?? false,
+            retestLimitPrice: _retestV2 && _retestV2.limitPrice > 0 ? +_retestV2.limitPrice.toFixed(2) : null,
+            retestStructLevel: _retestV2 && _retestV2.level > 0 ? +_retestV2.level.toFixed(2) : null,
             // Ziv Phase 1 — surface weekly-state + zone-status for the candidates table.
             weeklyState: wt.structure,
             zoneStatus: evaluateZoneGate(zones, bars[bars.length - 1].close, "long").inZone ? "in" : "out",
@@ -1748,7 +1796,7 @@ export async function runWarEngineCycle(
         }
         // ── PHASE-0 ANTI-CHASE HARD GATE (BUILD-spec F5; INERT until elzaIntradayWatcherEnabled=1) ──
         // Pure SUBTRACTION: a LONG whose validated live IBKR price has already run
-        // > breakLevel × 1.025 (~2.5% past the prior-day Donchian-20 breakout line) is a
+        // > breakLevel × 1.035 (~3.5% past the prior-day Donchian-20 breakout line) is a
         // CHASED entry — the #1 stop-out cause — so BLOCK it (never widen, never size).
         // breakLevel = donchian20High × 1.005 (same constant the watcher/backtest use).
         // Fires AFTER the live price is source-gated to IBKR truth + sanity-bounded, BEFORE
@@ -1757,9 +1805,9 @@ export async function runWarEngineCycle(
         // missing/<=0 donchian20High ⇒ no gate (cannot define breakLevel → never blocks).
         if (c.direction === "long" && antiChaseBlocks(currentPrice, c.donchian20High ?? 0, _intradayWatcherOn)) {
           const _breakLevel   = (c.donchian20High as number) * 1.005;
-          const _antiChaseMax = _breakLevel * 1.025;
+          const _antiChaseMax = _breakLevel * 1.035;  // owner 2026-06-30: anti-chase 2.5%→3.5% (matches antiChaseBlocks @ L319)
           dbLog("info", "SYSTEM",
-            `[AntiChase] 🚫 ${c.ticker} LONG live $${currentPrice.toFixed(2)} > breakLevel×1.025 $${_antiChaseMax.toFixed(2)} ` +
+            `[AntiChase] 🚫 ${c.ticker} LONG live $${currentPrice.toFixed(2)} > breakLevel×1.035 $${_antiChaseMax.toFixed(2)} ` +
             `(d20H $${(c.donchian20High as number).toFixed(2)} → break $${_breakLevel.toFixed(2)}) — chased breakout, blocking entry`
           );
           continue;
@@ -2247,6 +2295,13 @@ export async function runWarEngineCycle(
             // The Waiter ambushes at retestLevel (NOT EMA20×1.005); null ⇒ no Waiter LMT.
             retestLevel: (c as any).invalidationLevel ?? null,
             ema50: (c as any).ema50 ?? null,
+            // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs the Waiter consumes:
+            // retestValid = the execution-window ARM gate; retestLimitPrice = the resting
+            // LMT price (level×1.0075, FOMO-capped); retestStructLevel = the structural
+            // level the limitPrice was derived from (anti-chase FOMO-cap basis).
+            retestValid: (c as any).retestValid ?? false,
+            retestLimitPrice: (c as any).retestLimitPrice ?? null,
+            retestStructLevel: (c as any).retestStructLevel ?? null,
             // DISPLAY-ONLY: signed daily % change ("שינוי יומי %" column). From the
             // scan's daily bars (no fetch); null ⇒ client renders "—".
             changePercent: (c as any).changePercent ?? null,

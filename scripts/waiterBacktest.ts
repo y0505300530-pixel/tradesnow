@@ -1,20 +1,31 @@
 /**
  * waiterBacktest.ts — THE WAITER (retest resting-LMT entry model) backtest.
  *
- * Derived from scripts/elza-backtest.ts (same data fetch, portfolio loop, golden
- * exit ladder, reporting). The ONLY thing that changes for "Gold Retest" tier
- * candidates is the ENTRY MECHANISM: instead of a bar-close market buy, the Waiter
- * places a RESTING LMT at computeAmbushLimit(ema20, livePrice).limit (EMA20×1.005),
- * gated by isNearRetestZone(). The resting LMT becomes `open` on the FIRST subsequent
- * bar whose low ≤ restingLimit (passive pullback fill). No pullback / EOD-of-data →
- * the candidate NEVER fills (no trade). On fill: stop = wideLungSL, size =
- * vixRiskSize (1% risk), then the SAME golden exit ladder as elza-backtest.
+ * REALIGNED 2026-06-30 to the CURRENT live Waiter engine (THE RETEST FIX). The retest
+ * is a STRUCTURAL event, not EMA proximity. For each "Gold Retest" candidate this now
+ * mirrors the live pipeline EXACTLY:
+ *   1. Read the STRUCTURAL retestLevel DIRECTLY from calcZivEngineScore (ziv.retestLevel) —
+ *      the SAME field the live war cycle threads to the Waiter. zivEngine sets it ONLY when
+ *      the setup is a CONFIRMED structural retest (detectTrueRetest.isRetest > detectRoleReversal
+ *      .isReversal), else null. NOT EMA20, NOT a raw base-high. No level → SKIP.
+ *   2. Eligibility = evaluateRetestV2(zone, bars).valid — the SSOT execution window
+ *      (in-band ±0.5×ATR + 5-close hold + not-FOMO). NOT the tier label. (Owner-ratified
+ *      2026-06-30 — DR_WAITER_RETEST_ELIGIBILITY.md.)
+ *   3. LMT = computeAmbushLimit(limitPrice, structLevel, livePrice).limit =
+ *      evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped level×1.015). Anti-chase:
+ *      place only when live > limitPrice AND live ≤ level×1.015. Penny guard inside.
+ *   4. Stop = computeRetestStop({ retestLevel, entry: ambush, ema50 }).stop — structural
+ *      (retestLevel × 0.99) bounded by wideLungSL. size = vixRiskSize (1% risk). Then
+ *      capSharesToMaxPosition(maxPositionUsd) + the 30% retest-sleeve sub-cap.
+ *   5. The resting LMT becomes `open` on the FIRST subsequent bar whose low ≤ restingLimit
+ *      (passive pullback fill; fill price = limit). No pullback / EOD-of-data → NEVER
+ *      fills (no trade). On fill: the SAME golden exit ladder as elza-backtest.
  *
  * "Gold Breakout" tier KEEPS the elza-backtest market-entry path UNCHANGED so we can
  * compare the two sleeves side-by-side over the same window.
  *
- * EDGE GATE: does the resting-LMT retest model show positive expectancy (R) +
- * acceptable max-DD?
+ * G2 EDGE GATE: does the resting-LMT retest model show positive expectancy (AvgR ≥ 0)?
+ *   AvgR ≥ 0 = GO, else NO-GO.
  *
  * Run (LOCAL — needs .env + DB price cache reachable):
  *   node --import tsx --env-file=.env scripts/waiterBacktest.ts
@@ -29,8 +40,14 @@ import { getDb, getBulkCachedPrices, getUserAssets } from "../server/db";
 import { calcZivEngineScore, calcEMA } from "../server/zivEngine";
 import { calcCorrelation } from "../server/runtimeIntelligence";
 import { calcEntrySlTp, calcTarget1Price, ema50FromBars } from "../server/slCalculator";
-import { computeAmbushLimit, isNearRetestZone } from "../server/waiterEngine";
-import { wideLungSL, vixRiskSize } from "../server/engine/elzaV45Master";
+import {
+  computeAmbushLimit,
+  computeRetestStop,
+  capSharesToMaxPosition,
+} from "../server/waiterEngine";
+import { evaluateRetestV2 } from "../server/trueRetestEngine";
+import { detectZones, evaluateZoneGate } from "../server/zonesEngine";
+import { vixRiskSize } from "../server/engine/elzaV45Master";
 import { liveEngineConfig } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import type { LiveEngineConfig } from "../drizzle/schema";
@@ -53,13 +70,15 @@ const LONG_EXIT_SCORE_MIN = 3.5;
 const COMMISSION = 2.5;
 const SLIPPAGE = 0.001;
 
-// ─── Waiter sleeve caps (BUILD-spec defaults) ─────────────────────────────────────
-const MAX_RETEST_SLOTS = 8;        // concurrent resting + open retests
-const WAITER_NLV_PCT = 0.30;       // aggregate retest-sleeve cap (30% of NLV)
+// ─── Waiter sleeve caps — now read from liveEngineConfig (maxRetestSlots / waiterNlvPct)
+// in buildElzaConfig so the backtest tracks the live source of truth, not hard-coded copies.
 
-const LOOKBACK_START = "2025-09-01";
-const BACKTEST_START = "2026-01-01";
-const BACKTEST_END = "2026-06-20";
+// 60-trading-day G2 window (the GO/NO-GO gate). LOOKBACK_START gives ≥ lookback+confirm
+// bars so detectTrueRetest / EMA50 / role-reversal have full structural history before the
+// window opens. Override via WAITER_BT_START / WAITER_BT_END env if the cache range differs.
+const LOOKBACK_START = process.env.WAITER_BT_LOOKBACK ?? "2025-09-01";
+const BACKTEST_START = process.env.WAITER_BT_START ?? "2026-03-27";  // ~60 trading days before END
+const BACKTEST_END = process.env.WAITER_BT_END ?? "2026-06-20";
 const USER_ID = 1;
 
 type Bar = { date: string; open: number; high: number; low: number; close: number; volume: number };
@@ -94,11 +113,11 @@ interface RestingOrder {
   ticker: string;
   sector: string;
   placedDate: string;
-  restingLimit: number;     // EMA20 × 1.005 (computeAmbushLimit)
-  stop: number;             // wideLungSL off the ambush level
+  restingLimit: number;     // evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped)
+  stop: number;             // computeRetestStop (structural, wideLungSL-bounded)
   units: number;
   entryScore: number;
-  ema20: number;
+  retestLevel: number;      // the STRUCTURAL broken-support level the LMT ambushes at
 }
 
 interface ClosedTrade {
@@ -127,6 +146,8 @@ interface ElzaConfig {
   maxTotal: number;
   intradayMultiplier: number;
   overnightMultiplier: number;
+  maxRetestSlots: number;
+  waiterNlvPct: number;
 }
 
 function buildElzaConfig(cfg: LiveEngineConfig): ElzaConfig {
@@ -141,6 +162,8 @@ function buildElzaConfig(cfg: LiveEngineConfig): ElzaConfig {
   const minPos = cfg.minPositionUsd ?? 20_000;
   const maxPos = cfg.maxPositionUsd ?? 70_000;
   const perPositionUsd = Math.min(Math.max(rawPos, minPos), maxPos);
+  const retestSlots = (cfg as any).maxRetestSlots ?? 8;
+  const retestNlvPct = (cfg as any).waiterNlvPct ?? 0.30;
 
   return {
     totalNlv: nlv,
@@ -149,6 +172,8 @@ function buildElzaConfig(cfg: LiveEngineConfig): ElzaConfig {
     perPositionUsd,
     minPositionUsd: minPos,
     maxPositionUsd: maxPos,
+    maxRetestSlots: retestSlots,
+    waiterNlvPct: retestNlvPct,
     maxLong: cfg.maxLongPositions ?? cfg.maxPositions ?? 12,
     maxTotal: cfg.maxPositions ?? 12,
     intradayMultiplier: intMult,
@@ -316,7 +341,7 @@ async function main() {
 
   console.log(`Period: ${BACKTEST_START} → ${BACKTEST_END}`);
   console.log(`NLV: $${elza.totalNlv.toLocaleString()} | Cash budget: $${elza.cashBudget.toLocaleString()}`);
-  console.log(`Retest sleeve: max ${MAX_RETEST_SLOTS} slots | ${(WAITER_NLV_PCT * 100).toFixed(0)}% NLV sub-cap`);
+  console.log(`Retest sleeve: max ${elza.maxRetestSlots} slots | ${(elza.waiterNlvPct * 100).toFixed(0)}% NLV sub-cap | maxPos $${elza.maxPositionUsd.toLocaleString()}`);
   console.log(`Breakout sleeve: market entry, $${elza.perPositionUsd.toLocaleString()}/pos (UNCHANGED elza path)`);
 
   const assets = await getUserAssets(USER_ID);
@@ -349,6 +374,22 @@ async function main() {
   let restingExpired = 0;                        // never pulled back / EOD-cancel
   let restingCancelledInvalid = 0;               // setup invalidated while resting (live < EMA50)
   const fillDelays: number[] = [];               // bars from placement to fill
+
+  // ── Retest-funnel diagnostics: where do Gold-Retest candidates drop before a LMT rests? ──
+  const funnel = {
+    goldRetestTier: 0,      // reached the Gold-Retest branch
+    noStructLevel: 0,       // (legacy) no structural retest level — now folded into notValid
+    notValid: 0,            // evaluateRetestV2.valid === false OR missing SSOT limitPrice/level
+    slotFull: 0,            // maxRetestSlots used
+    zoneFail: 0,            // (legacy) isNearRetestZone — no longer the gate (kept = 0)
+    ambushNull: 0,          // computeAmbushLimit.limit <= 0 (anti-chase floor/FOMO-cap/penny)
+    stopFail: 0,            // computeRetestStop.stop <= 0
+    sizedOut: 0,            // vixRiskSize skip / 0 shares
+    maxPosCap: 0,           // capSharesToMaxPosition < 1
+    subCapBlock: 0,         // 30% sleeve sub-cap
+    bpBlock: 0,             // allocatedCapital buying-power
+    placed: 0,
+  };
 
   const sectorOf = (t: string) => assetMeta.find(a => a.ticker === t)?.sector ?? "Unknown";
   const dayIndex = new Map<string, number>();
@@ -490,7 +531,7 @@ async function main() {
   // FILL MODEL: the resting LMT becomes `open` on the FIRST subsequent bar where
   // bar.low ≤ restingLimit. The fill price is the limit (passive — a marketable limit
   // resting below price executes at the limit when price trades down to it). On fill,
-  // the stop is the wideLungSL computed at PLACEMENT, size is the qty reserved then.
+  // the stop is the computeRetestStop value computed at PLACEMENT, size is the qty reserved then.
   function processResting(day: string, barByTicker: Map<string, Bar>, regime: ReturnType<typeof getHistoricalRegime>) {
     for (let i = resting.length - 1; i >= 0; i--) {
       const ro = resting[i];
@@ -539,7 +580,12 @@ async function main() {
   function scanEntries(day: string, barByTicker: Map<string, Bar>, regime: ReturnType<typeof getHistoricalRegime>) {
     if (!regime.longOk) return;
 
-    interface Cand { ticker: string; tier: "Gold Retest" | "Gold Breakout"; finalScore: number; bars: Bar[]; ema20: number; ema50: number }
+    interface Cand {
+      ticker: string; tier: "Gold Retest" | "Gold Breakout"; finalScore: number; bars: Bar[];
+      ema20: number; ema50: number; retestLevel: number | null;
+      // THE RETEST FIX (SSOT) — evaluateRetestV2 outputs (mirror the live war cycle).
+      retestValid: boolean; retestLimitPrice: number | null; retestStructLevel: number | null;
+    }
     const candidates: Cand[] = [];
 
     const equityNow = currentEquity(barByTicker);
@@ -581,7 +627,39 @@ async function main() {
       const sectorVal = sectorPos.reduce((s, p) => s + p.notional, 0);
       if (equityNow > 0 && sectorVal / equityNow >= MAX_SECTOR_EQUITY_PCT) continue;
 
-      candidates.push({ ticker: t, tier: ziv.tier, finalScore: ziv.score, bars: histBars, ema20, ema50 });
+      // STRUCTURAL retest level — read DIRECTLY from calcZivEngineScore (the SAME field the
+      // live war cycle threads to the Waiter: ziv.retestLevel). zivEngine.ts:428-429 sets it
+      // ONLY when the setup is a CONFIRMED structural retest (retest.isRetest > role-reversal
+      // isReversal), else null. NOT EMA20, NOT a raw base-high.
+      const retestLevel = (ziv as any).retestLevel ?? null;
+
+      // THE RETEST FIX (SSOT) — mirror the live war cycle EXACTLY: for a Gold-Retest name,
+      // run evaluateRetestV2 over the proximal demand zone (detectZones → evaluateZoneGate),
+      // role-reversal override = ziv.retestLevel. The Waiter ARMS only when .valid; the LMT
+      // price = .limitPrice (level×1.0075, FOMO-capped); the FOMO-cap basis = .level.
+      let retestValid = false;
+      let retestLimitPrice: number | null = null;
+      let retestStructLevel: number | null = null;
+      if (ziv.tier === "Gold Retest") {
+        try {
+          const zones = detectZones(histBars as any, { trend: "up" });
+          const zg = evaluateZoneGate(zones, histBars[histBars.length - 1].close, "long");
+          if (zg.zone != null) {
+            const rt = evaluateRetestV2(
+              { zone: zg.zone, direction: "long", priceAtSignal: histBars[histBars.length - 1].close, isFirstRetest: true },
+              histBars as any, retestLevel,
+            );
+            retestValid = rt.valid;
+            retestLimitPrice = rt.limitPrice > 0 ? +rt.limitPrice.toFixed(2) : null;
+            retestStructLevel = rt.level > 0 ? +rt.level.toFixed(2) : null;
+          }
+        } catch { /* no qualifying zone → not valid */ }
+      }
+
+      candidates.push({
+        ticker: t, tier: ziv.tier, finalScore: ziv.score, bars: histBars, ema20, ema50, retestLevel,
+        retestValid, retestLimitPrice, retestStructLevel,
+      });
     }
 
     candidates.sort((a, b) => b.finalScore - a.finalScore);
@@ -593,40 +671,62 @@ async function main() {
       const livePrice = bar.close;   // backtest "live price" = current bar close (no intraday quote)
 
       if (c.tier === "Gold Retest") {
-        // ── RESTING LMT path (THE WAITER) ──────────────────────────────────────────
-        // Slot guard: open retests + resting LMTs < MAX_RETEST_SLOTS.
+        // ── RESTING LMT path (THE WAITER — live-parity retest pipeline) ─────────────
+        funnel.goldRetestTier++;
+        // OPTION-2 ELIGIBILITY (DR_WAITER_RETEST_ELIGIBILITY.md): ARM only when the SSOT
+        // evaluateRetestV2.valid === true (the in-band ±0.5×ATR + 5-close-hold + not-FOMO
+        // execution window) — NOT the tier label. No valid SSOT outputs → SKIP (no EMA20
+        // fallback). Byte-identical gating to placeNewRestingLimits.
+        if (c.retestValid !== true) { funnel.notValid++; continue; }
+        if (!(Number(c.retestLimitPrice) > 0) || !(Number(c.retestStructLevel) > 0)) { funnel.notValid++; continue; }
+        const retestLevel = c.retestStructLevel as number;
+
+        // Slot guard: open retests + resting LMTs < maxRetestSlots.
         const usedSlots = positions.filter(p => p.sleeve === "retest").length + resting.length;
-        if (usedSlots >= MAX_RETEST_SLOTS) continue;
+        if (usedSlots >= elza.maxRetestSlots) { funnel.slotFull++; continue; }
 
-        // Zone gate: price approaching EMA-20 from above in a confirmed uptrend.
-        const zone = isNearRetestZone({ livePrice, ema20: c.ema20, ema50: c.ema50 });
-        if (!zone.near) continue;
+        // LMT price = the SSOT evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped).
+        // Anti-chase (FOMO-aligned): place only when live > limitPrice (a pullback) AND
+        // live ≤ level×1.015 (FOMO cap). Penny guard inside. NO ×1.02 re-derivation.
+        const ambush = computeAmbushLimit(c.retestLimitPrice, c.retestStructLevel, livePrice);
+        if (!(ambush.limit > 0)) { funnel.ambushNull++; continue; }
 
-        // Ambush limit = EMA20 × 1.005 (anti-chase: must be below live, ≥ $2).
-        const ambush = computeAmbushLimit(c.ema20, livePrice);
-        if (!(ambush.limit > 0)) continue;
+        // Structural stop = retestLevel × 0.99 bounded by wideLungSL (the SAME stop the
+        // live resting bracket pairs). FAIL-CLOSED — skip on a non-positive stop.
+        const stopRes = computeRetestStop({ retestLevel, entry: ambush.limit, ema50: c.ema50 });
+        if (!(stopRes.stop > 0)) { funnel.stopFail++; continue; }
+        const stop = stopRes.stop;
 
-        // Structural stop off the ambush level (the SAME wideLungSL the live order pairs).
-        let stop: number;
-        try { stop = wideLungSL(ambush.limit, c.ema50, "long"); } catch { continue; }
-
-        // 1%-risk sizing — IDENTICAL to Elza (vixRiskSize off ambush entry + wideLungSL stop).
+        // 1%-risk sizing — IDENTICAL to Elza (vixRiskSize off ambush entry + structural stop).
         const sized = vixRiskSize({ nlv: elza.totalNlv, entry: ambush.limit, stop, vix: regime.vix });
-        if (sized.skip || !(sized.shares > 0)) continue;
+        if (sized.skip || !(sized.shares > 0)) { funnel.sizedOut++; continue; }
+
+        // §3b AUTHORITATIVE per-ticker maxPositionUsd cap (live-parity concentration fix).
+        // existingTickerUnits = same-ticker open/resting units (R1 dedups already, but mirror anyway).
+        const existingTickerUnits =
+          positions.filter(p => p.ticker === c.ticker).reduce((s, p) => s + Math.abs(p.units), 0) +
+          resting.filter(r => r.ticker === c.ticker).reduce((s, r) => s + Math.abs(r.units), 0);
+        const cap = capSharesToMaxPosition({
+          sizedShares: sized.shares, entry: ambush.limit,
+          existingTickerUnits, maxPositionUsd: elza.maxPositionUsd,
+        });
+        if (cap.cappedShares < 1) { funnel.maxPosCap++; continue; }
+        const cappedShares = cap.cappedShares;
 
         // §3 30% NLV sub-cap on the aggregate retest sleeve (open + resting notional).
-        const thisNotional = sized.shares * ambush.limit;
+        const thisNotional = cap.cappedNotional;
         const sleeveUsed = retestSleeveNotional(positions, resting);
-        if (sleeveUsed + thisNotional > WAITER_NLV_PCT * elza.totalNlv) continue;
+        if (sleeveUsed + thisNotional > elza.waiterNlvPct * elza.totalNlv) { funnel.subCapBlock++; continue; }
 
         // Buying-power cap (shared allocatedCapital) against open positions.
-        if (deployedNotional(positions) + thisNotional > elza.allocatedCapital) continue;
+        if (deployedNotional(positions) + thisNotional > elza.allocatedCapital) { funnel.bpBlock++; continue; }
 
         resting.push({
           ticker: c.ticker, sector: sectorOf(c.ticker), placedDate: day,
-          restingLimit: ambush.limit, stop, units: sized.shares,
-          entryScore: c.finalScore, ema20: c.ema20,
+          restingLimit: ambush.limit, stop, units: cappedShares,
+          entryScore: c.finalScore, retestLevel,
         });
+        funnel.placed++;
         restingPlaced++;
       } else {
         // ── BREAKOUT path (UNCHANGED elza-backtest market entry) ────────────────────
@@ -738,13 +838,17 @@ async function main() {
   const results = {
     meta: {
       generatedAt: new Date().toISOString(),
-      model: "The Waiter — retest RESTING-LMT entry vs Gold-Breakout market entry (elza-backtest exit ladder)",
+      model: "The Waiter — SSOT retest RESTING-LMT entry (evaluateRetestV2.valid gate, limitPrice=level×1.0075 FOMO-capped) vs Gold-Breakout market entry (elza-backtest exit ladder)",
       period: { start: BACKTEST_START, end: BACKTEST_END, lookbackFrom: LOOKBACK_START },
       universe: { catalogueUsa: usaAssets.length, withData: activeTickers.length },
       waiterConfig: {
-        ambushMult: 1.005,
-        maxRetestSlots: MAX_RETEST_SLOTS,
-        waiterNlvPct: WAITER_NLV_PCT,
+        limitAbovePct: 0.0075,                    // limitPrice = level × 1.0075 (evaluateRetestV2.LIMIT_ABOVE_PCT)
+        fomoCapPct: 0.015,                         // anti-chase ceiling = level × 1.015 (FOMO_PCT)
+        eligibility: "evaluateRetestV2.valid",    // SSOT execution-window gate (NOT tier label)
+        stopBelowPct: 0.01,                       // retestLevel × 0.99, wideLungSL-bounded
+        maxRetestSlots: elza.maxRetestSlots,
+        waiterNlvPct: elza.waiterNlvPct,
+        maxPositionUsd: elza.maxPositionUsd,
         riskPct: 0.01,
       },
       liveConfig: {
@@ -754,10 +858,11 @@ async function main() {
         perPositionUsd: elza.perPositionUsd,
       },
       assumptions: [
-        "RETEST: resting LMT = EMA20×1.005 (computeAmbushLimit), gated by isNearRetestZone",
+        "RETEST eligibility = evaluateRetestV2(zone,bars).valid (SSOT execution window: in-band ±0.5×ATR + 5-close hold + not-FOMO); NOT tier label; false → SKIP",
+        "RETEST: resting LMT = evaluateRetestV2.limitPrice (level×1.0075, FOMO-capped level×1.015); anti-chase: live>limitPrice AND live≤level×1.015",
         "FILL = first subsequent bar where low ≤ restingLimit; fill price = limit (passive pullback)",
         "Never pulled back / EOD-of-data → cancelled, NO trade",
-        "RETEST size = vixRiskSize (1% NLV risk); stop = wideLungSL(ambush, ema50)",
+        "RETEST size = vixRiskSize (1% NLV risk); stop = computeRetestStop (retestLevel×0.99, wideLungSL-bounded); capSharesToMaxPosition(maxPositionUsd)",
         "BREAKOUT path UNCHANGED from elza-backtest (market buy, perPositionUsd sizing)",
         "Backtest 'live price' = current daily-bar close (no intraday quote in cache)",
         "Both sleeves share the elza-backtest golden exit ladder (TP1/TP2/trail/score-decay)",
@@ -772,6 +877,7 @@ async function main() {
       fillRatePct: Math.round(fillRatePct * 10) / 10,
       avgFillDelayBars: Math.round(avgFillDelayBars * 100) / 100,
     },
+    retestFunnel: funnel,
     retestSleeve: retest,
     breakoutSleeve: breakout,
     sideBySide: {
@@ -792,14 +898,19 @@ async function main() {
   };
 
   const outPath = path.join(process.cwd(), "scripts", "waiterBacktest-results.json");
-  fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
 
   console.log("\n=== FILL MODEL ===");
   console.log(`Placed: ${restingPlaced} | Filled: ${restingFilled} | Expired(no-pullback/EOD): ${restingExpired} | Cancelled(invalid): ${restingCancelledInvalid}`);
   console.log(`Fill-rate: ${results.fillModel.fillRatePct}% | Avg fill-delay: ${results.fillModel.avgFillDelayBars} bars`);
 
-  console.log("\n=== RETEST SLEEVE (THE WAITER — the EDGE gate) ===");
-  console.log(`Round trips: ${retest.roundTrips} | Win-rate: ${retest.winRatePct}% | Expectancy: ${retest.expectancyR}R/trade`);
+  console.log("\n=== RETEST FUNNEL (where Gold-Retest candidates drop) ===");
+  console.log(`GoldRetest tier hits: ${funnel.goldRetestTier}`);
+  console.log(`  ↓ notValid (evaluateRetestV2.valid=false / no SSOT): ${funnel.notValid} | slot full: ${funnel.slotFull} | ambush null (anti-chase/FOMO/penny): ${funnel.ambushNull}`);
+  console.log(`  ↓ stop fail: ${funnel.stopFail} | sized-out: ${funnel.sizedOut} | maxPos cap: ${funnel.maxPosCap} | 30%-cap: ${funnel.subCapBlock} | BP: ${funnel.bpBlock}`);
+  console.log(`  → LMTs placed: ${funnel.placed}`);
+
+  console.log("\n=== RETEST SLEEVE (THE WAITER — the G2 gate) ===");
+  console.log(`Round trips: ${retest.roundTrips} | Win-rate: ${retest.winRatePct}% | AvgR/Expectancy: ${retest.expectancyR}R/trade`);
   console.log(`Return: ${retest.totalReturnPct}% | P&L: $${retest.totalPnl.toLocaleString()}`);
 
   console.log("\n=== BREAKOUT SLEEVE (elza market entry — baseline) ===");
@@ -817,12 +928,20 @@ async function main() {
   console.log(`Starting: $${STARTING_CAPITAL.toLocaleString()} → Final: $${results.portfolio.finalEquity.toLocaleString()}`);
   console.log(`Return: ${results.portfolio.totalReturnPct}% | Max DD: ${results.portfolio.maxDrawdownPct}% | SPY B&H: ${results.portfolio.spyBuyAndHoldPct}%`);
 
-  const verdict = retest.expectancyR > 0 && retest.roundTrips >= 5
-    ? `EDGE: POSITIVE — retest expectancy ${retest.expectancyR}R over ${retest.roundTrips} trips, max-DD ${results.portfolio.maxDrawdownPct}%`
-    : retest.roundTrips < 5
-      ? `EDGE: INCONCLUSIVE — only ${retest.roundTrips} retest round-trips (need ≥5 to trust expectancy)`
-      : `EDGE: NEGATIVE — retest expectancy ${retest.expectancyR}R ≤ 0`;
-  console.log(`\n=== EDGE VERDICT ===\n${verdict}`);
+  // ── G2 GO/NO-GO GATE: AvgR (expectancy per round-trip, in R) ≥ 0 = GO, else NO-GO. ──
+  const avgR = retest.expectancyR;
+  const go = avgR >= 0;
+  const verdict =
+    `G2 ${go ? "GO" : "NO-GO"} — retest AvgR ${avgR}R/trip over ${retest.roundTrips} round-trips ` +
+    `(win-rate ${retest.winRatePct}%, fill-rate ${results.fillModel.fillRatePct}%, max-DD ${results.portfolio.maxDrawdownPct}%)` +
+    (retest.roundTrips < 5 ? ` [LOW-N: only ${retest.roundTrips} trips — treat AvgR as low-confidence]` : "");
+  (results as any).g2 = {
+    avgR, expectancyR: avgR, winRatePct: retest.winRatePct,
+    fillRatePct: results.fillModel.fillRatePct, roundTrips: retest.roundTrips,
+    maxDrawdownPct: results.portfolio.maxDrawdownPct, verdict: go ? "GO" : "NO-GO",
+  };
+  console.log(`\n=== G2 GO/NO-GO (AvgR ≥ 0 = GO) ===\n${verdict}`);
+  fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
   console.log(`\nWritten to ${outPath}`);
   process.exit(0);
 }

@@ -70,16 +70,21 @@ const CONFIRM_HEADERS = { "X-Confirm-Live-Order": "yes" };
 
 // ── Constants (Appendix — pinned, backtestable) ──────────────────────────────────
 /**
- * THE RETEST FIX (2026-06-30): the resting LMT ambushes at the STRUCTURAL retest level
- * (broken resistance now acting as support — Ziv role-reversal / true-retest), NOT at a
- * moving average. We rest the LMT ABOVE the support so it fills on the BOUNCE off
- * support, never waiting for a break THROUGH it. RETEST_AMBUSH_ABOVE_PCT = +2% (owner-set)
- * treats the support as a 2% ZONE above the structural level ("אזורים ולא קווים" — Ziv:
- * support/resistance are zones, not exact lines), so the LMT fills on a shallower bounce
- * into the zone (more fills), and the wider entry→stop distance shrinks per-position size
- * (less concentration). Anti-chase still requires the ambush ≤ live price.
+ * THE RETEST FIX (2026-06-30, owner-ratified — DR_WAITER_RETEST_ELIGIBILITY.md). The
+ * resting LMT price is NO LONGER a separate ×1.02 ambush. It is now the SINGLE SSOT
+ * `evaluateRetestV2(...).limitPrice` (trueRetestEngine.ts) = structuralLevel × (1 +
+ * LIMIT_ABOVE_PCT/100) = level × 1.0075, FOMO-capped at level × (1 + FOMO_PCT/100) =
+ * level × 1.015. The OLD +2% ambush CONTRADICTED Ziv's ±2% retest-confirmation band: when
+ * the retest CONFIRMS (live ≈ level), live is not yet >+2% above level, so the +2% LMT
+ * rested ABOVE live → anti-chase rejected every candidate (G2 = 0 fills over 60 days). We
+ * delete the ×1.02 model and consume the threaded `limitPrice`. The FOMO cap (1.5%) is the
+ * anti-chase ceiling. RETEST_AMBUSH_ABOVE_PCT is retained ONLY as the documented alignment
+ * value (= LIMIT_ABOVE_PCT/100 = 0.75%) — it NO LONGER derives a price (kept so existing
+ * imports/tests have the aligned number).
  */
-export const RETEST_AMBUSH_ABOVE_PCT = 0.02;    // entryLimit = retestLevel × 1.02 (support ZONE — owner-set)
+export const RETEST_AMBUSH_ABOVE_PCT = 0.0075;  // = LIMIT_ABOVE_PCT/100 (doc alignment; price = evaluateRetestV2.limitPrice)
+/** FOMO anti-chase cap fraction = structuralLevel × (1 + RETEST_FOMO_ABOVE_PCT). Mirrors trueRetestEngine FOMO_PCT=1.5. */
+export const RETEST_FOMO_ABOVE_PCT = 0.015;
 /**
  * THE RETEST STOP (risk-critical): the retest is invalidated when price closes back BELOW
  * the broken-support level (zivEngine.ts:76 — stop belongs JUST BELOW retestLevel). We
@@ -105,31 +110,42 @@ export function isWaiterEnabled(config: LiveEngineConfig | null | undefined): bo
   return ((config as any)?.waiterEnabled ?? 0) === 1;
 }
 
-// ── PURE: ambush level (§2.1) — at the STRUCTURAL retest level, NOT a moving average ──
+// ── PURE: ambush level (§2.1) — the SSOT evaluateRetestV2.limitPrice, FOMO-aligned ──
 /**
- * computeAmbushLimit — THE RETEST FIX. The resting LMT price = retestLevel × (1 +
- * RETEST_AMBUSH_ABOVE_PCT), rounded to a cent. `retestLevel` is the broken-resistance-
- * now-support level the Ziv engine already computed (zivEngine retestLevel = True-Retest
- * priorBreakoutLevel, else Role-Reversal level). We rest a HAIR ABOVE it so the order
- * fills on the bounce off support (a precise touch), NOT at EMA20 (a moving average that
- * is a DIFFERENT price from the structural support).
+ * computeAmbushLimit — THE RETEST FIX (2026-06-30 owner-ratified). The resting LMT price
+ * is the SINGLE SSOT `evaluateRetestV2(...).limitPrice` computed once in the war cycle and
+ * THREADED here (= structuralLevel × 1.0075, FOMO-capped at structuralLevel × 1.015). This
+ * function is now a thin wrapper: it does NOT re-derive a price (no ×1.02), it only applies
+ * the live-time guards on the threaded limit. We pass BOTH the threaded `limitPrice` and the
+ * structural `level` evaluateRetestV2 used (for the FOMO-cap anti-chase ceiling).
  *
- * FAIL-CLOSED: a null/non-positive retestLevel returns 0 → the caller SKIPS the candidate
- * (no Waiter LMT; NEVER falls back to EMA20). Anti-chase: the ambush must be AT/BELOW the
- * live price (a retest buys a pullback to support; it never rests ABOVE market chasing up)
- * — if the level sits at/above live, price has not yet pulled back, so we skip. Penny guard.
+ * Guards (per the DR parameter table):
+ *   • FAIL-CLOSED: a null/non-positive limitPrice or level returns 0 → caller SKIPS.
+ *   • Penny guard: never rest a sub-$2 order.
+ *   • Pullback guard (anti-chase floor): the LMT must be BELOW live (live > limitPrice) —
+ *     a retest buys a pullback to support; it never rests AT/ABOVE market.
+ *   • FOMO-cap (anti-chase ceiling): place only when live ≤ level × (1 + RETEST_FOMO_ABOVE_PCT)
+ *     = level × 1.015. Above the FOMO cap the move is extended → skip (chasing).
  */
-export function computeAmbushLimit(retestLevel: number | null | undefined, livePrice: number): { limit: number; reason: string } {
-  if (!Number.isFinite(retestLevel as number) || !((retestLevel as number) > 0)) return { limit: 0, reason: "no retestLevel (skip — no EMA20 fallback)" };
+export function computeAmbushLimit(
+  limitPrice: number | null | undefined,
+  structLevel: number | null | undefined,
+  livePrice: number,
+): { limit: number; reason: string } {
+  if (!Number.isFinite(limitPrice as number) || !((limitPrice as number) > 0)) return { limit: 0, reason: "no limitPrice (skip — no SSOT retest)" };
+  if (!Number.isFinite(structLevel as number) || !((structLevel as number) > 0)) return { limit: 0, reason: "no structural level (skip)" };
   if (!Number.isFinite(livePrice) || livePrice <= 0) return { limit: 0, reason: "no live price" };
-  const lvl = retestLevel as number;
-  const raw = +(lvl * (1 + RETEST_AMBUSH_ABOVE_PCT)).toFixed(2);
-  if (!(raw > 0)) return { limit: 0, reason: "ambush ≤ 0" };
-  // Anti-chase: never rest a buy ABOVE the live price (that would chase, not ambush a pullback).
-  if (raw >= livePrice) return { limit: 0, reason: `ambush $${raw.toFixed(2)} ≥ live $${livePrice.toFixed(2)} (price not yet pulled back to support)` };
+  const raw = +(limitPrice as number).toFixed(2);
+  const lvl = structLevel as number;
+  if (!(raw > 0)) return { limit: 0, reason: "limit ≤ 0" };
   // Penny guard: never rest a sub-$2 order.
-  if (raw < 2) return { limit: 0, reason: `ambush $${raw.toFixed(2)} < $2 penny guard` };
-  return { limit: raw, reason: `ambush $${raw.toFixed(2)} (retest support $${lvl.toFixed(2)} × ${(1 + RETEST_AMBUSH_ABOVE_PCT)})` };
+  if (raw < 2) return { limit: 0, reason: `limit $${raw.toFixed(2)} < $2 penny guard` };
+  // Pullback guard (anti-chase floor): never rest a buy AT/ABOVE the live price.
+  if (!(livePrice > raw)) return { limit: 0, reason: `limit $${raw.toFixed(2)} ≥ live $${livePrice.toFixed(2)} (price not yet pulled back to support)` };
+  // FOMO-cap (anti-chase ceiling): the move is too extended above the structural level.
+  const fomoCap = +(lvl * (1 + RETEST_FOMO_ABOVE_PCT)).toFixed(2);
+  if (livePrice > fomoCap) return { limit: 0, reason: `live $${livePrice.toFixed(2)} > FOMO cap $${fomoCap.toFixed(2)} (level $${lvl.toFixed(2)} × ${(1 + RETEST_FOMO_ABOVE_PCT)}) — too extended` };
+  return { limit: raw, reason: `LMT $${raw.toFixed(2)} = evaluateRetestV2.limitPrice (level $${lvl.toFixed(2)}, FOMO cap $${fomoCap.toFixed(2)})` };
 }
 
 // ── PURE: structural retest stop (just below the broken-support level) ──────────────
@@ -442,7 +458,16 @@ async function placeRestingBracket(args: {
  * A null retestLevel means the war cycle had no structural retest for that name → the
  * Waiter MUST skip it (no EMA20 fallback).
  */
-interface RetestCandidate { ticker: string; score: number; retestLevel: number | null; ema50: number | null; }
+interface RetestCandidate {
+  ticker: string; score: number; retestLevel: number | null; ema50: number | null;
+  // THE RETEST FIX (SSOT eligibility + price): evaluateRetestV2 outputs persisted by the
+  // war cycle. retestValid = the execution-window gate (the Waiter ARMS only when true);
+  // retestLimitPrice = the resting LMT price (level×1.0075, FOMO-capped); retestStructLevel
+  // = the structural `level` evaluateRetestV2 used (anti-chase FOMO-cap basis).
+  retestValid: boolean;
+  retestLimitPrice: number | null;
+  retestStructLevel: number | null;
+}
 async function loadRetestCandidates(
   db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
 ): Promise<RetestCandidate[]> {
@@ -459,6 +484,9 @@ async function loadRetestCandidates(
         score: Number(it.score ?? 0),
         retestLevel: Number.isFinite(Number(it.retestLevel)) && Number(it.retestLevel) > 0 ? Number(it.retestLevel) : null,
         ema50: Number.isFinite(Number(it.ema50)) && Number(it.ema50) > 0 ? Number(it.ema50) : null,
+        retestValid: (it.retestValid ?? false) === true,
+        retestLimitPrice: Number.isFinite(Number(it.retestLimitPrice)) && Number(it.retestLimitPrice) > 0 ? Number(it.retestLimitPrice) : null,
+        retestStructLevel: Number.isFinite(Number(it.retestStructLevel)) && Number(it.retestStructLevel) > 0 ? Number(it.retestStructLevel) : null,
       }))
       .filter((it) => it.ticker)
       .sort((a, b) => b.score - a.score)
@@ -541,10 +569,17 @@ async function placeNewRestingLimits(
   for (const cand of candidates) {
     const sym = cand.ticker;
 
-    // THE RETEST FIX: a candidate with NO structural retest level gets NO Waiter LMT.
-    // (warEngine only sets retestLevel when the Ziv setup IS a true-retest/role-reversal.)
-    if (!(Number(cand.retestLevel) > 0)) {
-      dbLog("info", "SYSTEM", `[Waiter] ${sym} no structural retestLevel — skip (no EMA20 fallback)`);
+    // ── OPTION-2 ELIGIBILITY (DR_WAITER_RETEST_ELIGIBILITY.md) ──────────────────────
+    // The Waiter ARMS a candidate ONLY when evaluateRetestV2.valid === true (the in-band
+    // ±0.5×ATR + 5-close-hold + not-FOMO execution window the war cycle persisted) — NOT
+    // the "Gold Retest" tier label. The tier picks the NAME; .valid picks WHEN to arm. A
+    // candidate not in the execution window (or missing the SSOT outputs) gets NO LMT.
+    if (cand.retestValid !== true) {
+      dbLog("info", "SYSTEM", `[Waiter] ${sym} retest not in execution window (evaluateRetestV2.valid=false) — skip`);
+      continue;
+    }
+    if (!(Number(cand.retestLimitPrice) > 0) || !(Number(cand.retestStructLevel) > 0)) {
+      dbLog("info", "SYSTEM", `[Waiter] ${sym} no SSOT limitPrice/level — skip (no EMA20 fallback)`);
       continue;
     }
 
@@ -564,17 +599,19 @@ async function placeNewRestingLimits(
       ema50 = emas.ema50;
     }
 
-    // Qualify on proximity to the STRUCTURAL retest support (approaching from above, uptrend).
-    const zone = isNearRetestZone({ livePrice: live, retestLevel: cand.retestLevel, ema50 });
-    if (!zone.near) continue;
-
-    // Rest the LMT at the structural support (a touch above it — buy the bounce).
-    const ambush = computeAmbushLimit(cand.retestLevel, live);
-    if (!(ambush.limit > 0)) continue;
+    // The resting LMT price = the SSOT evaluateRetestV2.limitPrice (threaded). Anti-chase
+    // (FOMO-aligned): place only when live > limitPrice (a pullback) AND live ≤ structLevel
+    // × 1.015 (FOMO cap). Penny guard inside. NO ×1.02 re-derivation.
+    const ambush = computeAmbushLimit(cand.retestLimitPrice, cand.retestStructLevel, live);
+    if (!(ambush.limit > 0)) {
+      dbLog("info", "SYSTEM", `[Waiter] ${sym} anti-chase/penny — ${ambush.reason}`);
+      continue;
+    }
 
     // Structural stop JUST BELOW the retest support (invalidation), bounded by wideLungSL
-    // (parity safety floor). FAIL-CLOSED — never rest a garbage stop (never-naked-SL).
-    const stopRes = computeRetestStop({ retestLevel: cand.retestLevel, entry: ambush.limit, ema50 });
+    // (parity safety floor). FAIL-CLOSED — never rest a garbage stop (never-naked-SL). The
+    // stop anchors on retestStructLevel (the level the SSOT limitPrice was derived from).
+    const stopRes = computeRetestStop({ retestLevel: cand.retestStructLevel, entry: ambush.limit, ema50 });
     if (!(stopRes.stop > 0)) { dbLog("info", "SYSTEM", `[Waiter] ${sym} bad retest stop — ${stopRes.reason}`); continue; }
     const stop = stopRes.stop;
 
@@ -647,7 +684,7 @@ async function placeNewRestingLimits(
       const conid = await resolveConid(sym);
       if (!conid) { dbLog("info", "SYSTEM", `[Waiter] ${sym} no conid — skip`); continue; }
 
-      waiterLog("WAITER_ARM", sym, `${zone.reason}; ${ambush.reason}; stop $${stop.toFixed(2)}; qty ${cappedShares}`);
+      waiterLog("WAITER_ARM", sym, `valid retest (live $${live.toFixed(2)}); ${ambush.reason}; stop $${stop.toFixed(2)}; qty ${cappedShares}`);
 
       // Reserve the slot FIRST (pending_entry row) so a crash mid-order cannot over-broadcast.
       const ts = new Date();
@@ -667,10 +704,10 @@ async function placeNewRestingLimits(
         signal: WAITER_SIGNAL,
         isWaiterEntry: 1,
         countsTowardSlot: 1,
-        // THE RETEST FIX: this column now records the STRUCTURAL retest level the LMT
-        // rests at (broken-support), NOT EMA-20. It is the re-quote drift basis (R2) and
-        // the audit anchor for where the ambush sat.
-        waiterEmaAtPlace: +Number(cand.retestLevel).toFixed(4),
+        // THE RETEST FIX: this column records the STRUCTURAL retest level (the
+        // evaluateRetestV2 `level` the SSOT limitPrice was derived from — broken-support,
+        // NOT EMA-20). It is the re-quote drift basis (R2) and the audit anchor.
+        waiterEmaAtPlace: +Number(cand.retestStructLevel).toFixed(4),
         waiterStage: "RESTING",
         openedAt: ts,
       } as any);
@@ -775,7 +812,12 @@ async function manageWaiterBook(
     // retest level for this name (>0.5% drift) — a moving structural support — and never
     // chase up past live. A stable structural level ⇒ no re-quote (the LMT just waits).
     const restingLimit = Number(row.entryPrice) || 0;
-    const fresh = computeAmbushLimit(liveCand?.retestLevel ?? null, live);
+    // Re-quote basis = the SSOT limitPrice the war cycle republished for this name (FOMO-
+    // aligned). Only re-quote a name still in the valid execution window; an invalidated
+    // name is cancelled by shouldCancelRest above, not re-quoted.
+    const fresh = (liveCand?.retestValid === true)
+      ? computeAmbushLimit(liveCand?.retestLimitPrice ?? null, liveCand?.retestStructLevel ?? null, live)
+      : { limit: 0, reason: "not in valid execution window" };
     if (fresh.limit > 0 && restingLimit > 0) {
       const rq = shouldRequote({ restingLimit, freshLimit: fresh.limit, livePrice: live });
       if (rq.requote) {
