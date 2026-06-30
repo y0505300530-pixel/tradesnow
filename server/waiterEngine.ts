@@ -76,6 +76,10 @@ export const WAITER_ROUTE = "GOLD_RETEST_WAR" as const;
 export const WAITER_SIGNAL = "GOLD_RETEST_WAITER" as const;
 /** R4: max seconds a filled retest may sit before the STP is broker-verified resting. */
 export const NAKED_VERIFY_TIMEOUT_MS = 25_000;
+/** R4 naked-confirm: how many bounded re-reads of the resting-STP check before deciding. */
+export const NAKED_CONFIRM_RETRIES = 3;
+/** R4 naked-confirm: short backoff between re-reads (ms). Kept small — reconcile is hot. */
+export const NAKED_CONFIRM_BACKOFF_MS = 400;
 
 // ── Flag reader — same shape/source as every other live flag (one source of truth) ──
 export function isWaiterEnabled(config: LiveEngineConfig | null | undefined): boolean {
@@ -643,6 +647,149 @@ async function freeRestingRow(
   } catch { /* best-effort */ }
 }
 
+// ── R4 naked-confirmation: gateway-aware classifier + bounded retry (the FALSE-NEGATIVE fix) ──
+/**
+ * classifyVerifyReason — PURE. Split a `verifyRestingStopAtBe` `!verified` `reason` into:
+ *   • "definitive_absent" — a HEALTHY /orders response that genuinely shows no qualifying
+ *     STP (the STP truly is not resting). SAFE to flatten on.
+ *   • "transient"         — a gateway error (throw / not-ok / 405 / timeout). The STP status
+ *     is UNKNOWN — a real broker stop may well be resting; we just can't read it. NEVER
+ *     flatten on this (a down gateway is a HALT/alert condition, not a flatten trigger).
+ *   • "ok"                — verified true (no classification needed).
+ *
+ * This is the crux of the R4 hardening: `verifyRestingStopAtBe` collapses TRANSIENT and
+ * DEFINITIVE into a single `verified:false`; R4 must NOT. We classify on the reason prefix
+ * the verifier emits (its semantics are unchanged — the G1-A ghost path still fail-closes).
+ *
+ * NOTE: the verifier reports an `res.ok` empty `/orders` body as "no resting STP for ticker"
+ * — which LOOKS definitive but can be a known gateway flake. confirmStpAbsentForFlatten()
+ * therefore independently re-reads /orders to prove the book is healthy & non-empty before
+ * trusting any "absent" verdict.
+ */
+export function classifyVerifyReason(v: { verified: boolean; reason: string }): "ok" | "transient" | "definitive_absent" {
+  if (v.verified) return "ok";
+  const r = (v.reason ?? "").toLowerCase();
+  // Gateway-error prefixes emitted by verifyRestingStopAtBe → status UNKNOWN.
+  if (r.startsWith("orders read threw") || r.startsWith("orders read not-ok") ||
+      r.includes("timeout") || r.includes("etimedout") || r.includes("econn")) {
+    return "transient";
+  }
+  // Everything else (no STP / wrong qty / wrong price / no entry) is a healthy-book "absent".
+  return "definitive_absent";
+}
+
+/**
+ * confirmStpAbsentForFlatten — R4-ONLY robust naked-confirmation. Re-reads the resting-STP
+ * check up to NAKED_CONFIRM_RETRIES times (short backoff) AND independently confirms the
+ * /orders book is HEALTHY (gateway ok) and NON-EMPTY before ever returning "absent".
+ *
+ * Returns one of:
+ *   • "verified"  — a qualifying STP was found on some attempt ⇒ position is protected ⇒ NO flatten.
+ *   • "absent"    — every attempt returned a HEALTHY /orders response that consistently shows no
+ *                   qualifying STP ⇒ genuinely naked ⇒ FLATTEN.
+ *   • "unknown"   — the gateway was unreachable/erroring (or returned an empty book that could be
+ *                   a flake) and never produced a clean "STP found" or a healthy non-empty "no STP"
+ *                   ⇒ status UNKNOWN ⇒ do NOT blind-flatten (software-SL backstop + alert).
+ *
+ * NEVER throws. INERT-safe (only called from inside the flag-gated reconcile). `deps` mirror
+ * the verifier/test injection: `injectedOrders` (deterministic book) and `injectedSequence`
+ * (an array of per-attempt books / "THROW" sentinels) for tests; production passes nothing
+ * and we read the live /orders book each attempt.
+ */
+export async function confirmStpAbsentForFlatten(
+  pos: { ticker: string; units: number; direction: string; entryPrice: number },
+  deps?: {
+    injectedSequence?: Array<any[] | "THROW" | "NOTOK" | null> | null;
+    retries?: number;
+    backoffMs?: number;
+    sleep?: (ms: number) => Promise<void>;
+  },
+): Promise<{ decision: "verified" | "absent" | "unknown"; reason: string }> {
+  const retries = Math.max(1, deps?.retries ?? NAKED_CONFIRM_RETRIES);
+  const backoff = Math.max(0, deps?.backoffMs ?? NAKED_CONFIRM_BACKOFF_MS);
+  const sleep = deps?.sleep ?? ((ms: number) => new Promise<void>((res) => setTimeout(res, ms)));
+  const seq = deps?.injectedSequence ?? null;
+
+  let sawHealthyAbsent = false;   // a clean, non-empty /orders response that genuinely lacked the STP
+  let lastReason = "no attempts";
+
+  for (let i = 0; i < retries; i++) {
+    if (i > 0 && backoff > 0) await sleep(backoff);
+
+    // Resolve THIS attempt's order book: a transient sentinel forces verifyRestingStopAtBe to
+    // take its gateway-error path; a real array is a deterministic healthy book; null = live read.
+    let attemptOrders: any[] | null | undefined;
+    let forcedTransient: string | null = null;
+    if (seq) {
+      const slot = seq[Math.min(i, seq.length - 1)];
+      if (slot === "THROW") { forcedTransient = "orders read threw: injected"; }
+      else if (slot === "NOTOK") { forcedTransient = "orders read not-ok (HTTP 405)"; }
+      else { attemptOrders = slot; }
+    } else {
+      attemptOrders = undefined; // production: verifier reads live /orders itself
+    }
+
+    let v: { verified: boolean; reason: string };
+    try {
+      if (forcedTransient) {
+        v = { verified: false, reason: forcedTransient };
+      } else {
+        v = await verifyRestingStopAtBe(pos, attemptOrders ?? null);
+      }
+    } catch (e: any) {
+      // Defensive: verifier is documented never-throw, but treat any throw as transient/unknown.
+      v = { verified: false, reason: `orders read threw: ${String(e?.message ?? e).slice(0, 40)}` };
+    }
+
+    const cls = classifyVerifyReason(v);
+    lastReason = v.reason;
+    if (cls === "ok") {
+      return { decision: "verified", reason: v.reason };       // STP IS resting → never flatten
+    }
+    if (cls === "transient") {
+      continue;                                                // gateway flake → unknown so far, retry
+    }
+
+    // cls === "definitive_absent": independently prove the book is HEALTHY & NON-EMPTY before
+    // trusting "absent". An res.ok EMPTY /orders is a known flake → treat as transient/unknown.
+    const healthy = await ordersBookHealthyNonEmpty(seq ? attemptOrders ?? null : undefined);
+    if (healthy === "healthy_nonempty") {
+      sawHealthyAbsent = true;                                 // a real, readable book with no STP
+      continue;                                                // confirm it persists across retries
+    }
+    // empty/unreachable book → cannot trust the "absent" verdict this attempt.
+    continue;
+  }
+
+  if (sawHealthyAbsent) {
+    return { decision: "absent", reason: `STP genuinely absent across ${retries} healthy reads (${lastReason})` };
+  }
+  return { decision: "unknown", reason: `gateway unknown across ${retries} reads (${lastReason})` };
+}
+
+/**
+ * ordersBookHealthyNonEmpty — R4 helper. Independently re-reads /orders (or inspects an
+ * injected book) and reports whether the gateway returned a HEALTHY, NON-EMPTY order book.
+ * "healthy_nonempty" is the ONLY signal we trust to back an "STP absent" flatten decision.
+ * An empty book or any gateway non-ok/throw ⇒ "unreachable_or_empty" (status unknown).
+ * NEVER throws.
+ */
+async function ordersBookHealthyNonEmpty(
+  injected?: any[] | null,
+): Promise<"healthy_nonempty" | "unreachable_or_empty"> {
+  try {
+    if (injected !== undefined) {
+      return Array.isArray(injected) && injected.length > 0 ? "healthy_nonempty" : "unreachable_or_empty";
+    }
+    const res = await ibindRequest("GET", "/orders");
+    if (!res.ok) return "unreachable_or_empty";
+    const orders = (res.body as any)?.orders ?? [];
+    return Array.isArray(orders) && orders.length > 0 ? "healthy_nonempty" : "unreachable_or_empty";
+  } catch {
+    return "unreachable_or_empty";
+  }
+}
+
 // ── T4 / R3 / R4 — fill reconcile (called from ibkrSync; INERT at flag=0) ───────────
 /**
  * reconcileWaiterPositions — the resting-LMT lifecycle reconcile. INERT-FIRST: reads the
@@ -664,9 +811,18 @@ async function freeRestingRow(
 export async function reconcileWaiterPositions(
   userId: number,
   brokerQtyByTicker: Map<string, number>,
-  deps?: { config?: LiveEngineConfig | null; db?: Awaited<ReturnType<typeof getDb>>; injectedOrders?: any[] | null },
-): Promise<{ filled: number; flattened: number }> {
-  const summary = { filled: 0, flattened: 0 };
+  deps?: {
+    config?: LiveEngineConfig | null;
+    db?: Awaited<ReturnType<typeof getDb>>;
+    injectedOrders?: any[] | null;
+    // R4 test injection: the per-attempt /orders book sequence for the naked-confirm retry.
+    injectedNakedSequence?: Array<any[] | "THROW" | "NOTOK" | null> | null;
+    nakedConfirm?: typeof confirmStpAbsentForFlatten;
+    // R4 test injection: observe/stub the real never-naked flatten transmit (default = real one).
+    executeLiveSell?: typeof executeLiveSell;
+  },
+): Promise<{ filled: number; flattened: number; unknown?: number }> {
+  const summary = { filled: 0, flattened: 0, unknown: 0 };
   let config = deps?.config;
   try {
     if (config === undefined) config = await getLiveConfig(userId);
@@ -709,57 +865,121 @@ export async function reconcileWaiterPositions(
       summary.filled++;
       waiterLog("WAITER_FILL", sym, `filled ${ibkrQty}/${reqQty} @ ~$${entry.toFixed(2)} → managed (Golden ladder)`);
 
-      // ── R4: broker-verify the STP rests for the FILLED qty (G1-A). If not confirmed,
-      //    FLATTEN + alert — a filled retest must never sit unprotected. The OCA child STP
-      //    of the bracket should already be resting; this confirms it (fail-closed). ──
-      const v = await verifyRestingStopAtBe(
+      // ── BLOCKER-2 — PARTIAL fill guard (never false-positive flatten a protected position). ──
+      //    The OCA child STP of the bracket was placed for the FULL requestedQty
+      //    (placeRestingBracket); IBKR does NOT auto-resize the child stop to a partial parent
+      //    fill. So on a partial fill (ibkrQty < reqQty) verifyRestingStopAtBe sees a qty mismatch
+      //    (ghostSlots BE_VERIFY_QTY_SLACK 0.5sh) → skips the real (oversized-but-resting) STP →
+      //    "definitive_absent" → reconcile would transmit a REAL flatten of a position that is
+      //    actually OVER-protected. That is a false-positive flatten of a healthy, broker-protected
+      //    position. A partial fill is UNCERTAINTY, not confirmed-naked — and the oversized resting
+      //    STP fully covers the filled shares. So route a partial straight to the UNKNOWN/no-flatten
+      //    branch: software-SL backstop + loud alert + summary.unknown, and DO NOT flatten. The next
+      //    reconcile re-confirms (by which point the fill may have completed or the stop be resized).
+      if (ibkrQty < reqQty) {
+        log.error("LIVE_EXEC",
+          `[WAITER_NAKED] ${sym} PARTIAL fill ${ibkrQty}/${reqQty}u — child STP was sized for the FULL ${reqQty}u (IBKR does not auto-resize). ` +
+          `Treating as UNKNOWN (not naked): NOT flattening — the oversized resting STP still protects the filled shares; software-SL backstop armed, re-confirm next reconcile`,
+          { ticker: sym, posId: row.id });
+        await db.update(livePositions).set({ waiterStage: "FILLED_ARMING", slProtection: "software", status: "open" } as any)
+          .where(eq(livePositions.id, row.id));
+        waiterLog("WAITER_NAKED_FLATTEN", sym, `PARTIAL fill ${ibkrQty}/${reqQty}u — NO flatten (oversized STP still protects filled shares), software-SL backstop armed (re-confirm next reconcile)`);
+        summary.unknown++;
+        continue;
+      }
+
+      // ── R4: broker-verify the STP rests for the FILLED qty (G1-A) — GATEWAY-AWARE. ──
+      //    The OCA child STP of the bracket should already be resting. A first read MAY come
+      //    back `!verified` for two very different reasons:
+      //       (1) the STP genuinely is NOT resting (real naked position) → must FLATTEN, OR
+      //       (2) a TRANSIENT gateway hiccup (timeout / 405 / empty /orders) on a position
+      //           whose STP IS actually resting → a FALSE NEGATIVE.
+      //    Blind-flattening on (2) would CLOSE A HEALTHY POSITION that has a real broker stop
+      //    we merely could not read — strictly worse than a brief software-SL gap. So R4 runs
+      //    a bounded, gateway-aware naked-confirmation (confirmStpAbsentForFlatten): it retries
+      //    the resting-STP check and flattens ONLY on a DEFINITIVE absent (healthy, non-empty
+      //    /orders consistently showing no qualifying STP). On UNKNOWN (gateway down/empty
+      //    across retries) it does NOT flatten — it degrades to software-SL + a loud alert and
+      //    leaves the position for the next reconcile. (verifyRestingStopAtBe's own fail-closed
+      //    semantics are UNCHANGED — the G1-A ghost path still depends on them.) ──
+      const v0 = await verifyRestingStopAtBe(
         { ticker: sym, units: ibkrQty, direction: "long", entryPrice: Number(row.initialSl) || entry },
         deps?.injectedOrders,
       );
       // NOTE: verifyRestingStopAtBe checks the STP is at/through the supplied "BE" price.
       // For a fresh fill the protective stop is BELOW entry (wideLungSL), so we verify a
       // resting STP EXISTS for the filled qty by passing initialSl as the reference floor.
-      if (v.verified) {
+      if (v0.verified) {
         await db.update(livePositions).set({ waiterStage: "MANAGED", slProtection: "ibkr" } as any)
           .where(eq(livePositions.id, row.id));
-      } else {
-        // ── R4 REAL FLATTEN (fail-closed): a filled retest whose protective STP can NOT be
-        //    broker-verified resting must be CLOSED NOW — never parked for a cron. We TRANSMIT
-        //    a real flatten of the FILLED qty through the validated never-naked exit path
-        //    (executeLiveSell → marketable LMT via /orders/close-position; cancels the bracket,
-        //    1% slip cap, IOC→DAY retry — same path the Golden ladder uses). The row was just
-        //    flipped to `open` above, so executeLiveSell operates on broker truth (`ibkrQty`).
-        //    Idempotent: executeLiveSell flips to pending_exit first, so a re-entrant reconcile
-        //    sees `Already pending_exit` and is a no-op. Never throws (wrapped) — on a transmit
-        //    failure we still leave the loud alert + the SL/TP enforcement CRON as backstop. ──
-        const ageMs = Date.now() - (Number(row.openedAt instanceof Date ? row.openedAt.getTime() : Date.parse(String(row.openedAt))) || Date.now());
+        continue;
+      }
+
+      // First read was not-verified → run the bounded, gateway-aware confirmation before any flatten.
+      const confirm = (deps?.nakedConfirm ?? confirmStpAbsentForFlatten);
+      const decision = await confirm(
+        { ticker: sym, units: ibkrQty, direction: "long", entryPrice: Number(row.initialSl) || entry },
+        { injectedSequence: deps?.injectedNakedSequence ?? (deps?.injectedOrders !== undefined ? [deps?.injectedOrders ?? null] : undefined) },
+      ).catch((e) => ({ decision: "unknown" as const, reason: `confirm threw: ${String(e).slice(0, 60)}` }));
+
+      const ageMs = Date.now() - (Number(row.openedAt instanceof Date ? row.openedAt.getTime() : Date.parse(String(row.openedAt))) || Date.now());
+
+      if (decision.decision === "verified") {
+        // The retry FOUND the resting STP — the first read was a transient false negative. Healthy.
+        await db.update(livePositions).set({ waiterStage: "MANAGED", slProtection: "ibkr" } as any)
+          .where(eq(livePositions.id, row.id));
+        continue;
+      }
+
+      if (decision.decision === "unknown") {
+        // ── GATEWAY UNKNOWN (false-negative guard): do NOT blind-flatten. The position likely
+        //    HAS a real broker STP we just can't read. Degrade to software-SL (SL/TP cron
+        //    backstop), keep the loud alert, and leave the row for the next reconcile. A down
+        //    gateway is a HALT/alert condition — NOT a flatten trigger. ──
         log.error("LIVE_EXEC",
-          `[WAITER_NAKED] ${sym} filled ${ibkrQty}u but STP NOT broker-verified resting (${v.reason}) — FAIL-CLOSED, FLATTENING now`,
+          `[WAITER_NAKED] ${sym} filled ${ibkrQty}u — STP status UNKNOWN (gateway unreachable: ${decision.reason}). NOT flattening (false-negative guard); software-SL backstop armed, will re-confirm next reconcile`,
           { ticker: sym, posId: row.id, ageMs });
-        // Bind units to the broker-truth filled qty so the flatten exits exactly what filled
-        // (R3 already set this above, but re-assert defensively before the marketable close).
-        let sellOk = false;
-        let sellReason = "transmit not attempted";
-        try {
-          const sell = await executeLiveSell({ userId, positionId: row.id, reason: "WAITER_NAKED_FLATTEN" });
-          sellOk = sell.success;
-          sellReason = sell.reason;
-        } catch (sellErr) {
-          sellReason = String(sellErr).slice(0, 120);
-        }
-        summary.flattened++;
-        if (sellOk) {
-          waiterLog("WAITER_NAKED_FLATTEN", sym, `STP not verified (${v.reason}) — REAL flatten transmitted (${ibkrQty}u)`);
-          // executeLiveSell owns the row state (pending_exit → closed on fill). slProtection
-          // stays meaningful for any audit; no further mutation needed here.
-        } else {
-          // Transmit failed (gateway flake / reject). Keep the loud alert + flag software-SL so
-          // the SL/TP enforcement CRON retries the protective close on its next pass (backstop,
-          // NOT the primary path). The next reconcile tick also re-attempts the flatten.
-          waiterLog("WAITER_NAKED_FLATTEN", sym, `STP not verified (${v.reason}) — flatten transmit FAILED (${sellReason}); CRON backstop armed`);
-          await db.update(livePositions).set({ waiterStage: "FILLED_ARMING", slProtection: "software", status: "open" } as any)
-            .where(eq(livePositions.id, row.id));
-        }
+        await db.update(livePositions).set({ waiterStage: "FILLED_ARMING", slProtection: "software", status: "open" } as any)
+          .where(eq(livePositions.id, row.id));
+        waiterLog("WAITER_NAKED_FLATTEN", sym, `STP status UNKNOWN (${decision.reason}) — NO flatten, software-SL backstop armed (re-confirm next reconcile)`);
+        summary.unknown++;
+        continue;
+      }
+
+      // ── decision === "absent": DEFINITIVE naked (healthy, non-empty /orders, no STP across
+      //    retries). A filled retest that genuinely has no protective STP must be CLOSED NOW —
+      //    never parked for a cron. TRANSMIT a real flatten of the FILLED qty through the
+      //    validated never-naked exit path (executeLiveSell → marketable LMT via
+      //    /orders/close-position; cancels the bracket, 1% slip cap, IOC→DAY retry). The row was
+      //    flipped to `open` above, so executeLiveSell operates on broker truth (`ibkrQty`).
+      //    Idempotent: executeLiveSell flips to pending_exit first, so a re-entrant reconcile
+      //    sees `Already pending_exit` and is a no-op. Never throws (wrapped) — on transmit
+      //    failure we still leave the loud alert + the SL/TP enforcement CRON as backstop. ──
+      log.error("LIVE_EXEC",
+        `[WAITER_NAKED] ${sym} filled ${ibkrQty}u but STP DEFINITIVELY absent (${decision.reason}) — FLATTENING now`,
+        { ticker: sym, posId: row.id, ageMs });
+      let sellOk = false;
+      let sellReason = "transmit not attempted";
+      const _executeLiveSell = deps?.executeLiveSell ?? executeLiveSell;
+      try {
+        const sell = await _executeLiveSell({ userId, positionId: row.id, reason: "WAITER_NAKED_FLATTEN" });
+        sellOk = sell.success;
+        sellReason = sell.reason;
+      } catch (sellErr) {
+        sellReason = String(sellErr).slice(0, 120);
+      }
+      summary.flattened++;
+      if (sellOk) {
+        waiterLog("WAITER_NAKED_FLATTEN", sym, `STP definitively absent (${decision.reason}) — REAL flatten transmitted (${ibkrQty}u)`);
+        // executeLiveSell owns the row state (pending_exit → closed on fill). slProtection
+        // stays meaningful for any audit; no further mutation needed here.
+      } else {
+        // Transmit failed (gateway flake / reject). Keep the loud alert + flag software-SL so
+        // the SL/TP enforcement CRON retries the protective close on its next pass (backstop,
+        // NOT the primary path). The next reconcile tick also re-attempts the flatten.
+        waiterLog("WAITER_NAKED_FLATTEN", sym, `STP definitively absent (${decision.reason}) — flatten transmit FAILED (${sellReason}); CRON backstop armed`);
+        await db.update(livePositions).set({ waiterStage: "FILLED_ARMING", slProtection: "software", status: "open" } as any)
+          .where(eq(livePositions.id, row.id));
       }
     }
   } catch (e) {

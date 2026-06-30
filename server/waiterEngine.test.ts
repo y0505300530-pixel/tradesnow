@@ -24,6 +24,9 @@ import {
   shouldRequote,
   shouldCancelRest,
   waiterHoldsRetest,
+  classifyVerifyReason,
+  confirmStpAbsentForFlatten,
+  reconcileWaiterPositions,
   RETEST_AMBUSH_MULT,
   RETEST_TOP_N,
   REQUOTE_DRIFT,
@@ -57,7 +60,7 @@ describe("Waiter INERT invariant (flag=0 ⇒ byte-identical)", () => {
     const res = await reconcileWaiterPositions(1, new Map([["AAPL", 100]]), {
       config: { waiterEnabled: 0 } as any,
     });
-    expect(res).toEqual({ filled: 0, flattened: 0 });
+    expect(res).toEqual({ filled: 0, flattened: 0, unknown: 0 });
   });
 
   it("alertPoller Waiter tick + ibkrSync reconcile + warEngine R1 are flag-gated in source", () => {
@@ -185,7 +188,12 @@ describe("Waiter R4 real-flatten (fail-closed) on unverified STP", () => {
   const waiterSrc = readFileSync(join(__dirname, "waiterEngine.ts"), "utf8");
   // Isolate the reconcileWaiterPositions body so the assertions are scoped to R4.
   const recFn = waiterSrc.slice(waiterSrc.indexOf("export async function reconcileWaiterPositions"));
-  const nakedBranch = recFn.slice(recFn.indexOf("[WAITER_NAKED]"), recFn.indexOf("[WAITER_NAKED]") + 2200);
+  // Window spans ALL naked outcomes inside the reconcile body: the PARTIAL guard (BLOCKER-2 —
+  // no-flatten), the UNKNOWN branch (gateway-unreachable → no-flatten backstop), and the
+  // DEFINITIVE-ABSENT branch (real flatten → on transmit-fail: "flatten transmit FAILED" +
+  // software-SL). Scoped to the whole reconcile function body so adding earlier `[WAITER_NAKED]`
+  // logs (e.g. the partial guard) can never shrink the window below the transmit-fail log.
+  const nakedBranch = recFn.slice(recFn.indexOf("[WAITER_NAKED]"), recFn.indexOf("\n}\n", recFn.indexOf("return summary;")));
 
   it("transmits a REAL flatten via executeLiveSell with WAITER_NAKED_FLATTEN reason", () => {
     // The validated never-naked exit path is reused — not a stage mutation that defers to a cron.
@@ -279,5 +287,139 @@ describe("Waiter parity (risk stays 1%, stop stays wideLungSL)", () => {
   });
   it("RETEST_TOP_N is 10 (the 10/10 split)", () => {
     expect(RETEST_TOP_N).toBe(10);
+  });
+});
+
+// ── (8) R4 BEHAVIORAL — classifyVerifyReason (transient vs definitive-absent vs ok) ─────────
+//    Exercises the actual flatten-decision core (NOT source regex). BLOCKER-3.
+describe("Waiter R4 behavioral — classifyVerifyReason", () => {
+  it("a gateway THROW reason → transient (do NOT trust as absent)", () => {
+    expect(classifyVerifyReason({ verified: false, reason: "orders read threw: ECONNRESET" })).toBe("transient");
+  });
+  it('a not-ok "HTTP 405" reason → transient', () => {
+    expect(classifyVerifyReason({ verified: false, reason: "orders read not-ok (HTTP 405)" })).toBe("transient");
+  });
+  it('"no resting STP" → definitive_absent (healthy-book candidate for flatten)', () => {
+    expect(classifyVerifyReason({ verified: false, reason: "no resting STP for ticker" })).toBe("definitive_absent");
+  });
+  it("verified:true → ok (the STP is resting — never flatten)", () => {
+    expect(classifyVerifyReason({ verified: true, reason: "STP qty=100 @ $99.00 ≈ BE $95.00" })).toBe("ok");
+  });
+  it('timeout/econn substrings anywhere → transient', () => {
+    expect(classifyVerifyReason({ verified: false, reason: "socket ETIMEDOUT after 5s" })).toBe("transient");
+    expect(classifyVerifyReason({ verified: false, reason: "connect ECONNREFUSED" })).toBe("transient");
+  });
+});
+
+// ── (9) R4 BEHAVIORAL — confirmStpAbsentForFlatten (the bounded gateway-aware verdict) ──────
+//    A long pos; the exit-side STP is SELL. A book containing the matching STP ⇒ "verified".
+describe("Waiter R4 behavioral — confirmStpAbsentForFlatten", () => {
+  const POS = { ticker: "AAPL", units: 100, direction: "long", entryPrice: 95 }; // BE ref = 95
+  const matchingStp = [{ status: "Submitted", side: "SELL", description1: "AAPL", orderType: "STP", remainingQuantity: "100", stopPrice: 99 }];
+  // A healthy, non-empty book that has working orders but NO qualifying STP for AAPL.
+  const healthyNoStp = [{ status: "Submitted", side: "SELL", description1: "MSFT", orderType: "STP", remainingQuantity: "50", stopPrice: 200 }];
+  const fast = { backoffMs: 0, sleep: async () => {} };
+
+  it('["THROW","THROW","THROW"] → unknown (gateway down across retries — NO flatten)', async () => {
+    const r = await confirmStpAbsentForFlatten(POS, { ...fast, retries: 3, injectedSequence: ["THROW", "THROW", "THROW"] });
+    expect(r.decision).toBe("unknown");
+  });
+  it("[[],[],[]] (empty healthy books) → unknown (empty book is a known flake — NO flatten)", async () => {
+    const r = await confirmStpAbsentForFlatten(POS, { ...fast, retries: 3, injectedSequence: [[], [], []] });
+    expect(r.decision).toBe("unknown");
+  });
+  it("healthy NON-EMPTY books with no matching STP across retries → absent (genuinely naked)", async () => {
+    const r = await confirmStpAbsentForFlatten(POS, { ...fast, retries: 3, injectedSequence: [healthyNoStp, healthyNoStp, healthyNoStp] });
+    expect(r.decision).toBe("absent");
+  });
+  it("a book CONTAINING the matching STP → verified (protected — never flatten)", async () => {
+    const r = await confirmStpAbsentForFlatten(POS, { ...fast, retries: 3, injectedSequence: [matchingStp] });
+    expect(r.decision).toBe("verified");
+  });
+  it('mixed: ["THROW", healthyNoStp] → absent (a clean later read proves naked)', async () => {
+    const r = await confirmStpAbsentForFlatten(POS, { ...fast, retries: 2, injectedSequence: ["THROW", healthyNoStp] });
+    expect(r.decision).toBe("absent");
+  });
+});
+
+// ── (10) R4 BEHAVIORAL — reconcileWaiterPositions flatten-decision (unknown/absent/partial) ──
+//    Drives the WHOLE reconcile with an injected DB + injected executeLiveSell so we can OBSERVE
+//    whether a real flatten is transmitted. BLOCKER-2 (partial) + BLOCKER-3 (unknown/absent).
+describe("Waiter R4 behavioral — reconcileWaiterPositions flatten decision", () => {
+  // Minimal injectable Drizzle-like stub: select()/from()/where() resolves to the seeded rows;
+  // update()/set()/where() records the patch (and is awaitable). No real DB.
+  function makeDb(rows: any[]) {
+    const updates: Array<Record<string, any>> = [];
+    const db: any = {
+      select: () => ({ from: () => ({ where: async () => rows }) }),
+      update: () => ({ set: (patch: any) => ({ where: async () => { updates.push(patch); return undefined; } }) }),
+    };
+    return { db, updates };
+  }
+  const ON = { waiterEnabled: 1 } as any;
+  const baseRow = {
+    id: 7, ticker: "AAPL", isWaiterEntry: 1, status: "pending_entry",
+    requestedQty: 100, units: 100, entryPrice: 100, initialSl: 95,
+    allocatedCapital: 10000, openedAt: new Date(),
+  };
+
+  it('UNKNOWN (gateway down) → NO executeLiveSell, row slProtection:"software", summary.unknown===1', async () => {
+    const { db, updates } = makeDb([{ ...baseRow }]);
+    const sellCalls: any[] = [];
+    const res = await reconcileWaiterPositions(1, new Map([["AAPL", 100]]), {
+      config: ON, db,
+      injectedOrders: [],                                   // first v0 read: deterministic empty book (no network)
+      injectedNakedSequence: ["THROW", "THROW", "THROW"],
+      executeLiveSell: (async (a: any) => { sellCalls.push(a); return { success: true, reason: "stub" }; }) as any,
+    });
+    expect(sellCalls.length).toBe(0);                       // NEVER blind-flatten on unknown
+    expect(res.unknown).toBe(1);
+    expect(res.flattened).toBe(0);
+    expect(updates.some((u) => u.slProtection === "software")).toBe(true);
+  });
+
+  it("ABSENT (healthy book, no STP) → executeLiveSell IS called, summary.flattened===1", async () => {
+    const { db } = makeDb([{ ...baseRow }]);
+    const sellCalls: any[] = [];
+    const healthyNoStp = [{ status: "Submitted", side: "SELL", description1: "MSFT", orderType: "STP", remainingQuantity: "50", stopPrice: 200 }];
+    const res = await reconcileWaiterPositions(1, new Map([["AAPL", 100]]), {
+      config: ON, db,
+      injectedOrders: [],                                   // first v0 read: deterministic empty book (no network)
+      injectedNakedSequence: [healthyNoStp, healthyNoStp, healthyNoStp],
+      executeLiveSell: (async (a: any) => { sellCalls.push(a); return { success: true, reason: "filled" }; }) as any,
+    });
+    expect(sellCalls.length).toBe(1);                       // a genuinely-naked filled pos IS flattened
+    expect(sellCalls[0].reason).toBe("WAITER_NAKED_FLATTEN");
+    expect(res.flattened).toBe(1);
+  });
+
+  it("BLOCKER-2 PARTIAL fill (ibkrQty < reqQty) → NO executeLiveSell (oversized STP still protects)", async () => {
+    // Broker reports only 40 of the 100 requested filled. The full-size child STP still rests.
+    // Even with a DEFINITIVELY-absent sequence injected, a partial must NOT flatten.
+    const { db, updates } = makeDb([{ ...baseRow }]);
+    const sellCalls: any[] = [];
+    const healthyNoStp = [{ status: "Submitted", side: "SELL", description1: "MSFT", orderType: "STP", remainingQuantity: "50", stopPrice: 200 }];
+    const res = await reconcileWaiterPositions(1, new Map([["AAPL", 40]]), {
+      config: ON, db,
+      injectedNakedSequence: [healthyNoStp, healthyNoStp, healthyNoStp],
+      executeLiveSell: (async (a: any) => { sellCalls.push(a); return { success: true, reason: "filled" }; }) as any,
+    });
+    expect(sellCalls.length).toBe(0);                       // false-positive flatten PREVENTED
+    expect(res.flattened).toBe(0);
+    expect(res.unknown).toBe(1);                            // routed to the UNKNOWN/no-flatten branch
+    expect(updates.some((u) => u.slProtection === "software")).toBe(true);
+  });
+
+  it("VERIFIED (first read finds the resting STP) → NO flatten (healthy)", async () => {
+    const { db } = makeDb([{ ...baseRow }]);
+    const sellCalls: any[] = [];
+    const matchingStp = [{ status: "Submitted", side: "SELL", description1: "AAPL", orderType: "STP", remainingQuantity: "100", stopPrice: 99 }];
+    const res = await reconcileWaiterPositions(1, new Map([["AAPL", 100]]), {
+      config: ON, db,
+      injectedOrders: matchingStp,
+      executeLiveSell: (async (a: any) => { sellCalls.push(a); return { success: true, reason: "x" }; }) as any,
+    });
+    expect(sellCalls.length).toBe(0);
+    expect(res.flattened).toBe(0);
   });
 });

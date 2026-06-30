@@ -1572,6 +1572,14 @@ export async function runWarEngineCycle(
       // no lock and stay byte-identical. flag=0 ⇒ this whole block is skipped (no lock at all).
       let _waiterLockHeld = false;
       const _warLockHolder = `war:${String(c.ticker).toUpperCase()}`;
+      // BLOCKER-1 FIX: the `try {` now begins BEFORE the lock acquire, so the per-candidate
+      // `finally` (which guards `if (_waiterLockHeld) releaseEntrySlot(...)`) also covers the
+      // `await import("./waiterEngine")` and the `db.select(...)` below. Previously those two
+      // awaits sat OUTSIDE the try — if `db.select` threw (DB hiccup / pool exhaustion) the
+      // throw propagated with the shared lock HELD and only `_warRunning` got reset by the
+      // outer finally → `_slotEntryBusy` leaked true forever → global entry deadlock until a
+      // process restart. With the try moved up, EVERY throw path releases the lock.
+      try {
       if ((warLiveConfig as any)?.waiterEnabled === 1 && c.direction === "long" && c.finalScore < 9) {
         if (!tryAcquireEntrySlot(_warLockHolder)) {
           dbLog("info", "SYSTEM", `[Waiter:R1] ⏭ War skip ${c.ticker} retest — entry-slot lock busy (Waiter/other path mid-insert); retry next cycle`);
@@ -1589,9 +1597,6 @@ export async function runWarEngineCycle(
           continue;
         }
       }
-      // The per-candidate `finally` guarantees the shared lock is released on ANY exit of this
-      // iteration (continue / break / throw), so a held `war:<ticker>` lock can never leak.
-      try {
       // ── HTB cooldown: skip names that placed-but-never-filled recently (stop broker spam) ──
       if (isHtbBlocked(c.ticker)) {
         dbLog("info", "SYSTEM", `[HTB] ⏭ skip ${c.ticker} — no-fill cooldown (${htbRemainingMin(c.ticker)}m left)`);
