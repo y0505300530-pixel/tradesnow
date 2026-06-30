@@ -144,6 +144,13 @@ export interface WarEngineScan {
    */
   ema50?: number | null;
   /**
+   * Signed daily % change for the War Room "שינוי יומי %" column. Computed from the
+   * daily bars ALREADY loaded for scoring: (latestClose − prevClose) / prevClose × 100,
+   * rounded to 2dp. Null when prevClose ≤ 0 / <2 bars. DISPLAY-ONLY — never feeds any
+   * gate, sizing or order. No new network fetch (reuses the scan's `bars`).
+   */
+  changePercent?: number | null;
+  /**
    * Phase-0 anti-chase (BUILD-spec F5): the prior-day Donchian-20 high (Math.max of
    * the last-20 daily-bar highs), fixed for the day. The anti-chase gate in the
    * entry-execution loop reads breakLevel = donchian20High × 1.005 from THIS value —
@@ -890,6 +897,19 @@ export async function runWarEngineCycle(
         const zones = detectZones(bars, { trend: wt.direction === "down" ? "down" : "up" });
         zivP1Cache.set(ticker, { wt, zones });
 
+        // ── DISPLAY-ONLY: signed daily % change for the War Room candidates table ──
+        // (latestClose − prevClose) / prevClose × 100 from the daily bars ALREADY
+        // loaded above — NO new fetch. Null when <2 bars or prevClose ≤ 0 (client
+        // renders "—" gracefully). Computed once per ticker, shared by both scans.
+        // Never feeds a gate, sizing or order — purely the "שינוי יומי %" column.
+        const _changePercent: number | null = (() => {
+          if (bars.length < 2) return null;
+          const _latestClose = bars[bars.length - 1].close;
+          const _prevClose   = bars[bars.length - 2].close;
+          if (!(_prevClose > 0) || !Number.isFinite(_latestClose)) return null;
+          return +(((_latestClose - _prevClose) / _prevClose) * 100).toFixed(2);
+        })();
+
         // ── LONG scan ──────────────────────────────────────────────────────
         if (regime.longOk) {
           const ziv     = calcZivEngineScore(bars);
@@ -928,6 +948,8 @@ export async function runWarEngineCycle(
             // THE WAITER: daily EMA-50 (wideLungSL floor reference) carried to the
             // persisted candidate so the Waiter never re-fetches bars to recompute it.
             ema50: Number.isFinite(ziv.ema50) ? ziv.ema50 : null,
+            // DISPLAY-ONLY: signed daily % change for the "שינוי יומי %" column.
+            changePercent: _changePercent,
             // Phase-0 anti-chase (F5): prior-day Donchian-20 high, fixed for the day.
             // breakLevel = donchian20High × 1.005 is read off this in the entry loop.
             // Same Math.max-of-last-20-highs the v45 candidate cache surfaces (_d20High).
@@ -1148,6 +1170,8 @@ export async function runWarEngineCycle(
             action: "SKIP",
             // RC-2: structural-invalidation anchor (support→resistance level retested).
             invalidationLevel: bear.retestLevel ?? null,
+            // DISPLAY-ONLY: signed daily % change for the "שינוי יומי %" column.
+            changePercent: _changePercent,
             // Ziv Phase 1 — surface weekly-state + zone-status for the candidates table.
             weeklyState: wt.structure,
             zoneStatus: evaluateZoneGate(zones, bars[bars.length - 1].close, "short").inZone ? "in" : "out",
@@ -2223,6 +2247,9 @@ export async function runWarEngineCycle(
             // The Waiter ambushes at retestLevel (NOT EMA20×1.005); null ⇒ no Waiter LMT.
             retestLevel: (c as any).invalidationLevel ?? null,
             ema50: (c as any).ema50 ?? null,
+            // DISPLAY-ONLY: signed daily % change ("שינוי יומי %" column). From the
+            // scan's daily bars (no fetch); null ⇒ client renders "—".
+            changePercent: (c as any).changePercent ?? null,
             score: +Number(c.finalScore ?? 0).toFixed(2),
             scoreBreakdown: v45Score, // { base, subTotal, total } — SSOT genesisScore
             // ── Kronos conviction scores (DISPLAY/validation; null = no fresh cache row) ──

@@ -384,6 +384,47 @@ function DistanceToTrigger({ pct }: { pct: number | null }) {
   );
 }
 
+// ── daily % change (TODAY) — sign+number primary, color secondary (WCAG AA) ─────
+// Reads the LIVE-PRICE daily-change off the candidate, tolerating whichever field
+// backhand threads onto the upcomingSignals payload (same source the portfolio uses:
+// the live-price feed's changePercent / DB dailyChangePercent). null ⇒ graceful "—".
+function candidateDailyChangePct(c: WarRoomCandidate): number | null {
+  const a = c as any;
+  return num(
+    a?.changePercent ??
+      a?.dailyChangePercent ??
+      a?.dayChangePct ??
+      a?.dailyChangePct ??
+      a?.changePct ??
+      a?.pctChange ??
+      a?.todayPct ??
+      a?.dayChange,
+  );
+}
+
+function DailyChange({ pct }: { pct: number | null }) {
+  if (pct === null)
+    return (
+      <span className="text-slate-300 text-sm" title="שינוי יומי לא זמין">
+        —
+      </span>
+    );
+  const down = pct < 0;
+  const sign = pct > 0 ? "+" : pct < 0 ? "−" : "";
+  const txt = `${sign}${Math.abs(pct).toFixed(2)}%`;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-0.5 font-mono font-bold tabular-nums text-sm whitespace-nowrap",
+        down ? "text-red-600" : "text-green-700",
+      )}
+      title={down ? "ירידה מאז סגירת אתמול" : "עלייה מאז סגירת אתמול"}
+    >
+      {txt}
+    </span>
+  );
+}
+
 // ── 12h snooze "X" — ≥44px, stopPropagation so it never opens Deep Analysis ─────
 function SnoozeIconButton({ ticker, onSnooze }: { ticker: string; onSnooze: (t: string) => void }) {
   return (
@@ -464,6 +505,7 @@ export function WarRoomCandidatesTable({
                     { h: "מוכנות (N/6)", w: "min-w-[150px]", accent: true },
                     { h: "מוכנות לכניסה (%)", w: "min-w-[160px]" },
                     { h: "מרחק לטריגר", w: "" },
+                    { h: "שינוי יומי %", w: "min-w-[96px]" },
                     { h: "סיבת חסימה", w: "min-w-[120px]" },
                     { h: "ציון", w: "" },
                     { h: "סכום מתוכנן ($)", w: "" },
@@ -525,6 +567,9 @@ export function WarRoomCandidatesTable({
                       </TableCell>
                       <TableCell className="py-3 px-3">
                         <DistanceToTrigger pct={num(c.distanceToTriggerPct)} />
+                      </TableCell>
+                      <TableCell className="py-3 px-3">
+                        <DailyChange pct={candidateDailyChangePct(c)} />
                       </TableCell>
                       <TableCell className="py-3 px-3">
                         {isReady(c) ? (
@@ -627,6 +672,10 @@ export function WarRoomCandidatesTable({
                       <span className="inline-flex items-center gap-1.5">
                         <span className="text-[11px] text-slate-500">לטריגר</span>
                         <DistanceToTrigger pct={num(c.distanceToTriggerPct)} />
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="text-[11px] text-slate-500">יומי</span>
+                        <DailyChange pct={candidateDailyChangePct(c)} />
                       </span>
                       <span className="inline-flex items-center gap-1.5">
                         <span className="text-[11px] text-slate-500">מתוכנן</span>
