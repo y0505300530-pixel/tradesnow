@@ -33,7 +33,7 @@
  * ── §5/§5b MANAGER (ONE tick, not competing loops) ───────────────────────────────
  * While a LMT rests: cancel on falling-knife (5m close < struct stop), setup-invalidation
  * (off the retest list / price < EMA-50), EOD (DAY tif, no overnight ambush); R2 re-quote
- * on EMA-20 drift > 0.5% (cancel+replace, never chase up past anti-chase). On fill: R3
+ * on retest-level drift > 0.5% (cancel+replace, never chase up past anti-chase). On fill: R3
  * bind STP + slot/budget to the ACTUAL filled qty; R4 arm wideLungSL STP → re-read /orders
  * (G1-A) to confirm resting → if not confirmed within N s, FLATTEN + alert (no naked window).
  *
@@ -69,7 +69,26 @@ export const LIVE_ACCOUNT_ID = "U16881054";
 const CONFIRM_HEADERS = { "X-Confirm-Live-Order": "yes" };
 
 // ── Constants (Appendix — pinned, backtestable) ──────────────────────────────────
-export const RETEST_AMBUSH_MULT = 1.005;   // entryLimit = EMA20 × 1.005 (EMA-20 + 0.5%)
+/**
+ * THE RETEST FIX (2026-06-30): the resting LMT ambushes at the STRUCTURAL retest level
+ * (broken resistance now acting as support — Ziv role-reversal / true-retest), NOT at a
+ * moving average. We rest the LMT ABOVE the support so it fills on the BOUNCE off
+ * support, never waiting for a break THROUGH it. RETEST_AMBUSH_ABOVE_PCT = +2% (owner-set)
+ * treats the support as a 2% ZONE above the structural level ("אזורים ולא קווים" — Ziv:
+ * support/resistance are zones, not exact lines), so the LMT fills on a shallower bounce
+ * into the zone (more fills), and the wider entry→stop distance shrinks per-position size
+ * (less concentration). Anti-chase still requires the ambush ≤ live price.
+ */
+export const RETEST_AMBUSH_ABOVE_PCT = 0.02;    // entryLimit = retestLevel × 1.02 (support ZONE — owner-set)
+/**
+ * THE RETEST STOP (risk-critical): the retest is invalidated when price closes back BELOW
+ * the broken-support level (zivEngine.ts:76 — stop belongs JUST BELOW retestLevel). We
+ * anchor the structural stop at retestLevel × (1 − 1%) and then bound it to wideLungSL so
+ * the $-risk can NEVER blow out past the parity cap (we take the TIGHTER / higher of the
+ * two for a long — structural-invalidation first, wideLungSL as the never-wider safety
+ * floor). See computeRetestStop below.
+ */
+export const RETEST_STOP_BELOW_PCT = 0.01;      // structural stop = retestLevel × (1 − 1%)
 export const RETEST_TOP_N = 10;            // top-10 retests get the Waiter
 export const REQUOTE_DRIFT = 0.005;        // R2: re-quote when |freshLimit − resting| / resting > 0.5%
 export const WAITER_ROUTE = "GOLD_RETEST_WAR" as const;
@@ -86,43 +105,87 @@ export function isWaiterEnabled(config: LiveEngineConfig | null | undefined): bo
   return ((config as any)?.waiterEnabled ?? 0) === 1;
 }
 
-// ── PURE: ambush level (§2.1) ─────────────────────────────────────────────────────
+// ── PURE: ambush level (§2.1) — at the STRUCTURAL retest level, NOT a moving average ──
 /**
- * computeAmbushLimit — the resting LMT price = EMA20 × RETEST_AMBUSH_MULT, rounded to a
- * cent. FAIL-CLOSED: a non-positive/non-finite EMA-20 returns 0 (the caller skips — never
- * price a resting order off garbage). Anti-chase: the ambush must be AT/BELOW the live
- * price (a retest buys a pullback to support; it never rests ABOVE market chasing up).
+ * computeAmbushLimit — THE RETEST FIX. The resting LMT price = retestLevel × (1 +
+ * RETEST_AMBUSH_ABOVE_PCT), rounded to a cent. `retestLevel` is the broken-resistance-
+ * now-support level the Ziv engine already computed (zivEngine retestLevel = True-Retest
+ * priorBreakoutLevel, else Role-Reversal level). We rest a HAIR ABOVE it so the order
+ * fills on the bounce off support (a precise touch), NOT at EMA20 (a moving average that
+ * is a DIFFERENT price from the structural support).
+ *
+ * FAIL-CLOSED: a null/non-positive retestLevel returns 0 → the caller SKIPS the candidate
+ * (no Waiter LMT; NEVER falls back to EMA20). Anti-chase: the ambush must be AT/BELOW the
+ * live price (a retest buys a pullback to support; it never rests ABOVE market chasing up)
+ * — if the level sits at/above live, price has not yet pulled back, so we skip. Penny guard.
  */
-export function computeAmbushLimit(ema20: number, livePrice: number): { limit: number; reason: string } {
-  if (!Number.isFinite(ema20) || ema20 <= 0) return { limit: 0, reason: "bad EMA-20" };
+export function computeAmbushLimit(retestLevel: number | null | undefined, livePrice: number): { limit: number; reason: string } {
+  if (!Number.isFinite(retestLevel as number) || !((retestLevel as number) > 0)) return { limit: 0, reason: "no retestLevel (skip — no EMA20 fallback)" };
   if (!Number.isFinite(livePrice) || livePrice <= 0) return { limit: 0, reason: "no live price" };
-  const raw = +(ema20 * RETEST_AMBUSH_MULT).toFixed(2);
+  const lvl = retestLevel as number;
+  const raw = +(lvl * (1 + RETEST_AMBUSH_ABOVE_PCT)).toFixed(2);
   if (!(raw > 0)) return { limit: 0, reason: "ambush ≤ 0" };
-  // Anti-chase: never rest a buy ABOVE the live price (that would chase, not ambush).
-  if (raw >= livePrice) return { limit: 0, reason: `ambush $${raw.toFixed(2)} ≥ live $${livePrice.toFixed(2)} (not a pullback)` };
+  // Anti-chase: never rest a buy ABOVE the live price (that would chase, not ambush a pullback).
+  if (raw >= livePrice) return { limit: 0, reason: `ambush $${raw.toFixed(2)} ≥ live $${livePrice.toFixed(2)} (price not yet pulled back to support)` };
   // Penny guard: never rest a sub-$2 order.
   if (raw < 2) return { limit: 0, reason: `ambush $${raw.toFixed(2)} < $2 penny guard` };
-  return { limit: raw, reason: `ambush $${raw.toFixed(2)} (EMA20 $${ema20.toFixed(2)} × ${RETEST_AMBUSH_MULT})` };
+  return { limit: raw, reason: `ambush $${raw.toFixed(2)} (retest support $${lvl.toFixed(2)} × ${(1 + RETEST_AMBUSH_ABOVE_PCT)})` };
 }
 
-// ── PURE: "near its entry zone" (§2 — price approaching EMA-20 from above, uptrend) ──
+// ── PURE: structural retest stop (just below the broken-support level) ──────────────
 /**
- * isNearRetestZone — the retest qualifies for an ambush only when price is approaching
- * EMA-20 FROM ABOVE in a confirmed uptrend: live > EMA20 (above support) AND live > EMA50
- * (uptrend not invalidated) AND within a sane band of EMA20 (not so far above the ambush
- * would never fill this session). FAIL-CLOSED on bad inputs.
+ * computeRetestStop — RISK-CRITICAL. The retest is invalidated when price closes back
+ * below the broken-support level (zivEngine.ts:76 — the stop belongs JUST BELOW
+ * retestLevel). We anchor the structural stop at retestLevel × (1 − RETEST_STOP_BELOW_PCT)
+ * and then bound it by wideLungSL(entry, ema50, "long") so the $-risk can NEVER blow out
+ * past the parity cap: for a long we take the HIGHER (tighter) of the two stops, so the
+ * structural-invalidation stop applies when it is tighter than wideLungSL, and wideLungSL
+ * is the never-wider safety floor when the structural level sits far below entry. Returns
+ * 0 (caller skips) on any non-positive/non-finite input or if the bound throws — never
+ * pair a live retest order with a garbage stop (never-naked-SL relies on this being sane).
+ */
+export function computeRetestStop(args: {
+  retestLevel: number | null | undefined; entry: number; ema50: number;
+}): { stop: number; reason: string } {
+  const { retestLevel, entry, ema50 } = args;
+  if (!Number.isFinite(retestLevel as number) || !((retestLevel as number) > 0)) return { stop: 0, reason: "no retestLevel" };
+  if (!Number.isFinite(entry) || entry <= 0) return { stop: 0, reason: "bad entry" };
+  const structStop = +((retestLevel as number) * (1 - RETEST_STOP_BELOW_PCT)).toFixed(2);
+  let lungStop: number;
+  try { lungStop = +wideLungSL(entry, ema50, "long").toFixed(2); } catch { return { stop: 0, reason: "wideLungSL threw" }; }
+  // Long: HIGHER stop = TIGHTER (smaller $-risk). Take the tighter of structural vs lung,
+  // but never above entry (a stop ≥ entry would invert risk → fail-closed skip).
+  const stop = Math.max(structStop, lungStop);
+  if (!(stop > 0) || stop >= entry) return { stop: 0, reason: `stop $${stop.toFixed(2)} ≥ entry $${entry.toFixed(2)} (invalid)` };
+  const which = structStop >= lungStop ? "structural (below retest support)" : "wideLungSL floor";
+  return { stop, reason: `stop $${stop.toFixed(2)} = ${which} [struct $${structStop.toFixed(2)}, lung $${lungStop.toFixed(2)}]` };
+}
+
+// ── PURE: "near its retest zone" (§2 — price approaching the support from above, uptrend) ──
+/**
+ * isNearRetestZone — THE RETEST FIX. The ambush qualifies only when price is approaching
+ * the STRUCTURAL retest level (broken-support) FROM ABOVE in a confirmed uptrend:
+ *   • live > retestLevel  (still above the support — a pullback TO it, not a break through)
+ *   • live > EMA50        (uptrend not invalidated — the macro long context still holds)
+ *   • within a sane band of retestLevel (≤8% above — else the pullback is too far off and
+ *     the resting LMT would never fill this session).
+ * FAIL-CLOSED on bad inputs / null retestLevel (no ambush). EMA20 is no longer consulted —
+ * the qualifying reference is the structural support the price is returning to.
  */
 export function isNearRetestZone(args: {
-  livePrice: number; ema20: number; ema50: number; maxAboveZonePct?: number;
+  livePrice: number; retestLevel: number | null | undefined; ema50: number; maxAboveZonePct?: number;
 }): { near: boolean; reason: string } {
-  const { livePrice, ema20, ema50 } = args;
-  const maxAbove = args.maxAboveZonePct ?? 0.08; // ≤8% above EMA20 — else the pullback is far off
-  if (!(livePrice > 0) || !(ema20 > 0) || !(ema50 > 0)) return { near: false, reason: "bad inputs" };
+  const { livePrice, retestLevel, ema50 } = args;
+  const maxAbove = args.maxAboveZonePct ?? 0.08; // ≤8% above the support — else the pullback is far off
+  if (!(livePrice > 0) || !Number.isFinite(retestLevel as number) || !((retestLevel as number) > 0) || !(ema50 > 0)) {
+    return { near: false, reason: "bad inputs / no retestLevel" };
+  }
+  const lvl = retestLevel as number;
   if (!(livePrice > ema50)) return { near: false, reason: `price < EMA50 — uptrend invalid` };
-  if (!(livePrice > ema20)) return { near: false, reason: `price below EMA20 — not approaching from above` };
-  const abovePct = (livePrice - ema20) / ema20;
-  if (abovePct > maxAbove) return { near: false, reason: `${(abovePct * 100).toFixed(1)}% above EMA20 — pullback too far` };
-  return { near: true, reason: `${(abovePct * 100).toFixed(1)}% above EMA20 (uptrend)` };
+  if (!(livePrice > lvl)) return { near: false, reason: `price below retest support $${lvl.toFixed(2)} — broke through, not approaching from above` };
+  const abovePct = (livePrice - lvl) / lvl;
+  if (abovePct > maxAbove) return { near: false, reason: `${(abovePct * 100).toFixed(1)}% above support — pullback too far` };
+  return { near: true, reason: `${(abovePct * 100).toFixed(1)}% above retest support $${lvl.toFixed(2)} (uptrend)` };
 }
 
 // ── PURE: §4 slot guard ─────────────────────────────────────────────────────────
@@ -178,11 +241,38 @@ export function subCapAllows(args: {
   return { allowed: true, capUsd: cap, reason: `sleeve $${Math.round(after)} ≤ $${Math.round(cap)}` };
 }
 
+/**
+ * capSharesToMaxPosition — the AUTHORITATIVE per-ticker notional cap (§3b), mirroring
+ * liveOrderExecutor.ts:1337-1359. The Waiter transmits via placeRestingBracket (NOT
+ * tryLiveEntry), so the executor's maxPositionUsd cap NEVER applied to a resting LMT.
+ * A tight retest stop (perShareRisk ≈ 3%) lets vixRiskSize produce a single position
+ * ≈34% of NLV; the 30% sleeve only bounds pure-tight cases, leaving a breach window for
+ * NLV>~$166k. This clamps the ACTUALLY-transmitted qty so existing + new ≤ maxPositionUsd.
+ *
+ * existingTickerUsd = Σ|units| (same-ticker open/pending_entry rows) × entry; the floor on
+ * the divisor mirrors the executor's $2 penny-guard. cappedShares < 1 ⇒ caller skips.
+ */
+export function capSharesToMaxPosition(args: {
+  sizedShares: number; entry: number; existingTickerUnits: number; maxPositionUsd: number;
+}): { cappedShares: number; cappedNotional: number; remainingUsd: number; existingUsd: number; clamped: boolean } {
+  const maxPosUsd = Number(args.maxPositionUsd) > 0 ? Number(args.maxPositionUsd) : 50000;
+  const entry = Number(args.entry) || 0;
+  const existingUsd = Math.abs(Number(args.existingTickerUnits) || 0) * entry;
+  const remainingUsd = Math.max(0, maxPosUsd - existingUsd);
+  const cappedShares = Math.min(
+    Math.max(0, Math.floor(Number(args.sizedShares) || 0)),
+    Math.floor(remainingUsd / Math.max(entry, 2)),
+  );
+  const cappedNotional = +(cappedShares * entry).toFixed(2);
+  return { cappedShares, cappedNotional, remainingUsd, existingUsd, clamped: cappedShares < (Number(args.sizedShares) || 0) };
+}
+
 // ── PURE: R2 re-quote drift ────────────────────────────────────────────────────────
 /**
- * shouldRequote — R2: a morning LMT at EMA20×1.005 goes stale by midday. Re-quote when
- * |freshLimit − restingLimit| / restingLimit > REQUOTE_DRIFT. Anti-chase: NEVER re-quote
- * UPWARD past the live price (that would chase the level up). FAIL-CLOSED on bad inputs.
+ * shouldRequote — R2: re-quote when the resting LMT's anchor moves. The anchor is now the
+ * STRUCTURAL retest level (republished by the war cycle), so a re-quote fires only when
+ * that level shifts: |freshLimit − restingLimit| / restingLimit > REQUOTE_DRIFT. Anti-chase:
+ * NEVER re-quote UPWARD past the live price (that would chase the level up). FAIL-CLOSED.
  */
 export function shouldRequote(args: {
   restingLimit: number; freshLimit: number; livePrice: number;
@@ -345,7 +435,14 @@ async function placeRestingBracket(args: {
 }
 
 // ── Load the top-N retest candidates from war_upcoming_signals ─────────────────────
-interface RetestCandidate { ticker: string; score: number; }
+/**
+ * RetestCandidate — now carries the STRUCTURAL retest level (broken-support the LMT rests
+ * at) + ema50 (the wideLungSL stop floor), threaded from the war cycle's persisted item
+ * (warEngine: retestLevel = ziv.retestLevel via invalidationLevel; ema50 = ziv.ema50).
+ * A null retestLevel means the war cycle had no structural retest for that name → the
+ * Waiter MUST skip it (no EMA20 fallback).
+ */
+interface RetestCandidate { ticker: string; score: number; retestLevel: number | null; ema50: number | null; }
 async function loadRetestCandidates(
   db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
 ): Promise<RetestCandidate[]> {
@@ -357,7 +454,12 @@ async function loadRetestCandidates(
     const items: any[] = Array.isArray(parsed?.items) ? parsed.items : [];
     return items
       .filter((it) => String(it.route ?? "").toUpperCase() === WAITER_ROUTE)
-      .map((it) => ({ ticker: String(it.ticker ?? "").toUpperCase(), score: Number(it.score ?? 0) }))
+      .map((it) => ({
+        ticker: String(it.ticker ?? "").toUpperCase(),
+        score: Number(it.score ?? 0),
+        retestLevel: Number.isFinite(Number(it.retestLevel)) && Number(it.retestLevel) > 0 ? Number(it.retestLevel) : null,
+        ema50: Number.isFinite(Number(it.ema50)) && Number(it.ema50) > 0 ? Number(it.ema50) : null,
+      }))
       .filter((it) => it.ticker)
       .sort((a, b) => b.score - a.score)
       .slice(0, RETEST_TOP_N);
@@ -439,24 +541,42 @@ async function placeNewRestingLimits(
   for (const cand of candidates) {
     const sym = cand.ticker;
 
+    // THE RETEST FIX: a candidate with NO structural retest level gets NO Waiter LMT.
+    // (warEngine only sets retestLevel when the Ziv setup IS a true-retest/role-reversal.)
+    if (!(Number(cand.retestLevel) > 0)) {
+      dbLog("info", "SYSTEM", `[Waiter] ${sym} no structural retestLevel — skip (no EMA20 fallback)`);
+      continue;
+    }
+
     // Broker-truth live price (never price a live order off stale EOD).
     const lp = priceMap.get(sym) ?? null;
     const live = lp && lp.source === "ibkr" ? Number(lp.price ?? 0) : 0;
     if (!(live > 0)) continue;
 
-    // EMA-20 / EMA-50 — the retest support + uptrend gate.
-    const emas = await ema20And50(sym);
-    if (!emas) continue;
-    const zone = isNearRetestZone({ livePrice: live, ema20: emas.ema20, ema50: emas.ema50 });
+    // EMA-50 — the wideLungSL stop floor. Prefer the threaded ema50 (computed in the war
+    // cycle from the SAME bars that produced retestLevel); fall back to a fresh fetch only
+    // if the war cycle didn't carry it (older persisted payloads). retestLevel is NEVER
+    // recomputed here — it is the structural truth from the war cycle.
+    let ema50 = Number(cand.ema50) > 0 ? Number(cand.ema50) : 0;
+    if (!(ema50 > 0)) {
+      const emas = await ema20And50(sym);
+      if (!emas) continue;
+      ema50 = emas.ema50;
+    }
+
+    // Qualify on proximity to the STRUCTURAL retest support (approaching from above, uptrend).
+    const zone = isNearRetestZone({ livePrice: live, retestLevel: cand.retestLevel, ema50 });
     if (!zone.near) continue;
 
-    const ambush = computeAmbushLimit(emas.ema20, live);
+    // Rest the LMT at the structural support (a touch above it — buy the bounce).
+    const ambush = computeAmbushLimit(cand.retestLevel, live);
     if (!(ambush.limit > 0)) continue;
 
-    // Structural stop off the ambush level — the SAME wideLungSL the broker order is paired
-    // with (parity). FAIL-CLOSED if it throws (never rest a garbage stop).
-    let stop: number;
-    try { stop = wideLungSL(ambush.limit, emas.ema50, "long"); } catch { continue; }
+    // Structural stop JUST BELOW the retest support (invalidation), bounded by wideLungSL
+    // (parity safety floor). FAIL-CLOSED — never rest a garbage stop (never-naked-SL).
+    const stopRes = computeRetestStop({ retestLevel: cand.retestLevel, entry: ambush.limit, ema50 });
+    if (!(stopRes.stop > 0)) { dbLog("info", "SYSTEM", `[Waiter] ${sym} bad retest stop — ${stopRes.reason}`); continue; }
+    const stop = stopRes.stop;
 
     // 1%-risk sizing — IDENTICAL to Elza (vixRiskSize off the ambush entry + wideLungSL stop).
     const sized = vixRiskSize({ nlv, entry: ambush.limit, stop, vix });
@@ -499,10 +619,35 @@ async function placeNewRestingLimits(
         continue;
       }
 
+      // ── AUTHORITATIVE PER-TICKER NOTIONAL CAP (2026-06-30 concentration fix) ─────
+      // The Waiter transmits via placeRestingBracket (NOT tryLiveEntry), so the
+      // maxPositionUsd cap in liveOrderExecutor.ts:1337-1359 NEVER applied. Mirror that
+      // cap here, on the qty ACTUALLY transmitted, computed INSIDE the entrySlotLock
+      // against the SAME fresh same-ticker exposure (`rows`, re-read at ~L570) and the
+      // SAME final qty that goes to placeRestingBracket — never the pre-lock sized.shares.
+      const maxPosUsd = Number((config as any)?.maxPositionUsd ?? 50000);
+      const existingTickerUnits = (rows as any[])
+        .filter((r) => String(r.ticker).toUpperCase() === sym)
+        .reduce((s, r) => s + Math.abs(Number(r.units) || 0), 0);
+      const cap = capSharesToMaxPosition({
+        sizedShares: sized.shares, entry: ambush.limit, existingTickerUnits, maxPositionUsd: maxPosUsd,
+      });
+      const cappedShares = cap.cappedShares;
+      // The notional ACTUALLY transmitted (and reserved) — recomputed from the capped qty
+      // so the DB insert, the bracket qty and the BP reserve all agree.
+      const cappedNotional = cap.cappedNotional;
+      if (cappedShares < 1) {
+        dbLog("info", "SYSTEM", `[Waiter] ${sym} maxPositionUsd cap — no headroom (existing $${Math.round(cap.existingUsd)} ≥ max $${Math.round(maxPosUsd)})`);
+        continue; // entrySlotLock released by the finally — no leak (R1 discipline)
+      }
+      if (cap.clamped) {
+        dbLog("info", "SYSTEM", `[Waiter] ${sym} maxPositionUsd cap — qty ${sized.shares}→${cappedShares} (notional $${Math.round(thisNotional)}→$${Math.round(cappedNotional)}, max $${Math.round(maxPosUsd)})`);
+      }
+
       const conid = await resolveConid(sym);
       if (!conid) { dbLog("info", "SYSTEM", `[Waiter] ${sym} no conid — skip`); continue; }
 
-      waiterLog("WAITER_ARM", sym, `${zone.reason}; ${ambush.reason}; stop $${stop.toFixed(2)}; qty ${sized.shares}`);
+      waiterLog("WAITER_ARM", sym, `${zone.reason}; ${ambush.reason}; stop $${stop.toFixed(2)}; qty ${cappedShares}`);
 
       // Reserve the slot FIRST (pending_entry row) so a crash mid-order cannot over-broadcast.
       const ts = new Date();
@@ -510,10 +655,10 @@ async function placeNewRestingLimits(
         userId,
         ticker: sym,
         direction: "long",
-        units: sized.shares,
-        requestedQty: sized.shares,
+        units: cappedShares,
+        requestedQty: cappedShares,
         entryPrice: ambush.limit,
-        allocatedCapital: thisNotional,
+        allocatedCapital: cappedNotional,
         currentSl: +stop.toFixed(2),
         currentTp: 0,
         initialSl: +stop.toFixed(2),
@@ -522,14 +667,18 @@ async function placeNewRestingLimits(
         signal: WAITER_SIGNAL,
         isWaiterEntry: 1,
         countsTowardSlot: 1,
-        waiterEmaAtPlace: +emas.ema20.toFixed(4),
+        // THE RETEST FIX: this column now records the STRUCTURAL retest level the LMT
+        // rests at (broken-support), NOT EMA-20. It is the re-quote drift basis (R2) and
+        // the audit anchor for where the ambush sat.
+        waiterEmaAtPlace: +Number(cand.retestLevel).toFixed(4),
         waiterStage: "RESTING",
         openedAt: ts,
       } as any);
       const newId = Number((inserted as any)?.insertId ?? 0) || null;
 
       // Place the resting LMT bracket (entry LMT + child STP), DAY tif.
-      const placed = await placeRestingBracket({ ticker: sym, conid, qty: sized.shares, entryLimit: ambush.limit, stop });
+      // Transmitted qty == capped qty == DB insert qty (the maxPositionUsd-bounded qty).
+      const placed = await placeRestingBracket({ ticker: sym, conid, qty: cappedShares, entryLimit: ambush.limit, stop });
       if (!placed.ok) {
         // Roll back the slot reservation — no resting order exists.
         if (newId) await db.update(livePositions)
@@ -540,13 +689,14 @@ async function placeNewRestingLimits(
       }
 
       // Reserve the shared optimistic-BP ledger on TRANSMIT (§3 — the moment it's sent).
-      reserveOptimisticBP(thisNotional);
+      // Use the CAPPED notional (the qty actually transmitted), not the pre-cap notional.
+      reserveOptimisticBP(cappedNotional);
       if (newId && placed.orderId) {
         await db.update(livePositions)
           .set({ ibkrEntryOrderId: placed.orderId } as any)
           .where(eq(livePositions.id, newId));
       }
-      waiterLog("WAITER_LMT_PLACED", sym, `LMT $${ambush.limit.toFixed(2)} qty ${sized.shares} notional $${Math.round(thisNotional)} (sleeve ${sub.reason})`);
+      waiterLog("WAITER_LMT_PLACED", sym, `LMT $${ambush.limit.toFixed(2)} qty ${cappedShares} notional $${Math.round(cappedNotional)} (sleeve ${sub.reason})`);
     } finally {
       releaseEntrySlot(`waiter:${sym}`);
     }
@@ -570,6 +720,9 @@ async function manageWaiterBook(
   const nearClose = isNearRtxClose();
   const liveList = await loadRetestCandidates(db);
   const onList = new Set(liveList.map((c) => c.ticker));
+  // THE RETEST FIX: index the live retest level + ema50 per name (the war cycle's
+  // structural truth) so re-quote/invalidation read the SAME anchor the place path used.
+  const candBySym = new Map(liveList.map((c) => [c.ticker, c]));
 
   let priceMap: Map<string, any>;
   try {
@@ -592,14 +745,23 @@ async function manageWaiterBook(
 
     const lp = priceMap.get(sym) ?? null;
     const live = lp && lp.source === "ibkr" ? Number(lp.price ?? 0) : 0;
-    const emas = await ema20And50(sym);
-    if (!emas || !(live > 0)) continue;          // no broker truth → leave resting (fail-closed)
+    if (!(live > 0)) continue;                    // no broker truth → leave resting (fail-closed)
+
+    // EMA-50 for the uptrend-invalidation cancel: prefer the live candidate's threaded
+    // ema50, else a fresh fetch (fail-closed if neither available).
+    const liveCand = candBySym.get(sym) ?? null;
+    let ema50 = Number(liveCand?.ema50) > 0 ? Number(liveCand!.ema50) : 0;
+    if (!(ema50 > 0)) {
+      const emas = await ema20And50(sym);
+      if (!emas) continue;
+      ema50 = emas.ema50;
+    }
 
     // Falling-knife / setup-invalidation cancel.
     const c5m = await last5mClose(sym);
     const cancel = shouldCancelRest({
       ticker: sym, structStop: Number(row.initialSl) || 0, last5mClose: c5m,
-      livePrice: live, ema50: emas.ema50, stillOnRetestList: onList.has(sym),
+      livePrice: live, ema50, stillOnRetestList: onList.has(sym),
     });
     if (cancel.cancel) {
       if (orderId) await cancelRestingOrder(orderId);
@@ -608,9 +770,12 @@ async function manageWaiterBook(
       continue;
     }
 
-    // R2 re-quote on EMA-20 drift > 0.5% (cancel + replace, never chase up).
+    // R2 re-quote: the resting LMT anchor is the STRUCTURAL retest level (fixed by the
+    // war cycle), NOT EMA-20. Re-quote only when the war cycle republishes a DIFFERENT
+    // retest level for this name (>0.5% drift) — a moving structural support — and never
+    // chase up past live. A stable structural level ⇒ no re-quote (the LMT just waits).
     const restingLimit = Number(row.entryPrice) || 0;
-    const fresh = computeAmbushLimit(emas.ema20, live);
+    const fresh = computeAmbushLimit(liveCand?.retestLevel ?? null, live);
     if (fresh.limit > 0 && restingLimit > 0) {
       const rq = shouldRequote({ restingLimit, freshLimit: fresh.limit, livePrice: live });
       if (rq.requote) {
@@ -625,7 +790,7 @@ async function manageWaiterBook(
         continue;
       }
     }
-    // else: leave it resting (waiting for the pullback).
+    // else: leave it resting (waiting for the pullback to support).
   }
 }
 

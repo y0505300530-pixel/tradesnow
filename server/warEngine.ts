@@ -137,6 +137,13 @@ export interface WarEngineScan {
    */
   invalidationLevel?: number | null;
   /**
+   * THE WAITER (retest resting-LMT): the daily EMA-50 at scan, surfaced so the
+   * persisted `war_upcoming_signals` item carries the structural-stop reference
+   * (wideLungSL floor) WITHOUT the Waiter re-fetching/re-computing it. Null when
+   * unavailable. DISPLAY/Waiter-only — never feeds the war gate or sizing here.
+   */
+  ema50?: number | null;
+  /**
    * Phase-0 anti-chase (BUILD-spec F5): the prior-day Donchian-20 high (Math.max of
    * the last-20 daily-bar highs), fixed for the day. The anti-chase gate in the
    * entry-execution loop reads breakLevel = donchian20High × 1.005 from THIS value —
@@ -918,6 +925,9 @@ export async function runWarEngineCycle(
             action: "SKIP",
             // RC-2: structural-invalidation anchor (resistance→support level retested).
             invalidationLevel: ziv.retestLevel ?? null,
+            // THE WAITER: daily EMA-50 (wideLungSL floor reference) carried to the
+            // persisted candidate so the Waiter never re-fetches bars to recompute it.
+            ema50: Number.isFinite(ziv.ema50) ? ziv.ema50 : null,
             // Phase-0 anti-chase (F5): prior-day Donchian-20 high, fixed for the day.
             // breakLevel = donchian20High × 1.005 is read off this in the entry loop.
             // Same Math.max-of-last-20-highs the v45 candidate cache surfaces (_d20High).
@@ -2207,6 +2217,12 @@ export async function runWarEngineCycle(
             // Phase-0 armed-watcher (F3): prior-day Donchian-20 high, persisted so the
             // watcher reads breakLevel = donchian20High × 1.005 with NO new bars fetch.
             donchian20High: c.donchian20High ?? null,
+            // THE WAITER (retest resting-LMT): the STRUCTURAL retest level (broken
+            // resistance now acting as support — True Retest priorBreakoutLevel, else
+            // Role-Reversal level) the resting LMT rests at, + the EMA-50 stop floor.
+            // The Waiter ambushes at retestLevel (NOT EMA20×1.005); null ⇒ no Waiter LMT.
+            retestLevel: (c as any).invalidationLevel ?? null,
+            ema50: (c as any).ema50 ?? null,
             score: +Number(c.finalScore ?? 0).toFixed(2),
             scoreBreakdown: v45Score, // { base, subTotal, total } — SSOT genesisScore
             // ── Kronos conviction scores (DISPLAY/validation; null = no fresh cache row) ──

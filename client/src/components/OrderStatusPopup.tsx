@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle2, XCircle, Clock, Edit3, Trash2, AlertTriangle, Info, ExternalLink, Shield } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Clock, Edit3, Trash2, AlertTriangle, Info, ExternalLink, Shield, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Z } from "@/lib/zIndex";
@@ -234,7 +234,14 @@ export function OrderStatusPopup({
   const isStalled = phase === "stalled";
   const isTerminal = isTerminalPhase(phase);
   const inFlight = phase === "submitting" || phase === "pending" || phase === "partial" || phase === "syncing";
-  const blockDismissWhileTracking = trackPositionClose && !exitDone && inFlight && immediateStatus !== "failed";
+  // Soft hint only: while still tracking a position-close fill we *prefer* the user
+  // waits, but this NEVER blocks dismissal. Protection-sync ("מסנכרן הגנה") runs in
+  // the background — the order is already at IBKR, so the UI must never trap.
+  const stillTracking = trackPositionClose && !exitDone && inFlight && immediateStatus !== "failed";
+
+  // Single source of truth for "how did this close" — used by every dismiss path.
+  const dismissOutcome = (): "stalled" | "terminal" | "dismissed" =>
+    isStalled ? "stalled" : isTerminal ? "terminal" : "dismissed";
 
   useEffect(() => {
     if (!open || immediateStatus || isStalled || isTerminal) return;
@@ -314,27 +321,33 @@ export function OrderStatusPopup({
 
   return (
     <Dialog open={open} onOpenChange={(v) => {
-      if (!v) {
-        if (phase === "stalled") { handlePopupClose("stalled"); return; }
-        if (blockDismissWhileTracking) return;
-        handlePopupClose(isTerminal ? "terminal" : "dismissed");
-      }
+      // ALWAYS-FUNCTIONAL dismiss: Escape, backdrop, and the Radix close path all
+      // route here. Never `return` early — the user must be able to leave at any
+      // phase, including a hung "מסנכרן הגנה" / "ממתין" sync state.
+      if (!v) handlePopupClose(dismissOutcome());
     }}>
       <DialogContent
         className="sm:max-w-md"
         style={{ zIndex: Z.orderEvent }}
-        onPointerDownOutside={(e) => {
-          if (phase === "stalled") return;
-          if (blockDismissWhileTracking) e.preventDefault();
-        }}
+        // Backdrop click + Escape are never prevented — dismissal is unconditional.
+        showCloseButton={false}
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg">
+          <DialogTitle className="flex items-center gap-2 text-lg pr-9">
             {statusIcon}
             <span className="text-[13px] sm:text-lg font-semibold">
               {intentLabel ? `${intentLabel} — ` : "ניהול אירוע — "}{ticker}
             </span>
           </DialogTitle>
+          {/* Always-rendered, never-disabled force close. ≥44px touch target, WCAG-AA. */}
+          <button
+            type="button"
+            aria-label="סגור חלון"
+            onClick={() => handlePopupClose(dismissOutcome())}
+            className="absolute top-2.5 left-2.5 flex h-11 w-11 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 active:bg-slate-200"
+          >
+            <X className="h-5 w-5" strokeWidth={2.5} />
+          </button>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
@@ -526,12 +539,15 @@ export function OrderStatusPopup({
           )}
           {phase !== "stalled" && (
             <Button
-              variant={blockDismissWhileTracking ? "ghost" : "default"}
+              variant="default"
               className="min-h-[44px] text-[11px] sm:text-sm"
-              onClick={() => handlePopupClose(isTerminal ? "terminal" : "dismissed")}
-              disabled={blockDismissWhileTracking}
+              onClick={() => handlePopupClose(dismissOutcome())}
             >
-              {exitDone || phase === "complete" ? "סיום" : trackPositionClose && inFlight ? "ממתין..." : "סגור"}
+              {exitDone || phase === "complete"
+                ? "סיום"
+                : stillTracking
+                  ? "סגור (הסנכרון ימשיך ברקע)"
+                  : "סגור"}
             </Button>
           )}
         </DialogFooter>

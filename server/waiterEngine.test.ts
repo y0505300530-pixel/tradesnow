@@ -17,17 +17,20 @@ import { join } from "path";
 import {
   isWaiterEnabled,
   computeAmbushLimit,
+  computeRetestStop,
   isNearRetestZone,
   freeRetestSlots,
   retestSleeveUsed,
   subCapAllows,
+  capSharesToMaxPosition,
   shouldRequote,
   shouldCancelRest,
   waiterHoldsRetest,
   classifyVerifyReason,
   confirmStpAbsentForFlatten,
   reconcileWaiterPositions,
-  RETEST_AMBUSH_MULT,
+  RETEST_AMBUSH_ABOVE_PCT,
+  RETEST_STOP_BELOW_PCT,
   RETEST_TOP_N,
   REQUOTE_DRIFT,
 } from "./waiterEngine";
@@ -75,34 +78,63 @@ describe("Waiter INERT invariant (flag=0 ⇒ byte-identical)", () => {
   });
 });
 
-// ── (1) §2 ambush level + zone (anti-chase, penny guard, uptrend) ──────────────────
-describe("Waiter §2 ambush level + zone", () => {
-  it("ambush = EMA20 × 1.005, must be BELOW live price (a pullback, not a chase)", () => {
-    expect(RETEST_AMBUSH_MULT).toBe(1.005);
-    // live above EMA20 → ambush sits below live = valid
+// ── (1) §2 ambush level + zone — at the STRUCTURAL retest level (anti-chase, penny, uptrend) ──
+describe("Waiter §2 ambush level + zone (retestLevel-based, NOT EMA20)", () => {
+  it("ambush = retestLevel × (1 + 2%) — into the support ZONE, BELOW live (buy the bounce)", () => {
+    expect(RETEST_AMBUSH_ABOVE_PCT).toBe(0.02);
+    // retest support 100 → ambush 102.00 (×1.02); live 103 above → valid pullback ambush
     const r = computeAmbushLimit(100, 103);
-    expect(r.limit).toBeCloseTo(100.5, 2);
+    expect(r.limit).toBeCloseTo(102.00, 2);
   });
 
-  it("REJECTS an ambush at/above the live price (anti-chase)", () => {
-    // EMA20=100 → ambush 100.5; live 100.2 → ambush ≥ live → reject
-    expect(computeAmbushLimit(100, 100.2).limit).toBe(0);
+  it("REJECTS a null/absent retestLevel — NO EMA20 fallback (caller skips)", () => {
+    expect(computeAmbushLimit(null, 103).limit).toBe(0);
+    expect(computeAmbushLimit(undefined, 103).limit).toBe(0);
+    expect(computeAmbushLimit(0, 103).limit).toBe(0);
   });
 
-  it("REJECTS a sub-$2 ambush (penny guard) and bad EMA", () => {
+  it("REJECTS an ambush at/above the live price (anti-chase — price not yet pulled back)", () => {
+    // retest 100 → ambush 102.00; live 100.1 → ambush ≥ live → reject
+    expect(computeAmbushLimit(100, 100.1).limit).toBe(0);
+  });
+
+  it("REJECTS a sub-$2 ambush (penny guard)", () => {
     expect(computeAmbushLimit(1.5, 10).limit).toBe(0);
-    expect(computeAmbushLimit(0, 100).limit).toBe(0);
-    expect(computeAmbushLimit(NaN, 100).limit).toBe(0);
   });
 
-  it("zone requires price > EMA20 > and price > EMA50 (uptrend), within band", () => {
-    expect(isNearRetestZone({ livePrice: 102, ema20: 100, ema50: 95 }).near).toBe(true);
+  it("zone requires price > retestLevel AND price > EMA50 (uptrend), within band", () => {
+    expect(isNearRetestZone({ livePrice: 102, retestLevel: 100, ema50: 95 }).near).toBe(true);
     // below EMA50 → uptrend invalid
-    expect(isNearRetestZone({ livePrice: 94, ema20: 100, ema50: 95 }).near).toBe(false);
-    // below EMA20 (not approaching from above)
-    expect(isNearRetestZone({ livePrice: 99, ema20: 100, ema50: 95 }).near).toBe(false);
-    // too far above EMA20 (>8%)
-    expect(isNearRetestZone({ livePrice: 110, ema20: 100, ema50: 95 }).near).toBe(false);
+    expect(isNearRetestZone({ livePrice: 94, retestLevel: 100, ema50: 95 }).near).toBe(false);
+    // below the retest support (broke through, not approaching from above)
+    expect(isNearRetestZone({ livePrice: 99, retestLevel: 100, ema50: 95 }).near).toBe(false);
+    // too far above support (>8%)
+    expect(isNearRetestZone({ livePrice: 110, retestLevel: 100, ema50: 95 }).near).toBe(false);
+    // null retestLevel → fail-closed
+    expect(isNearRetestZone({ livePrice: 102, retestLevel: null, ema50: 95 }).near).toBe(false);
+  });
+});
+
+// ── (1b) §2 structural retest stop (just below support, bounded by wideLungSL) ─────
+describe("Waiter §2 structural retest stop", () => {
+  it("anchors stop at retestLevel × (1 − 1%) when that is TIGHTER than wideLungSL", () => {
+    expect(RETEST_STOP_BELOW_PCT).toBe(0.01);
+    // retest support 100 → struct stop 99.0. entry 100.25, ema50 90 →
+    // wideLungSL = max(100.25×0.92=92.23, 90×0.99=89.1) = 92.23. struct 99 > 92.23 → take struct.
+    const r = computeRetestStop({ retestLevel: 100, entry: 100.25, ema50: 90 });
+    expect(r.stop).toBeCloseTo(99.0, 2);
+  });
+  it("falls back to the wideLungSL floor when the structural stop would be far below entry", () => {
+    // retest support 100 → struct 99.0; but ema50 99.5 → wideLungSL = max(entry×0.92, 99.5×0.99=98.5)
+    // entry 100.25 → 92.23 vs 98.5 → 98.5; struct 99 > 98.5 → still struct (tighter). Use a case
+    // where wideLungSL is HIGHER (tighter): ema50 100.2 → lung = max(92.23, 100.2×0.99=99.2)=99.2 > struct 99.
+    const r = computeRetestStop({ retestLevel: 100, entry: 100.25, ema50: 100.2 });
+    expect(r.stop).toBeCloseTo(99.2, 1);
+  });
+  it("fail-closed on null retestLevel or a stop that would be ≥ entry", () => {
+    expect(computeRetestStop({ retestLevel: null, entry: 100, ema50: 95 }).stop).toBe(0);
+    // retestLevel above entry → struct stop ≈ entry → invalid
+    expect(computeRetestStop({ retestLevel: 200, entry: 100, ema50: 95 }).stop).toBe(0);
   });
 });
 
@@ -144,6 +176,91 @@ describe("Waiter §3 30% sub-cap", () => {
       { isWaiterEntry: 1, status: "closed", allocatedCapital: 4000 },  // closed — excluded
     ];
     expect(retestSleeveUsed(rows)).toBe(12_000);
+  });
+});
+
+// ── (3b) §3b per-ticker maxPositionUsd cap (the PANW $142k concentration BLOCKER) ───
+//    The Waiter transmits via placeRestingBracket (NOT tryLiveEntry) so the executor's
+//    cap never applied. capSharesToMaxPosition mirrors liveOrderExecutor.ts:1337-1359 on
+//    the qty ACTUALLY transmitted. The cappedShares feed BOTH the DB insert AND the bracket.
+describe("Waiter §3b per-ticker maxPositionUsd cap (concentration BLOCKER)", () => {
+  it("CLAMP: a tight-stop retest at high NLV where sized.shares breaches the cap ⇒ notional ≤ maxPositionUsd", () => {
+    // Reproduce the bug window: high NLV + tight retest stop (perShareRisk ≈ 3%).
+    // entry = retestLevel × 1.02, structStop = retestLevel × 0.99 → perShareRisk ≈ 3.03 on $100 level.
+    const retestLevel = 100, nlv = 200_000, vix = 18;
+    const entry = computeAmbushLimit(retestLevel, 103).limit;     // 102.00
+    const stop = computeRetestStop({ retestLevel, entry, ema50: 95 }).stop; // 99.00 (struct, tighter)
+    const sized = vixRiskSize({ nlv, entry, stop, vix });
+    // Uncapped 1%-risk sizing at $200k NLV with ~3% per-share risk ⇒ notional far over $50k.
+    expect(sized.shares * entry).toBeGreaterThan(50_000);
+    const cap = capSharesToMaxPosition({
+      sizedShares: sized.shares, entry, existingTickerUnits: 0, maxPositionUsd: 50_000,
+    });
+    expect(cap.clamped).toBe(true);
+    expect(cap.cappedShares).toBeLessThan(sized.shares);
+    expect(cap.cappedShares).toBeGreaterThanOrEqual(1);
+    // The TRANSMITTED notional (cappedShares × entry) must not breach the cap.
+    expect(cap.cappedNotional).toBeLessThanOrEqual(50_000);
+    expect(cap.cappedShares * entry).toBeLessThanOrEqual(50_000);
+    // cappedNotional is exactly cappedShares × entry — the insert/bracket/BP-reserve basis.
+    expect(cap.cappedNotional).toBeCloseTo(cap.cappedShares * entry, 2);
+  });
+
+  it("SKIP: existingTickerUsd ≥ maxPositionUsd ⇒ cappedShares < 1 (no LMT — caller releases lock & continues)", () => {
+    // Already holding 600 sh @ $102 ≈ $61.2k ≥ $50k cap ⇒ zero headroom.
+    const cap = capSharesToMaxPosition({
+      sizedShares: 400, entry: 102, existingTickerUnits: 600, maxPositionUsd: 50_000,
+    });
+    expect(cap.cappedShares).toBeLessThan(1);
+    expect(cap.cappedNotional).toBe(0);
+    expect(cap.remainingUsd).toBe(0);
+  });
+
+  it("PASS-THROUGH: when sized.shares already fits, qty & notional are unchanged (no clamp)", () => {
+    const cap = capSharesToMaxPosition({
+      sizedShares: 100, entry: 102, existingTickerUnits: 0, maxPositionUsd: 50_000,
+    });
+    expect(cap.clamped).toBe(false);
+    expect(cap.cappedShares).toBe(100);
+    expect(cap.cappedNotional).toBeCloseTo(10_200, 2);
+  });
+
+  it("EXISTING exposure shrinks headroom (existing + new ≤ maxPositionUsd, NOT just new)", () => {
+    // 200 sh @ $100 = $20k existing; cap $50k ⇒ $30k headroom ⇒ ≤ 300 sh @ $100.
+    const cap = capSharesToMaxPosition({
+      sizedShares: 1000, entry: 100, existingTickerUnits: 200, maxPositionUsd: 50_000,
+    });
+    expect(cap.existingUsd).toBe(20_000);
+    expect(cap.remainingUsd).toBe(30_000);
+    expect(cap.cappedShares).toBe(300);
+    expect(cap.existingUsd + cap.cappedNotional).toBeLessThanOrEqual(50_000);
+  });
+
+  it("$2 penny-floor on the divisor (parity with executor) — never sizes off a sub-$2 price", () => {
+    // entry $1 would explode shares/$ without the floor; divisor clamps to $2.
+    const cap = capSharesToMaxPosition({
+      sizedShares: 1_000_000, entry: 1, existingTickerUnits: 0, maxPositionUsd: 50_000,
+    });
+    expect(cap.cappedShares).toBe(Math.floor(50_000 / 2));
+  });
+
+  it("INERT — the cap reads config.maxPositionUsd at the place site (default 50000), gated behind flag=0", () => {
+    const src = readFileSync(join(__dirname, "waiterEngine.ts"), "utf8");
+    // The cap is computed inside placeNewRestingLimits, INSIDE the entrySlotLock, on `rows`.
+    const fn = src.slice(src.indexOf("async function placeNewRestingLimits"));
+    const lockIdx = fn.indexOf("tryAcquireEntrySlot(`waiter:${sym}`)");
+    const capIdx = fn.indexOf("capSharesToMaxPosition({");
+    const insertIdx = fn.indexOf("await db.insert(livePositions)");
+    const bracketIdx = fn.indexOf("placeRestingBracket({ ticker: sym, conid, qty: cappedShares");
+    expect(lockIdx).toBeGreaterThan(-1);
+    expect(capIdx).toBeGreaterThan(lockIdx);     // cap is INSIDE the lock (atomic exposure)
+    expect(capIdx).toBeLessThan(insertIdx);      // cap precedes the slot-reserve insert
+    expect(bracketIdx).toBeGreaterThan(-1);      // transmitted qty == cappedShares
+    // Insert uses cappedShares for BOTH units and requestedQty (insert qty == transmit qty).
+    expect(fn).toContain("units: cappedShares");
+    expect(fn).toContain("requestedQty: cappedShares");
+    // BP reserve uses the CAPPED notional, not the pre-cap thisNotional.
+    expect(fn).toContain("reserveOptimisticBP(cappedNotional)");
   });
 });
 
@@ -273,13 +390,17 @@ describe("Waiter R2 re-quote on EMA drift", () => {
 });
 
 // ── (7) PARITY — sizing reuses vixRiskSize (1%-risk) + wideLungSL (unchanged) ──────
-describe("Waiter parity (risk stays 1%, stop stays wideLungSL)", () => {
-  it("ambush + wideLungSL + vixRiskSize compose to a 1%-risk floored qty", () => {
-    const ema20 = 100, ema50 = 98, nlv = 100_000, vix = 18;
-    const ambush = computeAmbushLimit(ema20, 103);          // 100.5
-    expect(ambush.limit).toBeCloseTo(100.5, 2);
-    const stop = wideLungSL(ambush.limit, ema50, "long");   // SAME stop math as Elza
-    const sized = vixRiskSize({ nlv, entry: ambush.limit, stop, vix });
+describe("Waiter parity (risk stays 1%, stop stays wideLungSL-bounded)", () => {
+  it("retest ambush + structural-stop (wideLungSL-bounded) + vixRiskSize → 1%-risk floored qty", () => {
+    const retestLevel = 100, ema50 = 98, nlv = 100_000, vix = 18;
+    const ambush = computeAmbushLimit(retestLevel, 103);     // 102.00 (retest × 1.02)
+    expect(ambush.limit).toBeCloseTo(102.00, 2);
+    // structural stop just below support, bounded by wideLungSL (never wider than parity).
+    const stopRes = computeRetestStop({ retestLevel, entry: ambush.limit, ema50 });
+    expect(stopRes.stop).toBeGreaterThan(0);
+    // wideLungSL is the never-wider floor: the chosen stop must be ≥ wideLungSL (tighter $-risk).
+    expect(stopRes.stop).toBeGreaterThanOrEqual(wideLungSL(ambush.limit, ema50, "long"));
+    const sized = vixRiskSize({ nlv, entry: ambush.limit, stop: stopRes.stop, vix });
     expect(sized.skip).toBe(false);
     // riskDollars = NLV × 0.01 × vixMult(1.0 @ vix≤25) = $1,000; qty = floor(1000 / perShareRisk)
     expect(sized.riskDollars).toBeCloseTo(1000, 2);
