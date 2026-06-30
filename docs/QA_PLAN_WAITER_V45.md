@@ -246,4 +246,34 @@ ssh root@143.198.141.131 'cd /root/tradesnow && ./deploy-tradesnow.sh --inert-ch
 - **טסטים env-תלויים** (IBIND/SUPADATA/HMAC) נכשלים מקומית, עוברים על השרת. צריך `skipIf(!env)` כדי ש-G0 ירוץ נקי מקומית (בתיקון).
 
 ## עדכון מצב-Waiter (קריטי לחוקה)
-The Waiter **מפורק (`waiterEnabled=0`)** מאז 2026-06-30 ערב, אחרי תיקון רמת-ה-retest (אורב ב-`retestLevel×1.02` = פריצה→תמיכה, לא EMA20). **G2 + G3 + הסבב הנוכחי חייבים להיות ירוקים לפני arm.** ה-flag הוא owner-only.
+The Waiter **מפורק (`waiterEnabled=0`)** מאז 2026-06-30 ערב. אחרי שתי איטרציות (retestLevel×1.02 → evaluateRetestV2 → **WAITER-ZIV-SSOT**, branch `feat/waiter-ziv-ssot`), הגייט מיושר כעת לזיו (`detectTrueRetest`/GAP_02, שער אחד כמו War). **G2 + G3 + הסבב הנוכחי חייבים להיות ירוקים לפני arm.** ה-flag הוא owner-only.
+
+---
+---
+
+# נספח B — פרוטוקול G2-INTRADAY (owner-ratified, 2026-06-30 night)
+
+**מסקנה מחייבת:** **G2 על נרות-יומיים אינו תקף ל-Waiter.** ה-Waiter הוא **מנגנון intraday** — המגע ±2% ב-`retestLevel` קורה *תוך-יום* (המחיר נוגע וקופץ), בעוד הסגירה היומית מורחבת. backtest יומי בודק eligibility על ה-close אבל ממלא על ה-low → **לעולם ~0 fills, גם כשהקוד נכון.** (הוכח: WAITER-ZIV-SSOT, 9 tier-hits → 0 placed, נפלו על distPct>2% בסגירה.) **0-fill יומי ≠ "קוד שבור" — זו רזולוציה לא-מתאימה.**
+
+## G2-INTRADAY — סדר חובה (לא "בנה הכל")
+
+**שלב א — תיקון funnel (יום אחד, sanity קודם):**
+- הוסף מונים מפורשים ל-`waiterBacktest.ts`: `distPctBlocked`, `ambushNull`, `belowFloor`, `fomoBlocked`. **אסור להשאיר "7 עברו אבל 0 placed" בלי שם.**
+- **בדיקת-אות יומית (לא G2):** ARM כש-`bar.low` נוגע ב-`retestLevel × 1.0075` (מגע תוך-יום), FOMO על ה-close. לא מחליף 5m — אבל מראה אם יש **אות** לפני שבונים harness כבד.
+
+**שלב ב — backtest 5m ממוקד (ה-G2 האמיתי):**
+- 30 יום NYSE בלבד (לא 8.5 חודשים).
+- **רק** הטיקרים שיצאו "Gold Retest" ב-funnel (9–15, לא כל היקום) — מונע rate-limit/ימי-ריצה.
+- מקור: `intradayMarketData` (5m קיים — Yahoo, ~55 יום ל-chunk).
+
+**שלב ג — קריטריון GO:** `placed > 0` על 30 יום. `AvgR ≥ 0` — רצוי, לא חוסם.
+
+**שלב ד — רק אז:** shadow יום אחד (לוג `WAITER_ARM`/`SKIP distPct` **בלי IBKR**) → `maxRetestSlots=2` arm → ניתוח fills → scale או NO-GO.
+
+## Fallback (אם 5m חסום > 48 שעות)
+**#2 בזהירות בלבד:** `maxRetestSlots=2` **קשיח**, shadow/2-slots + צפייה, **אפס scale**. עדיין דורש סימן-חיים (shadow logs) לפני פקודות אמת.
+
+## קו אדום
+> **אין arm חי לפני `placed > 0` ב-harness (5m או shadow).** arm בלי 5m = הוכחה על כסף במקום ב-harness — **בדיוק מה שהחוקה אוסרת.** daily backtest = sanity בלבד, **לא** G2.
+
+ראה [[DR_WAITER_ZIV_SSOT]].
