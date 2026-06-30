@@ -43,6 +43,7 @@ import { placeMarketableLmtClose } from "./liveMarketOrder";
 import { getUserAssets, getDb } from "./db";
 import { getKronosAddonFromRow, loadKronosConvictionCache, mapKronosAddon, type TradeDir } from "./kronosConvictionJob";
 import { isHtbBlocked, htbRemainingMin, markHtb } from "./htbBlocklist";
+import { tryAcquireEntrySlot, releaseEntrySlot } from "./entrySlotLock";
 // ── Elza v4.5 Golden-DNA SSOT (validated backtest brain). scoreLong is the SAME
 // pure scorer the validated backtest drives (parity pinned by
 // server/elzaV45ParityProof.test.ts). Used ONLY on the flag=1 entry path. ──
@@ -301,7 +302,7 @@ export function antiChaseBlocks(livePrice: number, donchian20High: number, watch
   if (!watcherOn) return false;
   if (!(donchian20High > 0) || !(livePrice > 0)) return false;
   const breakLevel = donchian20High * 1.005;
-  return livePrice > breakLevel * 1.025;
+  return livePrice > breakLevel * 1.035;  // owner 2026-06-30: anti-chase 2.5%→3.5%
 }
 
 /** Per-name hard COUNT caps for the concurrent book. */
@@ -1550,6 +1551,47 @@ export async function runWarEngineCycle(
       // ELZA 2.0 — refresh-candidates (scan-only): re-score + persist the forecast,
       // but place NO live orders. The autonomous cycle still handles real entries.
       if (opts?.scanOnly) break;
+      // ── R1 cross-pipeline lock (THE WAITER mutual-exclusion) — INERT at waiterEnabled=0 ──
+      // The slow War cycle ALSO enters GOLD_RETEST_WAR names (market buy). The SAME ticker
+      // could get a Waiter resting LMT AND a War market buy → double-fill / over-size. When
+      // the Waiter holds an armed/resting (pending_entry) or open LMT on this ticker, the War
+      // cycle MUST skip its retest entry. One ticker, one pipeline. The flag is read FIRST —
+      // flag=0 ⇒ no Waiter rows exist and this is a no-op (byte-identical).
+      //
+      // CROSS-PIPELINE LOCK (R1 gap-close): the Waiter holds the SHARED `entrySlotLock` only
+      // around its atomic reserve + pending_entry INSERT (waiterEngine §4). Previously the War
+      // cycle read `waiterHoldsRetest` WITHOUT that lock — a same-cycle TOCTOU between this
+      // dup-check and the Waiter's insert was possible (only uq_open_ticker saved it at the DB).
+      // We now acquire the SAME shared lock (`war:<ticker>`) BEFORE the read and HOLD it through
+      // this candidate's retest `tryLiveEntry` transmit, so the Waiter insert and War dup-check
+      // are genuinely serialized under one lock. If the lock is already held (the Waiter — or
+      // another entry path — is mid-insert THIS instant), we skip this candidate's retest tick
+      // and retry next cadence (the contention IS the serialization). The lock is released in
+      // the per-candidate `finally` below, on EVERY exit (continue / break / throw). Long-retest
+      // route only (finalScore<9) — breakouts/shorts never collide with the Waiter, so they take
+      // no lock and stay byte-identical. flag=0 ⇒ this whole block is skipped (no lock at all).
+      let _waiterLockHeld = false;
+      const _warLockHolder = `war:${String(c.ticker).toUpperCase()}`;
+      if ((warLiveConfig as any)?.waiterEnabled === 1 && c.direction === "long" && c.finalScore < 9) {
+        if (!tryAcquireEntrySlot(_warLockHolder)) {
+          dbLog("info", "SYSTEM", `[Waiter:R1] ⏭ War skip ${c.ticker} retest — entry-slot lock busy (Waiter/other path mid-insert); retry next cycle`);
+          continue;
+        }
+        _waiterLockHeld = true;
+        const { waiterHoldsRetest } = await import("./waiterEngine");
+        const _waiterRows = await db.select({ ticker: livePositions.ticker, isWaiterEntry: livePositions.isWaiterEntry, status: livePositions.status })
+          .from(livePositions)
+          .where(and(eq(livePositions.userId, userId), inArray(livePositions.status, ["open", "pending_entry"] as any)));
+        if (waiterHoldsRetest(c.ticker, _waiterRows as any)) {
+          dbLog("info", "SYSTEM", `[Waiter:R1] ⏭ War skip ${c.ticker} retest — Waiter holds an armed/resting LMT (one ticker, one pipeline)`);
+          releaseEntrySlot(_warLockHolder);
+          _waiterLockHeld = false;
+          continue;
+        }
+      }
+      // The per-candidate `finally` guarantees the shared lock is released on ANY exit of this
+      // iteration (continue / break / throw), so a held `war:<ticker>` lock can never leak.
+      try {
       // ── HTB cooldown: skip names that placed-but-never-filled recently (stop broker spam) ──
       if (isHtbBlocked(c.ticker)) {
         dbLog("info", "SYSTEM", `[HTB] ⏭ skip ${c.ticker} — no-fill cooldown (${htbRemainingMin(c.ticker)}m left)`);
@@ -2007,6 +2049,12 @@ export async function runWarEngineCycle(
       } catch (e) {
         dbLog("warn", "SYSTEM", `[WarEngine] Entry error ${c.ticker}: ${String(e).slice(0,80)}`);
       }
+      } finally {
+        // R1 cross-pipeline lock: release the shared entry-slot lock on EVERY exit of this
+        // candidate iteration (normal fall-through, continue, break, or thrown error). Only
+        // ever held on the long-retest path at waiterEnabled=1 → no-op (byte-identical) at flag=0.
+        if (_waiterLockHeld) releaseEntrySlot(_warLockHolder);
+      }
     }
 
     // ── Cycle end summary ─────────────────────────────────────────────────────
@@ -2076,7 +2124,7 @@ export async function runWarEngineCycle(
         .filter(s => s.finalScore >= 6)
         .sort((a, b) => b.finalScore - a.finalScore),
       { heldLong: heldLongForPreview, heldShort: heldShortForPreview },
-    ).slice(0, 10);
+    ).slice(0, 20);   // owner 2026-06-30: candidate list 10→20
 
     // ── War Room v4.5 DISPLAY: LONG-ONLY candidates list ──────────────────────────
     // The War Room candidates table shows LONG candidates only. SHORTs are removed

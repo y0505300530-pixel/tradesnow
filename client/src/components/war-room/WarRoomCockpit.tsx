@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { toastMutationError } from "@/lib/mutationErrors";
-import { Gauge, Zap, Moon, ShieldAlert, Loader2, Wallet, AlertTriangle } from "lucide-react";
+import { Gauge, Zap, Moon, ShieldAlert, Loader2, Wallet, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // War Room — "Cyborg Mode" leverage cockpit. ONE source of truth for both dials.
@@ -73,6 +73,56 @@ function readWallet(data: any) {
     buyingPower: num(s?.buyingPower),
     availableFunds: num(s?.availableFunds),
   };
+}
+
+// Read Daily P&L — SAME source the metrics ribbon reads (summary.dailyPnlUsd /
+// summary.dailyPnlPct). Both optional-chained so the cell renders "—" pre-data.
+function readDailyPnl(data: any) {
+  const s = data?.summary ?? {};
+  const num = (...vals: any[]) => {
+    for (const v of vals) {
+      const n = Number(v);
+      if (v != null && !isNaN(n) && isFinite(n)) return n;
+    }
+    return null;
+  };
+  return {
+    usd: num(s?.dailyPnlUsd, s?.pnl?.daily, s?.dailyPnl),
+    pct: num(s?.dailyPnlPct, s?.dailyPct),
+  };
+}
+
+// Read holdings $$ summary — total gross deployed (long + |short|) and per-holding
+// average. Prefers summary.totalHolding (IBKR SSOT, same as the ribbon footer); falls
+// back to long+short USD, then to summing |position value|. Count from positions[].
+function readHoldingsSummary(data: any) {
+  const s = data?.summary ?? {};
+  const lev = s?.leverage ?? {};
+  const lg = s?.liveGross ?? {};
+  const num = (...vals: any[]) => {
+    for (const v of vals) {
+      const n = Number(v);
+      if (v != null && !isNaN(n) && isFinite(n)) return n;
+    }
+    return null;
+  };
+  const positions: any[] = Array.isArray(data?.positions) ? data.positions : [];
+  const longUsd = num(lev.longUsd, lg.longUsd);
+  const shortUsd = num(lev.shortUsd, lg.shortUsd);
+  const fromLongShort =
+    longUsd != null || shortUsd != null
+      ? (longUsd ?? 0) + Math.abs(shortUsd ?? 0)
+      : null;
+  const fromPositions = positions.length
+    ? positions.reduce((acc, p) => {
+        const v = Number(p?.value);
+        return acc + (v != null && !isNaN(v) && isFinite(v) ? Math.abs(v) : 0);
+      }, 0)
+    : null;
+  const total = num(s?.totalHolding, s?.liveGross?.grossUsd, fromLongShort, fromPositions);
+  const count = num(s?.openCount, positions.length || null);
+  const avg = total != null && count != null && count > 0 ? total / count : null;
+  return { total, count, avg };
 }
 
 // Read gross/long/short/net/nlv. Preferred source is the backend's purpose-built
@@ -335,58 +385,93 @@ function TrimToOvernightButton({ data, overnight }: { data: any; overnight: numb
     }
   };
 
+  // SUBTLE ghost button — auto-width, red-600 text on a thin red-300 outline.
+  // Safety UNCHANGED: 2-tap arm→confirm, 3s auto-disarm, isPending guard. ≥44px tall.
   return (
-    <div className="flex flex-col">
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={isPending}
-        aria-label={`Trim to ${targetLabel} overnight — press twice to confirm`}
-        className={cn(
-          "flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border-2 px-4 py-3",
-          "text-sm font-black uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2",
-          isPending
-            ? "cursor-wait border-red-700 bg-red-700 text-white"
-            : armed
-              ? "animate-pulse border-red-800 bg-red-700 text-white focus-visible:ring-red-400"
-              : "border-red-600 bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400",
-        )}
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            <span>TRIMMING…</span>
-          </>
-        ) : armed ? (
-          <>
-            <ShieldAlert className="h-4 w-4" aria-hidden="true" />
-            <span>TRIM TO {targetLabel} — TAP AGAIN TO CONFIRM</span>
-          </>
-        ) : (
-          <>
-            <ShieldAlert className="h-4 w-4" aria-hidden="true" />
-            <span>TRIM TO {targetLabel} (OVERNIGHT)</span>
-          </>
-        )}
-      </button>
-      <p className="mt-1 text-center text-[11px] leading-snug text-slate-500">
-        {armed ? (
-          <span className="font-semibold text-red-700">
-            Confirm within 3s — flattens weakest-first to {targetLabel}. Places REAL sell orders.
-          </span>
-        ) : alreadySafe ? (
-          <span>Already ≤{targetLabel} — overnight-safe.</span>
-        ) : (
-          <span>Flattens weakest-first down to {targetLabel} overnight cap. Two-tap guarded.</span>
-        )}
-      </p>
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={isPending}
+      aria-label={`Trim to ${targetLabel} overnight — press twice to confirm`}
+      title={
+        armed
+          ? `Confirm within 3s — flattens weakest-first to ${targetLabel}. Places REAL sell orders.`
+          : alreadySafe
+            ? `Already ≤${targetLabel} — overnight-safe.`
+            : `Flattens weakest-first to ${targetLabel} overnight cap. Two-tap guarded.`
+      }
+      className={cn(
+        "inline-flex min-h-[44px] max-w-fit items-center justify-center gap-1.5 rounded-lg border px-3 py-2",
+        "text-[11px] font-semibold transition-colors focus:outline-none focus-visible:ring-2",
+        isPending
+          ? "cursor-wait border-red-300 bg-red-50 text-red-600"
+          : armed
+            ? "border-red-400 bg-red-50 text-red-700 focus-visible:ring-red-300"
+            : "border-red-300 bg-transparent text-red-600 hover:bg-red-50 focus-visible:ring-red-300",
+      )}
+    >
+      {isPending ? (
+        <>
+          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+          <span>Trimming…</span>
+        </>
+      ) : armed ? (
+        <>
+          <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
+          <span>Tap again to confirm — to {targetLabel}</span>
+        </>
+      ) : (
+        <>
+          <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
+          <span>Trim to {targetLabel} (overnight)</span>
+        </>
+      )}
+    </button>
+  );
+}
+
+// ── Daily P&L — cockpit top-LEFT cell. Big color-coded $ + % beneath. ────────
+// Same source as the metrics ribbon (summary.dailyPnlUsd / dailyPnlPct). Color is
+// reinforced with a trend icon + sign so meaning is never color-alone (WCAG).
+function DailyPnlPanel({ data, isLoading }: { data: any; isLoading: boolean }) {
+  const { usd, pct } = readDailyPnl(data);
+  const up = (usd ?? 0) >= 0;
+  const tone = usd == null ? "text-slate-300" : up ? "text-green-700" : "text-red-600";
+  const TrendIcon = up ? TrendingUp : TrendingDown;
+  return (
+    <div
+      dir="rtl"
+      className="flex flex-col rounded-xl border-2 border-slate-200 bg-white px-4 py-3"
+    >
+      <div className="flex items-center gap-1.5">
+        <TrendIcon className={cn("h-4 w-4 shrink-0", usd == null ? "text-slate-400" : tone)} aria-hidden="true" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
+          P&amp;L יומי
+        </span>
+      </div>
+
+      <div className="mt-1 flex flex-col">
+        <span className={cn("font-mono text-4xl font-black leading-none tabular-nums", tone)}>
+          {isLoading && usd == null ? (
+            <span className="inline-block h-9 w-28 animate-pulse rounded bg-slate-200" />
+          ) : (
+            <>
+              {usd != null && up ? "+" : ""}
+              {fmtUsd(usd)}
+            </>
+          )}
+        </span>
+        <span className={cn("mt-1 font-mono text-sm font-semibold tabular-nums", tone)}>
+          {pct == null ? "—" : `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`}
+        </span>
+      </div>
     </div>
   );
 }
 
 // ── Live Wallet readout — money state that "hits the eye" ────────────────────
-// NLV (שווי תיק) + Available Margin / buying power (כוח קנייה זמין). Big mono $.
-// availableFunds shown as a secondary line only when present.
+// NLV (שווי תיק) + cash (מזומן זמין) + buying power (כוח קנייה זמין, moved in from
+// the old middle cell). Big mono $. Secondary lines optional-chained → hidden pre-data.
 function LiveWalletPanel({ data, isLoading }: { data: any; isLoading: boolean }) {
   const { nlv, buyingPower, availableFunds } = readWallet(data);
   const skel = (w: string) => (
@@ -404,24 +489,11 @@ function LiveWalletPanel({ data, isLoading }: { data: any; isLoading: boolean })
         </span>
       </div>
 
-      <div className="mt-2 grid grid-cols-2 gap-3">
-        <div className="flex flex-col">
-          <span className="text-[11px] font-semibold text-slate-500">שווי תיק</span>
-          <span className="font-mono text-2xl font-black leading-tight tabular-nums text-slate-800">
-            {isLoading && nlv == null ? skel("w-20") : fmtUsd(nlv)}
-          </span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[11px] font-semibold text-slate-500">כוח קנייה זמין</span>
-          <span
-            className={cn(
-              "font-mono text-2xl font-black leading-tight tabular-nums",
-              buyingPower == null ? "text-slate-300" : "text-green-700",
-            )}
-          >
-            {isLoading && buyingPower == null ? skel("w-20") : fmtUsd(buyingPower)}
-          </span>
-        </div>
+      <div className="mt-2 flex flex-col">
+        <span className="text-[11px] font-semibold text-slate-500">שווי תיק</span>
+        <span className="font-mono text-2xl font-black leading-tight tabular-nums text-slate-800">
+          {isLoading && nlv == null ? skel("w-20") : fmtUsd(nlv)}
+        </span>
       </div>
 
       {availableFunds != null && (
@@ -430,6 +502,60 @@ function LiveWalletPanel({ data, isLoading }: { data: any; isLoading: boolean })
           <b className="text-slate-700">{fmtUsd(availableFunds)}</b>
         </div>
       )}
+
+      {/* Buying power — promoted out of its own cell into the wallet. Green = available
+          firepower. Optional-chained → hidden pre-data so nothing is lost. */}
+      {buyingPower != null && (
+        <div className="mt-1.5 flex items-center justify-between border-t border-slate-100 pt-1.5 font-mono text-[11px] text-slate-500">
+          <span>כוח קנייה זמין</span>
+          <b className="text-green-700">{fmtUsd(buyingPower)}</b>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Holdings SUMMARY cell — cockpit top-MIDDLE. Σ-footer style, promoted prominent. ──
+// Total holdings value BIG + secondary "{N} פוזיציות · ממוצע $X". Same reader the
+// wallet footer used (readHoldingsSummary). All optional-chained → "—" pre-data.
+function HoldingsSummaryPanel({ data, isLoading }: { data: any; isLoading: boolean }) {
+  const { total, count, avg } = readHoldingsSummary(data);
+  return (
+    <div
+      dir="rtl"
+      className="flex flex-col rounded-xl border-2 border-slate-200 bg-white px-4 py-3"
+    >
+      <div className="flex items-center gap-1.5">
+        <span className="shrink-0 font-mono text-base font-black leading-none text-slate-500" aria-hidden="true">Σ</span>
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
+          Σ החזקות
+        </span>
+      </div>
+
+      <div className="mt-1 flex flex-col">
+        <span
+          className={cn(
+            "font-mono text-4xl font-black leading-none tabular-nums",
+            total == null ? "text-slate-300" : "text-slate-800",
+          )}
+        >
+          {isLoading && total == null ? (
+            <span className="inline-block h-9 w-28 animate-pulse rounded bg-slate-200" />
+          ) : (
+            fmtUsd(total)
+          )}
+        </span>
+        <span className="mt-1 font-mono text-[11px] font-semibold tabular-nums text-slate-500">
+          {count == null ? (
+            "—"
+          ) : (
+            <>
+              {count} פוזיציות
+              {avg != null && <span className="text-slate-400"> · ממוצע {fmtUsd(avg)}</span>}
+            </>
+          )}
+        </span>
+      </div>
     </div>
   );
 }
@@ -455,23 +581,18 @@ function OverAllocationBanner({ data }: { data: any }) {
 
   if (!(plannedSum > buyingPower)) return null;
 
+  // SUBTLE chip — no pulse, no gradient, no border-2. Quiet muted-amber.
   return (
-    <div
+    <span
       dir="rtl"
-      role="alert"
-      className="mb-3 flex animate-pulse items-start gap-2 rounded-xl border-2 border-red-600 bg-gradient-to-l from-red-100 to-amber-100 px-4 py-3"
+      role="status"
+      className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-700"
     >
-      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-700" aria-hidden="true" />
-      <div className="flex flex-col">
-        <span className="text-[13px] font-black uppercase tracking-wide text-red-700">
-          ⚠ OVER-ALLOCATION RISK
-        </span>
-        <span className="mt-0.5 text-[11px] font-semibold leading-snug text-red-800">
-          {fmtUsd(plannedSum)} מתוכנן מול {fmtUsd(buyingPower)} זמין · חלק מהפריצות עלולות
-          להידחות מחוסר תקציב
-        </span>
-      </div>
-    </div>
+      <AlertTriangle className="h-3 w-3 shrink-0 text-amber-500" aria-hidden="true" />
+      <span>
+        over-allocation · {fmtUsd(plannedSum)} מתוכנן מול {fmtUsd(buyingPower)} זמין
+      </span>
+    </span>
   );
 }
 
@@ -496,11 +617,11 @@ export function WarRoomCockpit({
       dir="ltr"
       className="border-b border-slate-200 bg-slate-50/70 px-3 py-3 sm:px-6"
     >
-      {/* OVER-ALLOCATION RISK — top of cockpit, above all dials. Self-hides unless real. */}
-      <OverAllocationBanner data={data} />
-
-      {/* Money state first: NLV + buying power so live liquidity hits the eye. */}
-      <div className="mb-3">
+      {/* Money state first — TOP ROW left→right: P&L יומי · Σ החזקות · LIVE WALLET.
+          375px: single-column stack (Daily P&L → holdings summary → wallet). */}
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <DailyPnlPanel data={data} isLoading={isLoading} />
+        <HoldingsSummaryPanel data={data} isLoading={isLoading} />
         <LiveWalletPanel data={data} isLoading={isLoading} />
       </div>
 
@@ -544,9 +665,13 @@ export function WarRoomCockpit({
           />
         </div>
       </div>
-      {/* TRIM is destructive → full-width, red, guarded, reachable in a hurry. */}
-      <div className="mt-3">
-        <TrimToOvernightButton data={data} overnight={overnightTarget} />
+      {/* Quiet, secondary footer: over-alloc chip (self-hides) + subtle Trim button.
+          Wraps on 375px; over-alloc on the left, Trim on the right. */}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <OverAllocationBanner data={data} />
+        <div className="ml-auto">
+          <TrimToOvernightButton data={data} overnight={overnightTarget} />
+        </div>
       </div>
     </section>
   );

@@ -20,13 +20,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, BellOff, CheckCircle2, ChevronLeft, Radar, ShieldAlert } from "lucide-react";
+import { AlertTriangle, BellOff, CheckCircle2, ChevronLeft, CornerDownLeft, Radar, Rocket, ShieldAlert } from "lucide-react";
+
+// Authoritative live watcher map + open-position tickers come from getStatus():
+//   data.summary.watcherStatus  →  Record<ticker, "ARMED"|"CROSSED"|"HELD_5M"|"BLOCKED"|...>
+//   data.positions              →  open/pending positions (ticker carries step 6 "נכנס")
+// Both optional — the meter degrades to the per-row `watcherStatus` + live-price/status
+// derivation when they're absent, so it always shows *something* pre-watcher-data.
+export type WatcherStatusMap = Record<string, string | null | undefined> | undefined | null;
 
 // ── v4.5 candidate contract (LONG-only) ───────────────────────────────────────
 export type WarRoomCandidate = {
   ticker: string;
   route?: string | null;
   tier?: string | null;
+  /** Short signal label from the contract: "Breakout" | "Retest" (optional). */
+  signal?: string | null;
   /** v4.5 score object — may degrade to a bare number from the legacy contract. */
   score?: { base?: number; subTotal?: number; total?: number } | number | null;
   /** Signed % distance to trigger. Negative = below trigger, ≥0 = at/above. */
@@ -60,6 +69,16 @@ export type WarRoomCandidatesTableProps = {
   onSnooze?: (ticker: string) => void;
   /** Header right-side slot (refresh / run buttons / freshness pill). */
   headerExtra?: React.ReactNode;
+  /**
+   * Authoritative live watcher map from getStatus(): { [ticker]: "ARMED"|"CROSSED"|… }.
+   * Optional — the readiness meter falls back to each row's own `watcherStatus`.
+   */
+  watcherStatusMap?: WatcherStatusMap;
+  /**
+   * Tickers with an OPEN/PENDING position (from getStatus().positions) → readiness 6/6 "נכנס".
+   * Optional — accepts an array or a Set; absent ⇒ rung 6 relies on watcherStatus only.
+   */
+  openPositionTickers?: string[] | Set<string> | null;
   className?: string;
 };
 
@@ -88,6 +107,57 @@ function fmtUsd(v: any): string {
 /** Is this candidate entry-ready (no block of any kind)? */
 function isReady(c: WarRoomCandidate): boolean {
   return !c.blockReason && !c.abnormalCycle && !c.macroBlocked;
+}
+
+// ── Signal type (Breakout vs Retest) — color + icon + text, never color-alone ──
+// Prefer the explicit `signal` short-label; fall back to deriving from route/tier.
+// Unknown/null ⇒ null ⇒ renders a muted "—".
+type SignalKind = "BREAKOUT" | "RETEST";
+function signalKind(c: WarRoomCandidate): SignalKind | null {
+  const sig = String(c.signal ?? "").trim().toLowerCase();
+  if (sig === "breakout") return "BREAKOUT";
+  if (sig === "retest") return "RETEST";
+  const route = String(c.route ?? "").toUpperCase();
+  if (route === "GOLD_BREAKOUT_WAR") return "BREAKOUT";
+  if (route === "GOLD_RETEST_WAR") return "RETEST";
+  const tier = String(c.tier ?? "").toLowerCase();
+  if (/breakout|פריצה/.test(tier)) return "BREAKOUT";
+  if (/retest/.test(tier)) return "RETEST";
+  return null;
+}
+
+const SIGNAL_META: Record<SignalKind, { label: string; className: string; icon: React.ReactNode; title: string }> = {
+  BREAKOUT: {
+    label: "פריצה",
+    className: "border-blue-300 bg-blue-50 text-blue-800",
+    icon: <Rocket className="w-3 h-3 shrink-0" aria-hidden />,
+    title: "פריצה — Gold Breakout",
+  },
+  RETEST: {
+    label: "Retest",
+    className: "border-amber-300 bg-amber-50 text-amber-800",
+    icon: <CornerDownLeft className="w-3 h-3 shrink-0" aria-hidden />,
+    title: "Retest — Gold Retest",
+  },
+};
+
+function SignalTypeBadge({ candidate, compact }: { candidate: WarRoomCandidate; compact?: boolean }) {
+  const kind = signalKind(candidate);
+  if (!kind) return <span className="text-slate-300 text-[11px]" title="סוג איתות לא ידוע">—</span>;
+  const m = SIGNAL_META[kind];
+  return (
+    <Badge
+      title={m.title}
+      aria-label={m.title}
+      className={cn(
+        "px-1.5 py-0.5 min-h-[20px] text-[11px] font-bold tracking-wide gap-1 whitespace-nowrap",
+        m.className,
+      )}
+    >
+      {m.icon}
+      {m.label}
+    </Badge>
+  );
 }
 
 // Map a raw blockReason / flag → a prominent, color+icon+text badge (WCAG AA).
@@ -138,56 +208,131 @@ function blockBadge(c: WarRoomCandidate): BadgeMeta {
   };
 }
 
-// ── Intraday Armed-Watcher chip (F7) — sign/icon + text, never color-alone ─────
-// null / undefined ⇒ returns null ⇒ renders NOTHING. Reuses the row's Badge
-// styling conventions (same px/min-h/font scale as the block badge).
-const WATCHER_META: Record<
-  NonNullable<WarRoomCandidate["watcherStatus"]>,
-  { label: string; className: string; sign: string; title: string }
-> = {
-  HOT_LIST: {
-    label: "חם",
-    sign: "🔥",
-    className: "border-amber-300 bg-amber-50 text-amber-800",
-    title: "ברשימה חמה — קרוב לטריגר (מוכנות > 70%)",
-  },
-  ARMED: {
-    label: "חמוש",
-    sign: "🎯",
-    className: "border-indigo-300 bg-indigo-50 text-indigo-800",
-    title: "חמוש — בתוך 1% מהפריצה, מנוטר חי",
-  },
-  CROSSED: {
-    label: "חצה",
-    sign: "⤴",
-    className: "border-blue-300 bg-blue-50 text-blue-800",
-    title: "חצה — המחיר חצה את הטריגר, ממתין לאישור 5 דקות",
-  },
-  HELD_5M: {
-    label: "אושר",
-    sign: "✓",
-    className: "border-green-300 bg-green-50 text-green-800",
-    title: "אושר — החזיק 5 דקות, לקראת כניסה",
-  },
+// ── 6-STEP READINESS LADDER (breakout pipeline) — the "N/6" meter ──────────────
+// Replaces the old lagging/ambiguous Intraday-Watcher STATE chip (ARMED/CROSSED/
+// אושר) AND the "עובר ✓" state badge — the owner found them ambiguous. The watcher
+// status is now consumed as one rung of the ladder rather than a free-floating chip.
+// Computes the highest rung reached.
+// watcherStatus (per-row, or the authoritative summary map) drives rungs 3–5/6;
+// status / live-price derivation is the pre-watcher fallback so it never shows blank.
+type LadderRung = {
+  step: number;               // 0..6 — highest rung reached
+  blocked: boolean;           // anti-chase wall → render "✕ חסום" instead of N/6
+  label: string;              // Hebrew name of the current rung
 };
+const RUNG_LABELS = ["—", "מועמד", "מאושר", "חמוש", "חצה", "אושר", "נכנס"];
 
-function WatcherChip({ status, compact }: { status?: WarRoomCandidate["watcherStatus"]; compact?: boolean }) {
-  if (!status) return null; // null / undefined ⇒ no chip
-  const m = WATCHER_META[status];
-  if (!m) return null; // defensive: unknown value never breaks the row
+/** Resolve the authoritative watcher status for a ticker: summary-map first, row fallback. */
+function resolveWatcher(c: WarRoomCandidate, map?: WatcherStatusMap): string | null {
+  const t = String(c?.ticker ?? "").toUpperCase();
+  const fromMap = map?.[t] ?? map?.[String(c?.ticker ?? "")];
+  return String(fromMap ?? c?.watcherStatus ?? "").toUpperCase() || null;
+}
+
+function readinessLadder(
+  c: WarRoomCandidate,
+  opts?: { watcherMap?: WatcherStatusMap; openTickers?: Set<string> },
+): LadderRung {
+  const ws = resolveWatcher(c, opts?.watcherMap);
+  if (ws === "BLOCKED") return { step: 0, blocked: true, label: "חסום" };
+
+  // live-price / donchian fallback (only when those fields ride on the row) ──────
+  const live = num((c as any)?.live ?? (c as any)?.livePrice ?? (c as any)?.currentPrice);
+  const don20H = num((c as any)?.donchian20High ?? (c as any)?.don20H);
+  const trigger = don20H === null ? null : don20H * 1.005;
+  const t = String(c?.ticker ?? "").toUpperCase();
+  const hasPosition = !!opts?.openTickers?.has(t);
+
+  // 6/6 נכנס — an open/pending position exists, or watcher says entered.
+  if (hasPosition || ws === "ENTERED" || ws === "FILLED" || ws === "ENTERED_5M") {
+    return { step: 6, blocked: false, label: RUNG_LABELS[6] };
+  }
+  // 5/6 אושר — HELD / confirmed 5m.
+  if (ws === "HELD_5M") return { step: 5, blocked: false, label: RUNG_LABELS[5] };
+  // 4/6 חצה — CROSSED (watcher) or live at/above trigger.
+  if (ws === "CROSSED" || (live !== null && trigger !== null && live >= trigger)) {
+    return { step: 4, blocked: false, label: RUNG_LABELS[4] };
+  }
+  // 3/6 חמוש — ARMED (watcher) or live within ~4% below the trigger.
+  if (
+    ws === "ARMED" ||
+    (live !== null && trigger !== null && live >= trigger * 0.96 && live < trigger)
+  ) {
+    return { step: 3, blocked: false, label: RUNG_LABELS[3] };
+  }
+  // 2/6 מאושר — passed quality/regime gates.
+  if (String(c?.status ?? "").trim().toLowerCase() === "approved") {
+    return { step: 2, blocked: false, label: RUNG_LABELS[2] };
+  }
+  // 1/6 מועמד — the row exists.
+  return { step: 1, blocked: false, label: RUNG_LABELS[1] };
+}
+
+// Pip + N/6 colors by rung: 1–2 slate, 3–4 amber, 5 orange, 6 green-bold.
+function rungTone(step: number): { pip: string; text: string } {
+  if (step >= 6) return { pip: "bg-green-600", text: "text-green-700" };
+  if (step === 5) return { pip: "bg-orange-500", text: "text-orange-600" };
+  if (step >= 3) return { pip: "bg-amber-500", text: "text-amber-600" };
+  return { pip: "bg-slate-400", text: "text-slate-500" };
+}
+
+/** The "small diagram": 6 pips filled up to `step` + an N/6 label. color+number+pips. */
+function ReadinessMeter({
+  candidate,
+  watcherMap,
+  openTickers,
+  compact,
+}: {
+  candidate: WarRoomCandidate;
+  watcherMap?: WatcherStatusMap;
+  openTickers?: Set<string>;
+  compact?: boolean;
+}) {
+  const r = readinessLadder(candidate, { watcherMap, openTickers });
+
+  if (r.blocked) {
+    return (
+      <span
+        title="חסום — anti-chase (המחיר רץ מהר מדי מהטריגר)"
+        aria-label="חסום — anti-chase"
+        className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-red-50 px-1.5 py-0.5 min-h-[20px] text-[11px] font-bold text-red-700 whitespace-nowrap"
+      >
+        <span aria-hidden>✕</span>
+        חסום
+      </span>
+    );
+  }
+
+  const tone = rungTone(r.step);
+  const ready = r.step >= 6;
+  const title = `${r.step}/6 · ${r.label}`;
   return (
-    <Badge
-      title={m.title}
-      aria-label={m.title}
-      className={cn(
-        "px-2 py-0.5 min-h-[24px] font-bold tracking-wide gap-1 whitespace-nowrap",
-        compact ? "text-[11px]" : "text-xs",
-        m.className,
-      )}
+    <span
+      className="inline-flex items-center gap-1.5 whitespace-nowrap"
+      title={title}
+      aria-label={`מוכנות ${r.step} מתוך 6 — ${r.label}`}
     >
-      <span aria-hidden className="shrink-0">{m.sign}</span>
-      {m.label}
-    </Badge>
+      <span className="flex items-center gap-[2px]" aria-hidden>
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <span
+            key={idx}
+            className={cn(
+              "rounded-[1px] transition-colors",
+              compact ? "w-[5px] h-[11px]" : "w-1.5 h-3.5",
+              idx < r.step ? tone.pip : "bg-slate-200",
+            )}
+          />
+        ))}
+      </span>
+      <span className={cn("font-mono font-bold tabular-nums text-[11px]", tone.text, ready && "text-[12px]")}>
+        {r.step}/6
+      </span>
+      {ready ? (
+        <span className="font-bold text-[11px] text-green-700">מוכן!</span>
+      ) : (
+        <span className={cn("text-[11px] font-medium", tone.text, compact && "hidden")}>{r.label}</span>
+      )}
+    </span>
   );
 }
 
@@ -260,8 +405,19 @@ export function WarRoomCandidatesTable({
   onTickerClick,
   onSnooze,
   headerExtra,
+  watcherStatusMap,
+  openPositionTickers,
   className,
 }: WarRoomCandidatesTableProps) {
+  // Normalise open-position tickers → uppercase Set (accepts array | Set | null).
+  const openTickers = new Set(
+    (Array.isArray(openPositionTickers)
+      ? openPositionTickers
+      : openPositionTickers
+        ? Array.from(openPositionTickers)
+        : []
+    ).map((t) => String(t ?? "").toUpperCase()),
+  );
   // LONG-ONLY: hard filter — never render a short row even if one slips into the payload.
   const longs = candidates.filter(
     (c) => !("direction" in (c as any)) || (c as any).direction !== "short",
@@ -304,9 +460,11 @@ export function WarRoomCandidatesTable({
                   {[
                     { h: "#", w: "w-8" },
                     { h: "מניה", w: "" },
+                    { h: "סוג", w: "w-[88px]" },
+                    { h: "מוכנות (N/6)", w: "min-w-[150px]", accent: true },
                     { h: "מוכנות לכניסה (%)", w: "min-w-[160px]" },
                     { h: "מרחק לטריגר", w: "" },
-                    { h: "סיבת חסימה", w: "min-w-[150px]", accent: true },
+                    { h: "סיבת חסימה", w: "min-w-[120px]" },
                     { h: "ציון", w: "" },
                     { h: "סכום מתוכנן ($)", w: "" },
                   ].map(({ h, w, accent }) => (
@@ -353,13 +511,25 @@ export function WarRoomCandidatesTable({
                         ) : null}
                       </TableCell>
                       <TableCell className="py-3 px-3">
+                        <SignalTypeBadge candidate={c} />
+                      </TableCell>
+                      <TableCell className="py-3 px-3">
+                        <ReadinessMeter
+                          candidate={c}
+                          watcherMap={watcherStatusMap}
+                          openTickers={openTickers}
+                        />
+                      </TableCell>
+                      <TableCell className="py-3 px-3">
                         <ReadinessBar pct={num(c.readinessPct)} />
                       </TableCell>
                       <TableCell className="py-3 px-3">
                         <DistanceToTrigger pct={num(c.distanceToTriggerPct)} />
                       </TableCell>
                       <TableCell className="py-3 px-3">
-                        <div className="flex flex-wrap items-center gap-1.5">
+                        {isReady(c) ? (
+                          <span className="text-slate-300 text-[11px]" title="אין חסם">—</span>
+                        ) : (
                           <Badge
                             title={bm.title}
                             className={cn(
@@ -370,8 +540,7 @@ export function WarRoomCandidatesTable({
                             {bm.icon}
                             {bm.label}
                           </Badge>
-                          <WatcherChip status={c?.watcherStatus} />
-                        </div>
+                        )}
                       </TableCell>
                       <TableCell className="py-3 px-3">
                         <span className={cn("font-mono font-semibold text-base tabular-nums", scoreTone(st))}>
@@ -425,8 +594,9 @@ export function WarRoomCandidatesTable({
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-[11px] font-mono text-slate-400 shrink-0">{i + 1}</span>
-                      <span className="font-mono font-bold text-base text-slate-900 truncate">{c.ticker}</span>
+                      <span className="font-mono font-bold text-base text-slate-900 shrink-0">{c.ticker}</span>
                       <ChevronLeft className="w-4 h-4 text-slate-300 shrink-0" />
+                      <span className="shrink-0"><SignalTypeBadge candidate={c} compact /></span>
                       {c.tier ? <span className="text-[11px] text-slate-400 truncate">{c.tier}</span> : null}
                     </div>
                     <span className="shrink-0 font-mono font-semibold text-base tabular-nums">
@@ -435,13 +605,23 @@ export function WarRoomCandidatesTable({
                     </span>
                   </div>
 
-                  {/* Row 2 — readiness bar (full width) */}
+                  {/* Row 2 — readiness LADDER (N/6 meter — the prominent indicator) */}
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-[11px] text-slate-500 shrink-0 w-14">מוכנות</span>
+                    <ReadinessMeter
+                      candidate={c}
+                      watcherMap={watcherStatusMap}
+                      openTickers={openTickers}
+                    />
+                  </div>
+
+                  {/* Row 3 — readiness % bar (full width) */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-[11px] text-slate-400 shrink-0 w-14">% מוכנות</span>
                     <ReadinessBar pct={num(c.readinessPct)} compact />
                   </div>
 
-                  {/* Row 3 — distance-to-trigger (+ planned size) + block badge */}
+                  {/* Row 4 — distance-to-trigger (+ planned size) + block badge */}
                   <div className="flex items-center justify-between gap-2 mt-2">
                     <span className="inline-flex items-center gap-2 min-w-0 flex-wrap">
                       <span className="inline-flex items-center gap-1.5">
@@ -461,17 +641,18 @@ export function WarRoomCandidatesTable({
                       </span>
                     </span>
                     <span className="inline-flex items-center gap-1 shrink-0 flex-wrap justify-end">
-                      <WatcherChip status={c?.watcherStatus} compact />
-                      <Badge
-                        title={bm.title}
-                        className={cn(
-                          "px-2.5 py-1 min-h-[28px] text-[11px] font-bold tracking-wide gap-1.5 whitespace-nowrap",
-                          bm.className,
-                        )}
-                      >
-                        {bm.icon}
-                        {bm.label}
-                      </Badge>
+                      {isReady(c) ? null : (
+                        <Badge
+                          title={bm.title}
+                          className={cn(
+                            "px-2.5 py-1 min-h-[28px] text-[11px] font-bold tracking-wide gap-1.5 whitespace-nowrap",
+                            bm.className,
+                          )}
+                        >
+                          {bm.icon}
+                          {bm.label}
+                        </Badge>
+                      )}
                       {onSnooze ? <SnoozeIconButton ticker={c.ticker} onSnooze={onSnooze} /> : null}
                     </span>
                   </div>

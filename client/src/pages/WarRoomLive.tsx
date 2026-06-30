@@ -1685,8 +1685,10 @@ export default function WarRoomLive() {
                   <div className="mt-3">
                     <WarRoomCandidatesTable
                       candidates={((data as any)?.upcomingSignals ?? []).filter((c: any) => !snoozedTickers.has(c?.ticker))}
-                      onTickerClick={(t) => openDeepAnalysis(t)}
+                      onTickerClick={(t) => setV45Ticker(t)}
                       onSnooze={(t) => snoozeTicker(t)}
+                      watcherStatusMap={(data as any)?.summary?.watcherStatus}
+                      openPositionTickers={((data as any)?.positions ?? []).map((p: any) => p?.ticker)}
                       headerExtra={
                         <>
                           <span className="hidden sm:inline text-[10px] font-mono text-slate-400">

@@ -1702,16 +1702,17 @@ async function _startAlertPollerAsync() {
   // The FLAG itself is read at the TOP of runArmedWatcherTick — flag=0 ⇒ it returns
   // immediately before ANY fetch/state-mutation, so this interval is byte-identical to
   // a no-op today. The 60s cross-check reuses the tickIbkrSync quote cache (no new /quotes).
-  const ARMED_WATCHER_MS = 75_000;
+  const ARMED_WATCHER_MS = 60_000;  // owner 2026-06-30: 75s→60s
   const tickArmedWatcher = async () => {
     try {
-      if (!isIbkrSyncMarketOpen()) return;        // market-open guard
-      if (hourlyAnalyzeRunning) return;           // slot interlock — never overlap a universe scan
-      if (_watcherRunning) return;                // reentrancy latch
+      if (!isIbkrSyncMarketOpen()) { console.log("[AW-HB] skip: market-closed guard"); return; }
+      if (hourlyAnalyzeRunning) { console.log("[AW-HB] skip: hourlyAnalyzeRunning STUCK (universe scan interlock)"); return; }
+      if (_watcherRunning) { console.log("[AW-HB] skip: prev tick still running"); return; }
       _watcherRunning = true;
       try {
         const { runArmedWatcherTick } = await import("./intradayArmedWatcher");
         await runArmedWatcherTick(1);             // flag=0 ⇒ early-returns (inert)
+        console.log("[AW-HB] tick RAN ok");
       } finally {
         _watcherRunning = false;
       }

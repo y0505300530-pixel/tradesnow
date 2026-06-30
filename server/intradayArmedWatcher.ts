@@ -44,12 +44,14 @@ import { dbLog } from "./persistentLogger";
 // ── Constants (design Appendix §7 — pinned, backtestable) ────────────────────────
 /** breakLevel = donchian20High × BREAK_MULT (the breakout line). */
 export const BREAK_MULT = 1.005;
-/** Anti-chase ceiling: live > breakLevel × ANTI_CHASE_MULT (~2.5% past) → BLOCKED. */
-export const ANTI_CHASE_MULT = 1.025;
-/** ARMED = live within ARM_PROXIMITY (1%) below breakLevel. */
-export const ARM_PROXIMITY = 0.01;
-/** Hot-list / confirm minimum intraday RVOL. */
-export const INTRADAY_RVOL_MIN = 1.5;
+/** Anti-chase ceiling: live > breakLevel × ANTI_CHASE_MULT (~3.5% past) → BLOCKED. (owner 2026-06-30: 2.5%→3.5%) */
+export const ANTI_CHASE_MULT = 1.035;
+/** ARMED = live within ARM_PROXIMITY below breakLevel. (owner 2026-06-30: 1%→4% — watch ALL names near the line, not just razor-close) */
+export const ARM_PROXIMITY = 0.04;
+/** Watch the N hottest (by readiness) every tick. (owner 2026-06-30: run on top-10) */
+export const WATCHER_TOP_N = 10;
+/** Hot-list / confirm minimum intraday RVOL. (owner 2026-06-30: 1.5→1.2 — catch weaker-volume breakouts) */
+export const INTRADAY_RVOL_MIN = 1.2;
 /** Confirm-fetch caps (rate-budget §4). */
 export const CONFIRM_FETCH_TTL_MS = 60_000;     // ≤1 confirm-fetch / ticker / 60s
 export const MAX_CONFIRM_FETCHES_PER_TICK = 3;  // ≤N confirm-fetches / tick (global)
@@ -185,7 +187,7 @@ export function buildArmList(
     const gapB = b.breakLevel > 0 ? Math.abs(b.livePrice - b.breakLevel) / b.breakLevel : Infinity;
     return gapA - gapB;
   });
-  return out;
+  return out.slice(0, WATCHER_TOP_N);   // owner 2026-06-30: actively watch only the 10 hottest
 }
 
 // ── DISPLAY-ONLY status surface (consumed by F6 liveEngine.getStatus) ────────────
@@ -313,6 +315,7 @@ export async function runArmedWatcherTick(userId: number): Promise<void> {
     }
 
     const armed = buildArmList(candidates, livePriceByTicker);
+    console.log(`[AW-HB] cands=${candidates.length} priced=${livePriceByTicker.size} armed=${armed.length} states=[${armed.map(a => a.ticker + ":" + a.state).join(",")}]`);
 
     // Refresh the DISPLAY status map (ARMED/CROSSED/HELD_5M/BLOCKED). HOT_LIST is a
     // hint for high-readiness names that are not yet armed (set by F4's light pass).

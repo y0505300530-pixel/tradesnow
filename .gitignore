@@ -132,3 +132,4 @@ PACKAGE_DOCS/
 .playwright-mcp/
 .manus-logs/
 backups/
+secrets/
