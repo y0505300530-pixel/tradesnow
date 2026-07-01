@@ -1218,23 +1218,28 @@ async function checkPeriodicAnalyzeTime() {
 
   // ── EOD Deleverage: handled by independent deleverageCron.ts (22:45 IST) ──
 
-  // ── War Engine — autonomous LONG+SHORT decision layer (all enabled accounts) ──
-  import("./warEngine").then(({ runWarEngineAllAccounts }) => {
+  // ── War Engine — autonomous LONG+SHORT decision layer (CEO ONLY — Dror gated off) ──
+  // INVARIANT: periodic live trading MUST NOT change when Dror account exists.
+  // Dror runs only after liveEngineConfig.isEnabled=1 AND MULTI_ACCOUNT_LIVE_ENABLED=1.
+  import("./warEngine").then(async ({ runWarEngineCycle }) => {
     const _ownerUid = 1;
-    runWarEngineAllAccounts({ onProgress: (p) => setProgress(p) }).then((results) => {
-      for (const [slug, r] of Object.entries(results)) {
+    const { getTradingAccountBySlug } = await import("./tradingAccounts");
+    const ceoAcct = await getTradingAccountBySlug("ceo");
+    runWarEngineCycle(_ownerUid, {
+      tradingAccountId: ceoAcct?.id,
+      onProgress: (p) => setProgress(p),
+    }).then((r) => {
       if (r.entered > 0) {
-        console.log(`[WarEngine:${slug}] ✅ entered=${r.entered} managed=${r.managed} scanned=${r.scanned} regime=${r.regimeDecision}`);
+        console.log(`[WarEngine] ✅ entered=${r.entered} managed=${r.managed} scanned=${r.scanned} regime=${r.regimeDecision}`);
       }
       if (r.liveSignals && r.liveSignals.length > 0) {
         import("./liveOrderExecutor").then(({ tryLiveEntry }) => {
           for (const sig of r.liveSignals) {
             tryLiveEntry({ userId: _ownerUid, ...sig })
-              .then(res => console.log(`[LiveEngine:${slug}] ${sig.ticker} → ${res.entered ? "✅ ENTERED" : "⏭ " + res.reason}`))
-              .catch(e => console.error(`[LiveEngine:${slug}] Entry error:`, e));
+              .then(res => console.log(`[LiveEngine] ${sig.ticker} → ${res.entered ? "✅ ENTERED" : "⏭ " + res.reason}`))
+              .catch(e => console.error(`[LiveEngine] Entry error:`, e));
           }
         }).catch(e => console.error("[LiveEngine] Import error:", e));
-      }
       }
     }).catch(e => console.error("[WarEngine] Cycle error:", e));
   }).catch(e => console.error("[WarEngine] Import error:", e));

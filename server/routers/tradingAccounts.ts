@@ -6,7 +6,7 @@ import {
   getTradingAccountBySlug,
   buildTradingAccountRuntime,
 } from "../tradingAccounts";
-import { enterTradingAccount } from "../tradingAccountContext";
+import { enterTradingAccount, runWithTradingAccount } from "../tradingAccountContext";
 
 export const tradingAccountsRouter = router({
   /** Accounts visible to the current user (admin = all, user = linked only). */
@@ -27,15 +27,14 @@ export const tradingAccountsRouter = router({
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, input.slug);
-      enterTradingAccount(buildTradingAccountRuntime(account));
-      return {
+      return runWithTradingAccount(buildTradingAccountRuntime(account), async () => ({
         id: account.id,
         slug: account.slug,
         label: account.label,
         ibkrAccountId: buildTradingAccountRuntime(account).ibkrAccountId,
         catalogUserId: account.catalogUserId,
         gateway: { slug: account.gateway.slug, baseUrl: account.gateway.baseUrl },
-      };
+      }));
     }),
 
   /** UI + nav capabilities for the logged-in user (scoped trading-book viewers vs admin). */

@@ -16,13 +16,12 @@ import { eq, and, desc, sql, inArray } from "drizzle-orm";
 import { ibindRequest, primeAccountsIfNeeded } from "../routers/ibkrProxy";
 import { ibindCached, invalidateIbkrCache } from "../ibkrCache";
 import { log } from "../logger";
-import { getLiveAccountId } from "../tradingAccountContext";
+import { getLiveAccountId, runWithTradingAccount } from "../tradingAccountContext";
 import {
   assertTradingAccountAccess,
   buildTradingAccountRuntime,
   getLiveConfigForTradingAccount,
 } from "../tradingAccounts";
-import { enterTradingAccount } from "../tradingAccountContext";
 import { calcEntrySlTp, ema50FromBars } from "../slCalculator";
 import { fetchBarsForTicker, fetchLivePrice } from "../marketData";
 import { claimManualOrder, settleManualOrder, releaseManualOrder, type ManualOrderResult } from "../manualOrderIdempotency";
@@ -116,7 +115,7 @@ export const liveEngineRouter = {
     const { runWarEngineCycle } = await import("../warEngine");
     const accountSlug = input?.accountSlug ?? "ceo";
     const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, accountSlug);
-    enterTradingAccount(buildTradingAccountRuntime(account));
+    return runWithTradingAccount(buildTradingAccountRuntime(account), async () => {
     startProgress(WR_PHASE.START);
     try {
       const r = await runWarEngineCycle(account.catalogUserId, {
@@ -137,6 +136,7 @@ export const liveEngineRouter = {
       finishProgress({ errors: [e?.message ?? "scan failed"], successes: [], actions: [] });
       throw e;
     }
+    });
   }),
 
   // ── Run a FULL War-Engine cycle MANUALLY — SCAN-ONLY (no live orders). ────────
@@ -408,8 +408,7 @@ export const liveEngineRouter = {
     .query(async ({ ctx, input }) => {
     const accountSlug = input?.accountSlug ?? "ceo";
     const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, accountSlug);
-    enterTradingAccount(buildTradingAccountRuntime(account));
-
+    return runWithTradingAccount(buildTradingAccountRuntime(account), async () => {
     if (input?.bustCache) {
       invalidateIbkrCache("/pnl");
       invalidateIbkrCache("/positions");
@@ -1045,6 +1044,7 @@ export const liveEngineRouter = {
       },
       account: { slug: account.slug, label: account.label },
     };
+    });
   }),
 
   // ── Update config (start/stop, allocatedPct, maxPositions) ──────────────

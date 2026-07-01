@@ -61,3 +61,14 @@ War Engine: runWarEngineAllAccounts() — one cycle per enabled account
 2. Start Dror IB Gateway on port 5001 + env secrets
 3. `updateIbkrAccountId({ slug: 'dror', ibkrAccountId: '…' })`
 4. Enable Dror: `liveEngineConfig.isEnabled = 1`
+5. **Only then** set `MULTI_ACCOUNT_LIVE_ENABLED=1` to arm autonomous Dror cycles
+
+## CEO live-trading safety (non-negotiable)
+
+| Guard | Effect |
+|-------|--------|
+| Dror `isEnabled=0` (seed) | War Engine never places Dror orders |
+| `alertPoller` | Runs **CEO cycle only** — same path as before multi-account |
+| `MULTI_ACCOUNT_LIVE_ENABLED` | Must be `1` for `runWarEngineAllAccounts` to scan multiple books |
+| Gateway default | No ALS context → port **5000** + CEO env secrets |
+| Dror UI | Read-only `getStatus` / Overview; uses `runWithTradingAccount` (no context leak) |

@@ -2503,6 +2503,18 @@ export async function runWarEngineCycle(
 export async function runWarEngineAllAccounts(
   opts?: Parameters<typeof runWarEngineCycle>[1],
 ): Promise<Record<string, Awaited<ReturnType<typeof runWarEngineCycle>>>> {
+  // Safety gate: autonomous multi-book trading is OFF unless explicitly armed.
+  // alertPoller uses runWarEngineCycle(CEO) directly — this helper is for manual/ops only.
+  if (process.env.MULTI_ACCOUNT_LIVE_ENABLED !== "1") {
+    const { getTradingAccountBySlug } = await import("./tradingAccounts");
+    const ceo = await getTradingAccountBySlug("ceo");
+    if (!ceo) return {};
+    const r = await runWarEngineCycle(ceo.catalogUserId, {
+      ...opts,
+      tradingAccountId: ceo.id,
+    });
+    return { ceo: r };
+  }
   const { listTradingAccounts, getLiveConfigForTradingAccount } = await import("./tradingAccounts");
   const accounts = await listTradingAccounts();
   const out: Record<string, Awaited<ReturnType<typeof runWarEngineCycle>>> = {};

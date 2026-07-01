@@ -37,6 +37,7 @@ export function runWithTradingAccount<T>(
 
 /** Synchronous bind for long async functions that cannot be wrapped in als.run(). */
 export function enterTradingAccount(ctx: TradingAccountRuntime): void {
+  // Prefer runWithTradingAccount for HTTP handlers — enterWith can leak across concurrent requests.
   als.enterWith(ctx);
 }
 
