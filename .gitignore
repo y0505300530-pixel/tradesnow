@@ -133,3 +133,4 @@ PACKAGE_DOCS/
 .manus-logs/
 backups/
 secrets/
+scripts/waiterBacktest-results.json
