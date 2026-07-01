@@ -13,6 +13,10 @@ export type VipTier = "VIP-A" | "VIP-B" | "BENCH";
 
 export const VIP_A_MAX = 12;
 export const VIP_B_MAX = 20;
+/** Points thresholds. Owner-ratified 2026-07-01: VIP-A ≥4 (was 5 — too strict; real energy names
+ *  never reached a "perfect 6" so VIP-A came out empty in the Phase-0 dry-run). */
+export const VIP_A_MIN_POINTS = 4;
+export const VIP_B_MIN_POINTS = 3;
 /** Tier breaks an ENTER-loop tie ONLY when the finalScore gap is within this band. */
 export const TIER_TIEBREAK_THRESHOLD = 0.5;
 export const TIER_RANK: Record<VipTier, number> = { "VIP-A": 3, "VIP-B": 2, BENCH: 1 };
@@ -46,8 +50,8 @@ export function scoreVipRank(input: VipRankInput): VipRankResult {
 
   let tier: VipTier;
   if (!input.closeAboveEma50) tier = "BENCH";       // falling knife — hard BENCH
-  else if (points >= 5) tier = "VIP-A";
-  else if (points >= 3) tier = "VIP-B";
+  else if (points >= VIP_A_MIN_POINTS) tier = "VIP-A";
+  else if (points >= VIP_B_MIN_POINTS) tier = "VIP-B";
   else tier = "BENCH";
   return { points, tier, reasons };
 }

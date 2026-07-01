@@ -15,6 +15,12 @@ describe("scoreVipRank", () => {
     expect(r.points).toBe(6);
     expect(r.tier).toBe("VIP-A");
   });
+  it("4 points → VIP-A (owner-ratified ≥4 threshold, was ≥5)", () => {
+    // ema50 + ema200 + kinetic>=70 + sector = 4 (no weekly slope, no finalScore)
+    const r = scoreVipRank({ closeAboveEma50: true, closeAboveEma200: true, weeklyEma50SlopePos: false, kineticScore: 80, finalScore: null, sectorHot: true });
+    expect(r.points).toBe(4);
+    expect(r.tier).toBe("VIP-A");
+  });
   it("MTSI/RIOT below EMA50 → hard BENCH regardless of momentum", () => {
     const r = scoreVipRank({ ...base, closeAboveEma50: false });
     expect(r.tier).toBe("BENCH");
