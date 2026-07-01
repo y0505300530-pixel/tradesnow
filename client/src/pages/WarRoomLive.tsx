@@ -254,14 +254,19 @@ function MaxPositionsBox({ maxLong, maxShort, setMaxLong, setMaxShort, onSave }:
     </div>
   );
 }
-// ── LeverageBox ──────────────────────────────────────────────────────────────
-function LeverageBox({ intradayLev, overnightLev, setIntradayLev, setOvernightLev, onSave }:
+// ── LeverageBox — mirrors WarRoomCockpit dials (same liveEngineConfig fields) ──
+const INTRADAY_LEV_MAX = 4.0;
+const OVERNIGHT_LEV_MAX = 2.0;
+
+function LeverageBox({ intradayLev, overnightLev, setIntradayLev, setOvernightLev, onSave, onEditStart, onEditEnd }:
   { intradayLev: number; overnightLev: number;
     setIntradayLev: (v: number) => void; setOvernightLev: (v: number) => void;
-    onSave: (intraday: number, overnight: number) => void }) {
+    onSave: (intraday: number, overnight: number) => void;
+    onEditStart?: () => void; onEditEnd?: () => void }) {
   const [saved, setSaved] = useState(false);
   const handleSave = () => {
     onSave(intradayLev, overnightLev);
+    onEditEnd?.();
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -271,24 +276,26 @@ function LeverageBox({ intradayLev, overnightLev, setIntradayLev, setOvernightLe
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-500 w-16 shrink-0">שעות מסחר</span>
         <input
-          type="number" min={1} max={3.9} step={0.1} value={intradayLev}
-          onChange={e => setIntradayLev(Math.min(3.9, Math.max(1, parseFloat(e.target.value) || 1)))}
+          type="number" min={0} max={INTRADAY_LEV_MAX} step={0.1} value={intradayLev}
+          onFocus={onEditStart}
+          onChange={e => setIntradayLev(Math.min(INTRADAY_LEV_MAX, Math.max(0, parseFloat(e.target.value) || 0)))}
           onBlur={handleSave}
           onKeyDown={e => { if (e.key === "Enter") handleSave(); }}
           className="w-16 text-center text-base font-bold font-mono tabular-nums bg-white border border-slate-300 rounded-md px-1 py-1 focus:outline-none focus:ring-2 focus:ring-slate-400/30"
         />
-        <span className="text-xs text-slate-400">/ 3.9x</span>
+        <span className="text-xs text-slate-400">/ {INTRADAY_LEV_MAX}x</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-500 w-16 shrink-0">לילה</span>
         <input
-          type="number" min={1} max={1.9} step={0.1} value={overnightLev}
-          onChange={e => setOvernightLev(Math.min(1.9, Math.max(1, parseFloat(e.target.value) || 1)))}
+          type="number" min={0} max={OVERNIGHT_LEV_MAX} step={0.1} value={overnightLev}
+          onFocus={onEditStart}
+          onChange={e => setOvernightLev(Math.min(OVERNIGHT_LEV_MAX, Math.max(0, parseFloat(e.target.value) || 0)))}
           onBlur={handleSave}
           onKeyDown={e => { if (e.key === "Enter") handleSave(); }}
           className="w-16 text-center text-base font-bold font-mono tabular-nums bg-white border border-slate-300 rounded-md px-1 py-1 focus:outline-none focus:ring-2 focus:ring-slate-400/30"
         />
-        <span className="text-xs text-slate-400">/ 1.9x</span>
+        <span className="text-xs text-slate-400">/ {OVERNIGHT_LEV_MAX}x</span>
       </div>
       <button
         onClick={handleSave}
@@ -870,6 +877,7 @@ export default function WarRoomLive({
   const [maxShort2, setMaxShort2]           = useState(6);
   const [overnightLev, setOvernightLev] = useState(1.9);
   const cfgInitialized = useRef(false);
+  const leverageEditing = useRef(false);
   const [lastFetch, setLastFetch] = useState<Date|null>(null);
   const [engineOnOptimistic, setEngineOnOptimistic] = useState<boolean|null>(null);
   const [activeSlug, setActiveSlug] = useState(accountSlug);
@@ -1129,8 +1137,6 @@ export default function WarRoomLive({
     if (!cfg || cfgInitialized.current) return;
     cfgInitialized.current = true;
     setAllocPct(cfg.allocatedPct ?? 50);
-    setIntradayLev(cfg.intradayMultiplier ?? 3.9);
-    setOvernightLev(cfg.overnightMultiplier ?? 1.9);
     setMinPosUsd((cfg as any).minPositionUsd ?? 2000);
     setMaxPosUsd((cfg as any).maxPositionUsd ?? 25000);
     setMaxPos2(cfg.maxPositions ?? 12);
@@ -1138,6 +1144,13 @@ export default function WarRoomLive({
     setMaxShort2((cfg as any).maxShortPositions ?? 6);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cfg]);
+
+  // Keep מינוף panel in sync with Cockpit dials / getStatus poll.
+  useEffect(() => {
+    if (!cfg || leverageEditing.current) return;
+    setIntradayLev(cfg.intradayMultiplier ?? 3.9);
+    setOvernightLev(cfg.overnightMultiplier ?? 1.9);
+  }, [cfg?.intradayMultiplier, cfg?.overnightMultiplier, cfg]);
 
   // Build rows
   const rows = useMemo(() => rawPos.map(p => {
@@ -1369,7 +1382,7 @@ export default function WarRoomLive({
       <CycleProgressStrip progress={cycleProgress} />
 
       {/* LEVERAGE COCKPIT — safety-critical: LIVE GROSS + Intraday Power Dial + TRIM-to-1.9× */}
-      <WarRoomCockpit data={data} isLoading={isLoading} />
+      <WarRoomCockpit data={data} isLoading={isLoading} accountSlug={querySlug} />
 
       {/* METRICS RIBBON — Daily P&L hero, terminal hierarchy */}
       <WarRoomMetricsRibbon
@@ -1787,7 +1800,7 @@ export default function WarRoomLive({
               maxPosUsd={maxPosUsd} setMaxPosUsd={v => { setMaxPosUsd(v); setDirty(true); }}
               dirty={dirty}
               onSave={() => {
-                updCfg.mutate({ allocatedPct: allocPct, minPositionUsd: minPosUsd, maxPositionUsd: maxPosUsd });
+                updCfg.mutate({ accountSlug: querySlug, allocatedPct: allocPct, minPositionUsd: minPosUsd, maxPositionUsd: maxPosUsd });
                 setTimeout(() => setDirty(false), 2000);
               }}
             />
@@ -1802,7 +1815,7 @@ export default function WarRoomLive({
               setMaxShort={setMaxShort2}
               onSave={(l, s) => {
                 updCfg.mutate(
-                  { maxPositions: l + s, maxLongPositions: l, maxShortPositions: s },
+                  { accountSlug: querySlug, maxPositions: l + s, maxLongPositions: l, maxShortPositions: s },
                   { onSuccess: () => toast.success(`מקס׳ לונג: ${l} | שורט: ${s} ⚔️`) }
                 );
               }}
@@ -1839,9 +1852,11 @@ export default function WarRoomLive({
             <LeverageBox
               intradayLev={intradayLev} overnightLev={overnightLev}
               setIntradayLev={setIntradayLev} setOvernightLev={setOvernightLev}
+              onEditStart={() => { leverageEditing.current = true; }}
+              onEditEnd={() => { leverageEditing.current = false; }}
               onSave={(intraday, overnight) => {
                 updCfg.mutate(
-                  { intradayMultiplier: intraday, overnightMultiplier: overnight },
+                  { accountSlug: querySlug, intradayMultiplier: intraday, overnightMultiplier: overnight },
                   { onSuccess: () => toast.success("מינוף עודכן ✓  שעות מסחר: ×" + intraday + "  |  לילה: ×" + overnight) }
                 );
               }}
@@ -1938,7 +1953,7 @@ export default function WarRoomLive({
                 setEngineOnOptimistic(false);
                 void runDestructiveAction("engine_off", (confirmToken) => {
                   updCfg.mutate(
-                    { isEnabled: 0, confirmToken },
+                    { accountSlug: querySlug, isEnabled: 0, confirmToken },
                     {
                       onSuccess: () => { setEngineOnOptimistic(null); refetch(); },
                       onError: (e) => { setEngineOnOptimistic(null); toastMutationError(e, "Engine stop failed"); },
@@ -1957,7 +1972,7 @@ export default function WarRoomLive({
               className="min-h-12 h-12 px-6 text-sm font-bold rounded-full bg-red-600 hover:bg-red-700 text-white"
               onClick={() => {
                 setEngineOnOptimistic(true);
-                updCfg.mutate({ isEnabled: 1 }, {
+                updCfg.mutate({ accountSlug: querySlug, isEnabled: 1 }, {
                   onSuccess: () => { setEngineOnOptimistic(null); refetch(); },
                   onError: (e) => { setEngineOnOptimistic(null); toastMutationError(e, "Engine start failed"); },
                 });

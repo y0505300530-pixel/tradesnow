@@ -1052,6 +1052,7 @@ export const liveEngineRouter = {
   // ── Update config (start/stop, allocatedPct, maxPositions) ──────────────
   updateConfig: adminProcedure
     .input(z.object({
+      accountSlug:          z.string().optional(),
       isEnabled:            z.number().min(0).max(1).optional(),
       allocatedPct:         z.number().min(0).max(100).optional(),
       maxPositions:         z.number().min(1).max(100).optional(),
@@ -1068,12 +1069,16 @@ export const liveEngineRouter = {
       confirmToken:         z.string().min(1).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      if (input.isEnabled === 0) {
-        requireConfirmToken(ctx.user.id, "engine_off", input.confirmToken);
-      }
-      const { confirmToken: _ct, ...configPatch } = input;
-      await updateLiveConfig(ctx.user.id, configPatch);
-      return { ok: true };
+      const accountSlug = input.accountSlug ?? "ceo";
+      const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, accountSlug);
+      return runWithTradingAccount(buildTradingAccountRuntime(account), async () => {
+        if (input.isEnabled === 0) {
+          requireConfirmToken(ctx.user.id, "engine_off", input.confirmToken);
+        }
+        const { confirmToken: _ct, accountSlug: _as, ...configPatch } = input;
+        await updateLiveConfig(ctx.user.id, configPatch);
+        return { ok: true };
+      });
     }),
 
   // ── Get all positions (open + closed) ────────────────────────────────────

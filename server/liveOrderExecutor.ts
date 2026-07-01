@@ -802,6 +802,14 @@ export async function getLiveConfig(userId: number): Promise<typeof liveEngineCo
 export async function updateLiveConfig(userId: number, patch: Partial<typeof liveEngineConfig.$inferInsert>): Promise<void> {
   const db = await getDb();
   if (!db) return;
+  const tacctId = getTradingAccountId();
+  if (tacctId != null) {
+    await db
+      .update(liveEngineConfig)
+      .set(patch)
+      .where(eq(liveEngineConfig.tradingAccountId, tacctId));
+    return;
+  }
   await db.update(liveEngineConfig).set(patch).where(eq(liveEngineConfig.userId, userId));
 }
 

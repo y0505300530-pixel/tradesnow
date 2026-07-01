@@ -20,6 +20,7 @@ import { Gauge, Zap, Moon, ShieldAlert, Loader2, Wallet, AlertTriangle, Trending
 
 const GROSS_CEILING = 4.0;
 const OVERNIGHT_CEILING = 2.0;
+const DEFAULT_INTRADAY = 3.9;
 const DEFAULT_OVERNIGHT = 1.9;
 
 // Zone thresholds shared by GROSS + DIALS: green ≤1.9× · amber 1.9–3.0× · red >3.0×.
@@ -228,6 +229,7 @@ function PowerDial({
   commitKey,
   caption,
   isLoading,
+  accountSlug = "ceo",
 }: {
   icon: React.ReactNode;
   title: string;
@@ -238,22 +240,35 @@ function PowerDial({
   commitKey: "intradayMultiplier" | "overnightMultiplier";
   caption: React.ReactNode;
   isLoading: boolean;
+  accountSlug?: string;
 }) {
   const [val, setVal] = useState<number>(configValue ?? defaultValue);
   const initialized = useRef(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCommitted = useRef<number | null>(null);
+  const slidingRef = useRef(false);
 
-  // Initialize once from config, then let the user drive.
+  // Initialize once from config, then follow server when another control saves.
   useEffect(() => {
-    if (initialized.current) return;
     if (configValue == null) return;
+    if (slidingRef.current || debounceRef.current) return;
+    if (lastCommitted.current != null && Math.abs(lastCommitted.current - configValue) < 0.001) {
+      if (!initialized.current) {
+        initialized.current = true;
+        setVal(configValue);
+      }
+      return;
+    }
     initialized.current = true;
     setVal(configValue);
     lastCommitted.current = configValue;
   }, [configValue]);
 
+  const utils = trpc.useUtils();
   const updCfg = trpc.liveEngine.updateConfig.useMutation({
+    onSuccess: () => {
+      utils.liveEngine.getStatus.invalidate();
+    },
     onError: (e: any) => toastMutationError(e, "עדכון מינוף נכשל"),
   });
 
@@ -262,21 +277,34 @@ function PowerDial({
       const clamped = Math.min(ceiling, Math.max(0, next));
       if (lastCommitted.current != null && Math.abs(lastCommitted.current - clamped) < 0.001) return;
       lastCommitted.current = clamped;
-      // Backend accepts intraday [0,4.0] / overnight [0,2.0] (optional-chained mutate).
-      (updCfg as any)?.mutate?.({ [commitKey]: clamped });
+      updCfg.mutate({ accountSlug, [commitKey]: clamped } as any);
     },
-    [updCfg, ceiling, commitKey],
+    [updCfg, ceiling, commitKey, accountSlug],
   );
 
   const onSlide = (next: number) => {
+    slidingRef.current = true;
     setVal(next);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => commit(next), 350);
+    debounceRef.current = setTimeout(() => {
+      commit(next);
+      slidingRef.current = false;
+      debounceRef.current = null;
+    }, 350);
   };
 
   useEffect(() => () => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
   }, []);
+
+  const finishSlide = () => {
+    slidingRef.current = false;
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    commit(val);
+  };
 
   const zone = levZone(val);
   const isPaused = val < 0.05;
@@ -312,9 +340,9 @@ function PowerDial({
         value={val}
         aria-label={`${title} multiplier`}
         onChange={(e) => onSlide(parseFloat(e.target.value))}
-        onMouseUp={() => commit(val)}
-        onTouchEnd={() => commit(val)}
-        onBlur={() => commit(val)}
+        onMouseUp={finishSlide}
+        onTouchEnd={finishSlide}
+        onBlur={finishSlide}
         className={cn(
           "mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-slate-400 via-amber-400 to-red-500",
           "accent-slate-900 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6",
@@ -600,9 +628,11 @@ function OverAllocationBanner({ data }: { data: any }) {
 export function WarRoomCockpit({
   data,
   isLoading,
+  accountSlug = "ceo",
 }: {
   data: any;
   isLoading: boolean;
+  accountSlug?: string;
 }) {
   const intradayConfig =
     data?.config?.intradayMultiplier ?? data?.intradayMultiplier ?? null;
@@ -634,10 +664,11 @@ export function WarRoomCockpit({
             icon={<Zap className="h-4 w-4" />}
             title="Intraday Power"
             configValue={intradayConfig}
-            defaultValue={DEFAULT_OVERNIGHT}
+            defaultValue={DEFAULT_INTRADAY}
             ceiling={GROSS_CEILING}
             ticks={[0, 1.9, 4.0]}
             commitKey="intradayMultiplier"
+            accountSlug={accountSlug}
             isLoading={isLoading}
             caption={
               <>
@@ -655,6 +686,7 @@ export function WarRoomCockpit({
             ceiling={OVERNIGHT_CEILING}
             ticks={[0, 1.0, 2.0]}
             commitKey="overnightMultiplier"
+            accountSlug={accountSlug}
             isLoading={isLoading}
             caption={
               <>
