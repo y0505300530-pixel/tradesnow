@@ -40,12 +40,18 @@ async function getPatterns(userId: number) {
   if (_patternCache && Date.now() - _patternCacheAt < CACHE_TTL) return _patternCache;
   const db = await getDb();
   if (!db) return [];
-  _patternCache = await db
+  const _rows = await db
     .select({ id: mentorPatterns.id, mentor: mentorPatterns.mentor,
               patternName: mentorPatterns.patternName, occurrences: mentorPatterns.occurrences,
               tickers: mentorPatterns.tickers })
     .from(mentorPatterns)
     .where(eq(mentorPatterns.userId, userId));
+  // Pre-parse `tickers` ONCE per cache build (10-min TTL) instead of JSON.parse per pattern on
+  // every calcMentorBoost call (called 2×/ticker × ~150 tickers × cycle). Byte-identical result.
+  _patternCache = _rows.map(p => ({
+    ...p,
+    tickersUpper: (() => { try { return (JSON.parse(p.tickers ?? "[]") as string[]).map(t => t.toUpperCase()); } catch { return []; } })(),
+  }));
   _patternCacheAt = Date.now();
   return _patternCache;
 }
@@ -70,8 +76,7 @@ export async function calcMentorBoost(
   for (const p of patterns) {
     if (p.occurrences < 2) continue; // need at least 2 sightings
 
-    const tickersArr: string[] = (() => { try { return JSON.parse(p.tickers ?? "[]"); } catch { return []; } })();
-    const tickerMatch = tickersArr.map(t => t.toUpperCase()).includes(tickerUpper);
+    const tickerMatch = ((p as any).tickersUpper ?? []).includes(tickerUpper);
     const patternMatch = expectedPatterns.includes(p.patternName);
 
     if (!tickerMatch && !patternMatch) continue;
