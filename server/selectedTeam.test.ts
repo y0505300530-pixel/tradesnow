@@ -55,6 +55,68 @@ describe("effectiveSortScore — sort-only boost", () => {
   });
 });
 
+// ── LIVE WAR ENTRY-EXECUTION sort (warEngine ~L1307) ────────────────────────────────
+// This is the comparator that orders the execute-entries candidate list. The live loop
+// binds the last slot + remaining budget in ITERATION ORDER, so this ordering decides
+// who is actually bought. It is deliberately RAW-SCORE-PRIMARY with team as an EQUAL-raw-
+// score TIEBREAK ONLY — a team name must NEVER jump a higher-raw-scored non-team name.
+// Mirrors the inline comparator in warEngine.ts (kept in lock-step by this test).
+function entrySortComparator(team: Set<string>) {
+  return (a: { ticker: string; finalScore: number }, b: { ticker: string; finalScore: number }) => {
+    if (b.finalScore !== a.finalScore) return b.finalScore - a.finalScore; // raw edge dominates
+    const ta = team.has(String(a.ticker).toUpperCase()) ? 1 : 0;
+    const tb = team.has(String(b.ticker).toUpperCase()) ? 1 : 0;
+    return tb - ta; // team wins ONLY on equal raw score
+  };
+}
+
+describe("LIVE entry-execution sort — team is a TIEBREAK, never a jump", () => {
+  it("ENTRY-1: a non-team finalScore=7.9 stays ABOVE a team finalScore=7.6 (raw dominates)", () => {
+    // 7.6 + 0.4 boost = 8.0 additive — which WOULD outrank 7.9 in the DISPLAY sort. The
+    // ENTRY sort must NOT apply the boost: the raw 7.9 non-team name keeps the slot.
+    const cands = [
+      { ticker: "AMD", finalScore: 7.6 },  // team — boosted display score 8.0
+      { ticker: "NVDA", finalScore: 7.9 }, // non-team, higher RAW
+    ];
+    const out = [...cands].sort(entrySortComparator(new Set(["AMD"])));
+    expect(out.map(c => c.ticker)).toEqual(["NVDA", "AMD"]); // higher RAW first — team does NOT jump
+  });
+
+  it("ENTRY-2: on an EXACT raw tie, the team name wins the slot", () => {
+    const cands = [
+      { ticker: "NVDA", finalScore: 7.8 }, // non-team
+      { ticker: "AMD", finalScore: 7.8 },  // team, equal RAW
+    ];
+    const out = [...cands].sort(entrySortComparator(new Set(["AMD"])));
+    expect(out.map(c => c.ticker)).toEqual(["AMD", "NVDA"]); // team wins the tie
+  });
+
+  it("ENTRY-3: empty team set ⇒ pure raw-descending order", () => {
+    const cands = [
+      { ticker: "AAA", finalScore: 7.2 },
+      { ticker: "BBB", finalScore: 8.1 },
+      { ticker: "CCC", finalScore: 7.9 },
+    ];
+    const out = [...cands].sort(entrySortComparator(new Set()));
+    expect(out.map(c => c.ticker)).toEqual(["BBB", "CCC", "AAA"]);
+  });
+
+  it("ENTRY-4 vs DISPLAY: the ADDITIVE display sort DOES let the boosted team name jump", () => {
+    // Documents the intentional asymmetry: display/Armed-top-N uses effectiveSortScore
+    // (+0.4), so the SAME 7.6 team name outranks the 7.9 non-team name in the DISPLAY
+    // path — but NOT in the ENTRY path (asserted in ENTRY-1). Two distinct orderings.
+    const team = new Set(["AMD"]);
+    const displaySort = (a: { ticker: string; finalScore: number }, b: { ticker: string; finalScore: number }) =>
+      effectiveSortScore(b.finalScore, b.ticker, team) - effectiveSortScore(a.finalScore, a.ticker, team);
+    const cands = [
+      { ticker: "NVDA", finalScore: 7.9 }, // non-team
+      { ticker: "AMD", finalScore: 7.6 },  // team → 8.0 boosted
+    ];
+    const out = [...cands].sort(displaySort);
+    expect(out.map(c => c.ticker)).toEqual(["AMD", "NVDA"]); // boosted team jumps in DISPLAY only
+  });
+});
+
 describe("buildArmList — SELECTED_TEAM sort-only tiebreak", () => {
   const D = 100;                       // donchian-20 high
   const LVL = breakLevelFor(D);        // breakout line

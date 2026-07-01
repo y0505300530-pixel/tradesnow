@@ -39,7 +39,7 @@ import { calcMentorBoost, invalidateMentorPatternCache } from "./mentorScoreBoos
 import { getSelectedTeamSet, effectiveSortScore, SELECTED_TEAM_BOOST } from "./selectedTeam";
 import { getMarketRegime, getTickerIntelligence, calcCorrelation } from "./runtimeIntelligence";
 import { log } from "./logger";
-import { tryLiveEntry, getLiveConfig, isLiveMarketOpen, computeLiveCapital, resyncOptimisticBP } from "./liveOrderExecutor";
+import { tryLiveEntry, getLiveConfig, isLiveMarketOpen, computeLiveCapital, resyncOptimisticBP, DEFAULT_MAX_POSITION_USD } from "./liveOrderExecutor";
 import { isGhostSlotsEnabled, rowCountsTowardSlot, positionPlannedRiskUsd, onBreakevenConfirmed } from "./ghostSlots";
 import { ibindRequest } from "./routers/ibkrProxy";
 import { getActiveSnoozedTickerSet } from "./routers/snooze";
@@ -329,7 +329,7 @@ export function isIntradayWatcherEnabled(config: { elzaIntradayWatcherEnabled?: 
 
 /**
  * antiChaseBlocks — PURE Phase-0 anti-chase decision (BUILD-spec F5). A LONG whose
- * validated live price has run > breakLevel × 1.025 (breakLevel = donchian20High ×
+ * validated live price has run > breakLevel × 1.035 (breakLevel = donchian20High ×
  * 1.005) is a chased breakout → BLOCK. SUBTRACTION-ONLY: returns true only to reject;
  * never sizes/widens. INERT contract: watcherOn=false ⇒ ALWAYS false (no gate → entry
  * admission byte-identical to today). donchian≤0 ⇒ false (cannot define breakLevel).
@@ -1297,18 +1297,24 @@ export async function runWarEngineCycle(
       }
     }
 
-    // ── 5. Execute entries — sorted by finalScore desc ───────────────────────
-    // SORT-ONLY rank priority: selected-team names rank higher via effectiveSortScore
-    // (finalScore + teamBonus, capped 10). This re-orders WHICH ENTERs are attempted
-    // first — it does NOT bypass any gate (the filter above already admitted only
-    // ENTERs), nor the per-direction slot caps, sector cap, budget, or sizing below,
-    // all of which still bind in iteration order. effectiveSortScore reads finalScore,
-    // never mutating it, so sizing/routing downstream are untouched.
+    // ── 5. Execute entries — sorted by RAW finalScore desc, team as tiebreak ──
+    // LIVE ENTRY ORDER is raw-score-primary: the loop below binds the last live slot(s)
+    // and remaining budget in iteration order, so ordering here decides who actually gets
+    // bought. Owner-ratified principle: "rank boost ≠ gate bypass; NOT bought at any
+    // price." Therefore team membership is a TIEBREAK ONLY (equal raw finalScore) — it
+    // NEVER lets a team name with a lower raw finalScore jump above (and starve out) a
+    // higher-raw-scored non-team name. This is deliberately NOT the additive
+    // effectiveSortScore used for the DISPLAY / Armed-top-N path (~L2221). The filter
+    // above already admitted only ENTERs; the per-direction slot caps, sector cap,
+    // budget, and sizing below still bind in iteration order — none are mutated here.
     const candidates = allScans
       .filter(s => s.action === "ENTER")
-      .sort((a, b) =>
-        effectiveSortScore(b.finalScore, b.ticker, selectedTeam) -
-        effectiveSortScore(a.finalScore, a.ticker, selectedTeam));
+      .sort((a, b) => {
+        if (b.finalScore !== a.finalScore) return b.finalScore - a.finalScore; // raw edge dominates
+        const ta = selectedTeam.has(String(a.ticker).toUpperCase()) ? 1 : 0;
+        const tb = selectedTeam.has(String(b.ticker).toUpperCase()) ? 1 : 0;
+        return tb - ta; // team wins ONLY on equal raw score
+      });
 
     const warLiveConfig = await getLiveConfig(userId);
     const dynamicMaxPos      = warLiveConfig?.maxPositions      ?? MAX_WAR_POSITIONS;
@@ -1809,7 +1815,7 @@ export async function runWarEngineCycle(
         // missing/<=0 donchian20High ⇒ no gate (cannot define breakLevel → never blocks).
         if (c.direction === "long" && antiChaseBlocks(currentPrice, c.donchian20High ?? 0, _intradayWatcherOn)) {
           const _breakLevel   = (c.donchian20High as number) * 1.005;
-          const _antiChaseMax = _breakLevel * 1.035;  // owner 2026-06-30: anti-chase 2.5%→3.5% (matches antiChaseBlocks @ L319)
+          const _antiChaseMax = _breakLevel * 1.035;  // owner 2026-06-30: anti-chase 2.5%→3.5% (matches ANTI_CHASE_MULT in antiChaseBlocks @ L341)
           dbLog("info", "SYSTEM",
             `[AntiChase] 🚫 ${c.ticker} LONG live $${currentPrice.toFixed(2)} > breakLevel×1.035 $${_antiChaseMax.toFixed(2)} ` +
             `(d20H $${(c.donchian20High as number).toFixed(2)} → break $${_breakLevel.toFixed(2)}) — chased breakout, blocking entry`
@@ -1872,7 +1878,7 @@ export async function runWarEngineCycle(
         // ticker and clamp/skip so existing + new ≤ maxPositionUsd. This cannot stop external
         // manual buys, but it stops the ENGINE from ever adding past the per-ticker cap.
         const _tkr = c.ticker.toUpperCase();
-        const _maxPosUsd = (warLiveConfig as any)?.maxPositionUsd ?? 70000;
+        const _maxPosUsd = (warLiveConfig as any)?.maxPositionUsd ?? DEFAULT_MAX_POSITION_USD;
         // Prefer IBKR broker-truth position value (mktValue is signed; use magnitude).
         const _ibkrPos = ibkrLivePositions.find(
           (p: any) => (p.contractDesc ?? "").toUpperCase() === _tkr
@@ -1950,7 +1956,7 @@ export async function runWarEngineCycle(
           // every admitted [7.5,8.0) entry scales by conviction instead of flat-
           // flooring at $20k. Derived from the gate constant so it cannot drift.
           const _minUsd = (warLiveConfig as any)?.minPositionUsd ?? 20000;
-          const _maxUsd = (warLiveConfig as any)?.maxPositionUsd ?? 70000;
+          const _maxUsd = (warLiveConfig as any)?.maxPositionUsd ?? DEFAULT_MAX_POSITION_USD;
           // Conviction sizing on the COMBINED score, anchored to the combined gate
           // (8.0) so the sizing band floor tracks the entry gate (DRIFT-3 fix). When
           // kronos is OFF, combined ≤ zivStructuralCap < 8.0 → flat minPositionUsd.
@@ -2069,7 +2075,7 @@ export async function runWarEngineCycle(
           // (7.5, the same constant the SHORT gate uses) so [7.5,8.0) shorts scale by
           // conviction instead of flat-flooring at $20k. Derived from the gate constant.
           const _minUsd = (warLiveConfig as any)?.minPositionUsd ?? 20000;
-          const _maxUsd = (warLiveConfig as any)?.maxPositionUsd ?? 70000;
+          const _maxUsd = (warLiveConfig as any)?.maxPositionUsd ?? DEFAULT_MAX_POSITION_USD;
           // Conviction sizing on the COMBINED score, anchored to the combined gate
           // (8.0). Kronos OFF → combined ≤ cap < 8.0 → flat minPositionUsd. Symmetric to LONG.
           const _sizeFloor = kronosOn ? combinedGate : zivOnlyFloor;

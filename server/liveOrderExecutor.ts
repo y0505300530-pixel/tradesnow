@@ -54,6 +54,16 @@ export const LIVE_ACCOUNT_ID = ENV.ibkrLiveAccountId;
 export { resolveConid };
 const LIVE_ENGINE_VERSION = "1.0";
 
+/**
+ * DEFAULT_MAX_POSITION_USD — the ONE shared per-ticker notional cap fallback (owner-
+ * ratified 2026-07-01). Mirrors the live config SSOT (liveEngineConfig.maxPositionUsd,
+ * $85k). Used ONLY when that config value is absent/null (the degraded/null-config path)
+ * — no behavior change when the live value is present (it always is). Consolidates the
+ * previously divergent fallbacks (999999 / 50000 / 70000) so a null-config read can
+ * never leave a per-ticker cap effectively unbounded.
+ */
+export const DEFAULT_MAX_POSITION_USD = 85000;
+
 // ── In-memory state ───────────────────────────────────────────────────────────
 let _liveRunning = false;
 let _lastLiveCycleAt = 0;
@@ -837,7 +847,7 @@ export function computeLiveCapital(config: typeof liveEngineConfig.$inferSelect)
   const overnightCap     = cashBudget * ovrMult;
   // Clamp perPositionSize by min/max USD from config
   const minPosUsd = (config as any).minPositionUsd ?? 1000;
-  const maxPosUsd = (config as any).maxPositionUsd ?? 999999;
+  const maxPosUsd = (config as any).maxPositionUsd ?? DEFAULT_MAX_POSITION_USD;
   const rawPerPos = allocatedCapital / maxPos;
   const perPositionSize = Math.min(Math.max(rawPerPos, minPosUsd), maxPosUsd);
 
@@ -1333,8 +1343,8 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   // maxPositionUsd ONLY for a fresh entry, and the prior cap here ignored the EXISTING
   // same-ticker position entirely (so existing + new could stack past the cap).
   //
-  // schema default is 50000 (NOT NULL) — the ?? is a dead-safe fallback only.
-  const _maxPosCapUsd = config?.maxPositionUsd ?? 50000;
+  // schema default is 85000 (NOT NULL) — the ?? is a dead-safe fallback only.
+  const _maxPosCapUsd = config?.maxPositionUsd ?? DEFAULT_MAX_POSITION_USD;
   // Existing same-ticker exposure (DB rows, magnitude). Engine path is usually 0 here
   // (duplicate-ticker block above), but manual/adoption/phoenix adds can be non-zero;
   // valued at the resolved live entry so existing + new ≤ maxPositionUsd is enforced.

@@ -10,7 +10,20 @@
  * This bonus NEVER touches a gate, sizing, FOMO/anti-chase, gapGuard, RC2/VixSize,
  * the combinedGate, the zivStructural floor, or the sector cap. It feeds ONLY the
  * derived score used for ranking / top-N selection. A team name that fails a gate is
- * still BLOCKED/SKIPped exactly as before — it merely sorts higher among ENTERs.
+ * still BLOCKED/SKIPped exactly as before.
+ *
+ * ── TWO DISTINCT ORDERINGS (owner-ratified 2026-07-01) ────────────────────────────
+ * There are TWO places this list orders candidates, and they are NOT the same:
+ *   1. DISPLAY / watchlist / Armed-top-N (warEngine ~L2221, war_upcoming_signals +
+ *      buildArmList): ADDITIVE — effectiveSortScore = finalScore + SELECTED_TEAM_BOOST
+ *      (+0.4, capped 10). Team names rank visibly higher here. This path is correctly
+ *      gated downstream (readinessPct dominates in buildArmList), so the boost only
+ *      influences presentation / arm-priority, never a live buy.
+ *   2. LIVE WAR ENTRY ORDER (warEngine ~L1307, the execute-entries loop that binds the
+ *      last live slot + remaining budget in iteration order): RAW-SCORE-PRIMARY, with
+ *      team membership as an EQUAL-raw-score TIEBREAK ONLY. A team name NEVER takes a
+ *      live slot / budget from a higher-RAW-finalScore non-team name. "Rank boost ≠ gate
+ *      bypass; NOT bought at any price." The +0.4 does NOT apply to who gets bought.
  *
  * ── STORAGE (Git SSOT, owner-editable) ────────────────────────────────────────────
  * The live list lives in `systemSettings` under key `selected_team` as a JSON array
