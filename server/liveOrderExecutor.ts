@@ -68,6 +68,33 @@ const LIVE_ENGINE_VERSION = "1.0";
  */
 export const DEFAULT_MAX_POSITION_USD = 85000;
 
+/** SSOT per-ticker notional cap from liveEngineConfig (never unbounded). */
+export function resolveMaxPositionUsd(
+  config: { maxPositionUsd?: number | null } | null | undefined,
+): number {
+  const v = Number(config?.maxPositionUsd);
+  return Number.isFinite(v) && v > 0 ? v : DEFAULT_MAX_POSITION_USD;
+}
+
+/**
+ * Clamp share qty so existing + new notional ≤ maxPositionUsd.
+ * Used by tryLiveEntry (last gate) and pyramidEngine (scale-in bypass path).
+ */
+export function capQtyToPerTickerNotional(args: {
+  maxPositionUsd: number;
+  existingUnits: number;
+  transmitPrice: number;
+  requestedQty: number;
+}): { qty: number; skip: boolean } {
+  const px = Math.max(args.transmitPrice, 2);
+  const existingUsd = Math.abs(args.existingUnits) * px;
+  const remainingUsd = Math.max(0, args.maxPositionUsd - existingUsd);
+  const maxQty = Math.floor(remainingUsd / px);
+  if (maxQty < 1) return { qty: 0, skip: true };
+  const qty = Math.min(Math.max(1, Math.floor(args.requestedQty)), maxQty);
+  return { qty, skip: false };
+}
+
 // ── In-memory state ───────────────────────────────────────────────────────────
 let _liveRunning = false;
 let _lastLiveCycleAt = 0;
@@ -1110,8 +1137,8 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   }
   // Cap actual size to remaining budget
   // Clamp final position size to min/max USD from config
-  const rawSize0 = positionSizeUsd > 0 ? Math.min(positionSizeUsd, perPositionSize * 1.5) : perPositionSize;
   const { minPosUsd: cfgMin, maxPosUsd: cfgMax } = computeLiveCapital(config);
+  const rawSize0 = positionSizeUsd > 0 ? Math.min(positionSizeUsd, cfgMax) : perPositionSize;
   const rawSize = Math.min(Math.max(rawSize0, cfgMin), cfgMax);
   const cappedSize = Math.min(rawSize, remainingBudget);
   // $5,000 minimum per position — but never exceed remaining budget or per-position allocation
@@ -1426,28 +1453,25 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   // same-ticker position entirely (so existing + new could stack past the cap).
   //
   // schema default is 85000 (NOT NULL) — the ?? is a dead-safe fallback only.
-  const _maxPosCapUsd = config?.maxPositionUsd ?? DEFAULT_MAX_POSITION_USD;
-  // Existing same-ticker exposure (DB rows, magnitude). Engine path is usually 0 here
-  // (duplicate-ticker block above), but manual/adoption/phoenix adds can be non-zero;
-  // valued at the resolved live entry so existing + new ≤ maxPositionUsd is enforced.
+  const _maxPosCapUsd = resolveMaxPositionUsd(config);
   const _existingTickerUnits = openPos
     .filter((p) => p.ticker?.toUpperCase() === ticker.toUpperCase())
     .reduce((s, p) => s + Math.abs(Number(p.units ?? 0)), 0);
-  const _existingTickerUsd = _existingTickerUnits * effectiveEntry;
-  const _remainingTickerUsd = Math.max(0, _maxPosCapUsd - _existingTickerUsd);
-  // Hard cap: never more than $remainingTickerUsd / $2 shares (defense against price
-  // cache bugs AND uncapped 1%-risk sizing). Uses aggressiveEntry (the transmit price).
-  const maxAllowedQty = Math.floor(_remainingTickerUsd / Math.max(aggressiveEntry, 2));
-  const qty = Math.min(Math.max(1, rawQty), maxAllowedQty);
-  if (rawQty > maxAllowedQty) {
-    log.warn("LIVE_EXEC", `[QTY Cap] ${ticker} rawQty=${rawQty} capped to ${maxAllowedQty} (maxPositionUsd=${_maxPosCapUsd} existing=$${Math.round(_existingTickerUsd)} remaining=$${Math.round(_remainingTickerUsd)})`);
-  }
-  // If the per-ticker cap leaves no room for even one share, do NOT round Math.max(1,…)
-  // up past the cap — skip the entry rather than place a single over-cap share.
-  if (maxAllowedQty < 1) {
+  const capped = capQtyToPerTickerNotional({
+    maxPositionUsd: _maxPosCapUsd,
+    existingUnits: _existingTickerUnits,
+    transmitPrice: aggressiveEntry,
+    requestedQty: rawQty,
+  });
+  if (capped.skip) {
     await releaseLock();
+    const _existingTickerUsd = _existingTickerUnits * aggressiveEntry;
     log.warn("LIVE_EXEC", `[QTY Cap] ${ticker} no headroom — existing $${Math.round(_existingTickerUsd)} ≥ maxPositionUsd $${Math.round(_maxPosCapUsd)}. SKIPPING entry.`);
     return { entered: false, reason: `Per-ticker cap: existing $${Math.round(_existingTickerUsd)} ≥ max $${Math.round(_maxPosCapUsd)} — no headroom` };
+  }
+  const qty = capped.qty;
+  if (rawQty > qty) {
+    log.warn("LIVE_EXEC", `[QTY Cap] ${ticker} rawQty=${rawQty} capped to ${qty} (maxPositionUsd=${_maxPosCapUsd} existing=${_existingTickerUnits}u)`);
   }
 
   log.info("LIVE_EXEC", `[Entry] ${ticker} ${direction.toUpperCase()} qty=${qty} entry=$${aggressiveEntry} sl=$${slPrice} tp=$${tpPrice}`);

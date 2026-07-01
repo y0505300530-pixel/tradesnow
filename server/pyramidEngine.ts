@@ -33,7 +33,7 @@ import { fetchBarsForTicker, fetchIbkrLivePricesBatch } from "./marketData";
 import { calcZivEngineScore }       from "./zivEngine";
 import { blocksElzaEntry }          from "./catalogStatus";
 import { validateSlTpDirection }    from "./slCalculator";
-import { isLiveMarketOpen, getLiveConfig, assertNotHalted } from "./liveOrderExecutor";
+import { isLiveMarketOpen, getLiveConfig, assertNotHalted, resolveMaxPositionUsd, capQtyToPerTickerNotional } from "./liveOrderExecutor";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const PYRAMID_MIN_ZIV_SCORE  = 8.5;
@@ -149,14 +149,39 @@ export async function runPyramidEngine(userId: number): Promise<number> {
       // ── 6. Sizing + directional SL/TP ───────────────────────────────────
       // Anchor sizing on originalUnits (frozen at first fill) when present, else units.
       const sizeAnchor = (pos as any).originalUnits ?? pos.units;
-      const addUnits = Math.max(1, Math.round(sizeAnchor * PYRAMID_ADD_FRACTION));
+      let addUnits = Math.max(1, Math.round(sizeAnchor * PYRAMID_ADD_FRACTION));
+
+      // ── 6b. PER-TICKER maxPositionUsd (pyramid bypasses tryLiveEntry — must cap here) ──
+      const maxPosUsd = resolveMaxPositionUsd(config);
+      const existingUnits = openPositions
+        .filter((p) => p.ticker.toUpperCase() === pos.ticker.toUpperCase())
+        .reduce((s, p) => s + Math.abs(Number(p.units ?? 0)), 0);
+      // Marketable limit price computed early so cap uses transmit price.
+      const addEntryPreview = +(isLong ? current * 1.005 : current * 0.995).toFixed(2);
+      const cap = capQtyToPerTickerNotional({
+        maxPositionUsd: maxPosUsd,
+        existingUnits,
+        transmitPrice: addEntryPreview,
+        requestedQty: addUnits,
+      });
+      if (cap.skip) {
+        log.info("PYRAMID",
+          `[PyramidEngine] ${pos.ticker} — maxPositionUsd $${maxPosUsd} full (existing ${existingUnits}u ≈ $${Math.round(existingUnits * addEntryPreview)}), skip pyramid`);
+        continue;
+      }
+      if (cap.qty < addUnits) {
+        log.warn("PYRAMID",
+          `[PyramidEngine] ${pos.ticker} pyramid qty ${addUnits}→${cap.qty} (maxPositionUsd $${maxPosUsd})`);
+        addUnits = cap.qty;
+      }
+
       // Add-on SL pinned at the ORIGINAL entry price (principal-protected scale-in).
       const addSl    = +pos.entryPrice.toFixed(2);
       // Inherit the original TP; fall back to a directionally-valid 20% target off the live price.
       const addTp    = +(pos.currentTp ?? (isLong ? current * 1.2 : current * 0.8)).toFixed(2);
 
       // Marketable limit: cross the spread so the add actually fills (BUY +0.5% long, SELL −0.5% short).
-      const addEntry = +(isLong ? current * 1.005 : current * 0.995).toFixed(2);
+      const addEntry = addEntryPreview;
 
       // ── Same NaN / penny guards the executor enforces (tryLiveEntry) ──────
       // A NaN/0/<$2 price is exactly what trips the gateway's positive-price check
