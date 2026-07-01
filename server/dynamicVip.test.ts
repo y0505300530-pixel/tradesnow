@@ -54,6 +54,13 @@ describe("applyTierCaps (INV-4: VIP-A ≤ 12, VIP-B ≤ 20)", () => {
     expect([...caps.values()].filter(t => t === "VIP-B").length).toBe(VIP_B_MAX);
     expect([...caps.values()].filter(t => t === "BENCH").length).toBe(5);
   });
+  it("equal points → kineticScore desc breaks the VIP-A cap tie (§C.5)", () => {
+    const ranked = Array.from({ length: 13 }, (_, i) => ({ ticker: `K${i}`, points: 5, tier: "VIP-A" as VipTier, kineticScore: 100 - i }));
+    const caps = applyTierCaps(ranked);
+    expect(caps.get("K0")).toBe("VIP-A");   // highest kinetic (100) keeps the slot
+    expect(caps.get("K12")).toBe("VIP-B");  // lowest kinetic (88) overflows
+    expect([...caps.values()].filter(t => t === "VIP-A").length).toBe(VIP_A_MAX);
+  });
 });
 
 describe("compareEnterPriority (INV-2: edge > 0.5 always beats a lower tier)", () => {

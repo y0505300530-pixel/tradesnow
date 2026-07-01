@@ -58,10 +58,13 @@ export function scoreVipRank(input: VipRankInput): VipRankResult {
  * applied by the caller BEFORE this. Returns ticker → final tier.
  */
 export function applyTierCaps(
-  ranked: Array<{ ticker: string; points: number; tier: VipTier }>,
+  ranked: Array<{ ticker: string; points: number; tier: VipTier; kineticScore?: number | null }>,
 ): Map<string, VipTier> {
   const out = new Map<string, VipTier>();
-  const byPoints = [...ranked].sort((a, b) => b.points - a.points);
+  // Sort by points desc; ties broken by kineticScore desc (spec §C.5) so the strongest-momentum
+  // name deterministically wins the last VIP-A slot.
+  const byPoints = [...ranked].sort((a, b) =>
+    (b.points - a.points) || ((b.kineticScore ?? 0) - (a.kineticScore ?? 0)));
   let aCount = 0, bCount = 0;
   for (const r of byPoints) {
     if (r.tier === "VIP-A" && aCount < VIP_A_MAX) { out.set(r.ticker, "VIP-A"); aCount++; }
