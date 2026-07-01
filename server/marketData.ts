@@ -347,10 +347,15 @@ export async function fetchLivePrice(ticker: string): Promise<LivePrice | null> 
  */
 export async function fetchBarsForTicker(ticker: string, days = 420): Promise<Bar[]> {
   ticker = normalizeTickerSymbol(ticker);
-  // Only cache the default 420-day request (most common usage)
-  if (days === 420) {
-    const cached = getBarsFromCache(ticker);
-    if (cached) return cached;
+  // In-memory cache: serve the 420-day request directly, and slice sub-420 requests from the
+  // same hot 420 superset (the 90/5-day fetches on the entry path already have this in RAM from
+  // the scan — avoids the 2-query DB path). days>420 falls through unchanged. The DB path below
+  // does the identical slice (line ~372), and the in-memory copy (≤15min TTL) is fresher than
+  // the DB path's ≤7-day acceptance, so the sliced bars are at least as current.
+  const _cached420 = getBarsFromCache(ticker);
+  if (_cached420) {
+    if (days === 420) return _cached420;
+    if (days < 420 && _cached420.length >= days) return _cached420.slice(-days) as Bar[];
   }
   // v20.54: Check DB price cache first.
   // For Deep Analysis / ZivH (historical data only), accept cache up to 48h old.
