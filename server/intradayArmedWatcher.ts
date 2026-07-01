@@ -36,6 +36,7 @@
  */
 
 import { getLiveConfig, isIntradayWatcherEnabled, isIntradayWatcherShadow } from "./liveOrderExecutor";
+import { shouldDeferEnqueue, drainDecision } from "./warRaceDefer";
 import { fetchIbkrLivePricesBatch } from "./marketData";
 import { fetchIntradayBarsForTicker, filterRegularSession, type IntradayBar } from "./intradayMarketData";
 import { getDb } from "./db";
@@ -217,6 +218,11 @@ const _lastConfirmFetchAt = new Map<string, number>();   // ticker → last 5m-b
 
 // ── In-process state machine memory (per ticker, current process/day) ────────────
 const _state = new Map<string, WatcherState>();
+// War-race deferred retry (P1d, INERT unless warRaceDeferQueueEnabled=1): a confirmed breakout
+// whose entry cycle returned a TRANSIENT block (busy latch / 30s gap) is parked here — it is
+// HELD_5M and would NEVER re-fire via the normal path — and re-attempted at the top of later
+// ticks until it enters, the cycle terminally declines it, or its TTL expires. Cleared daily.
+const _deferredArmed = new Map<string, { breakLevel: number; firstSeenMs: number }>();
 let _watcherTickRunning = false;   // module-local reentrancy (separate from F4's _watcherRunning)
 
 /** Israel-time YYYY-MM-DD date key (for the once-daily ARM-state reset). */
@@ -293,6 +299,10 @@ export async function runArmedWatcherTick(userId: number): Promise<void> {
   // · INERT (flag & shadow both 0 ⇒ byte-identical early-return before any work).
   const liveOn = isIntradayWatcherEnabled(config as any);
   const shadowOn = isIntradayWatcherShadow(config as any);
+  // War-race deferred retry gate (INERT unless warRaceDeferQueueEnabled=1) — LIVE mode only
+  // (shadow places no order → nothing to retry). At flag=0 the queue is never touched.
+  const deferOn = liveOn && (((config as any)?.warRaceDeferQueueEnabled ?? 0) === 1);
+  const deferTtlMs = (Number((config as any)?.warRaceDeferTtlSec) || 120) * 1000;
   if (!liveOn && !shadowOn) return;   // ← THE inert early-return
 
   if (_watcherTickRunning) return;   // never overlap our own tick
@@ -304,7 +314,36 @@ export async function runArmedWatcherTick(userId: number): Promise<void> {
       _state.clear();
       _watcherStatus.clear();
       _lastConfirmFetchAt.clear();
+      _deferredArmed.clear();
       _stateDay = day;
+    }
+
+    // ── War-race deferred retry (INERT unless deferOn): re-attempt transient-blocked breakouts
+    //    BEFORE this tick's fresh scan. TTL-bounded; the 30s manual gap naturally serializes so
+    //    at most one real cycle runs per tick (the rest stay queued). Fail-closed per entry. ──
+    if (deferOn && _deferredArmed.size > 0) {
+      const { runWarEngineCycle } = await import("./warEngine");
+      for (const [tk, d] of [..._deferredArmed]) {
+        if (Date.now() - d.firstSeenMs > deferTtlMs) {
+          _deferredArmed.delete(tk);
+          dbLog("info", "SYSTEM", `[ArmedWatcher-Defer] ⏱ ${tk} expired (>${(deferTtlMs / 1000).toFixed(0)}s) — dropped, no stale entry`);
+          continue;
+        }
+        try {
+          const rr = await runWarEngineCycle(userId, { manual: true, onlyTicker: tk });
+          const action = drainDecision(Date.now(), d.firstSeenMs, deferTtlMs, rr.entered, rr.regimeDecision);
+          if (action === "success") {
+            _deferredArmed.delete(tk);
+            dbLog("info", "SYSTEM", `[ArmedWatcher-Defer] ✅ ${tk} entered on retry (recovered a transient-blocked breakout)`);
+          } else if (action === "terminal") {
+            _deferredArmed.delete(tk);
+            dbLog("info", "SYSTEM", `[ArmedWatcher-Defer] ${tk} terminal on retry (${rr.regimeDecision}) — cycle declined, stop retrying`);
+          } // "keep" → still transient within TTL → leave queued for next tick
+        } catch (e) {
+          _deferredArmed.delete(tk);
+          dbLog("warn", "SYSTEM", `[ArmedWatcher-Defer] ${tk} retry threw — dropped: ${String(e).slice(0, 60)}`);
+        }
+      }
     }
 
     const candidates = await loadPersistedCandidates();
@@ -403,6 +442,12 @@ export async function runArmedWatcherTick(userId: number): Promise<void> {
           const r = await runWarEngineCycle(userId, { manual: true, onlyTicker: enterTicker });
           dbLog("info", "SYSTEM",
             `[ArmedWatcher] entry cycle for ${enterTicker} → entered=${r.entered} scanned=${r.scanned}`);
+          // War-race deferred retry (INERT unless deferOn): a confirmed breakout that hit a
+          // TRANSIENT block is HELD_5M now → would NEVER re-fire via the normal path → park it.
+          if (shouldDeferEnqueue(deferOn, r.entered, r.regimeDecision) && enterDetail) {
+            _deferredArmed.set(enterTicker, { breakLevel: enterDetail.breakLevel, firstSeenMs: Date.now() });
+            dbLog("info", "SYSTEM", `[ArmedWatcher-Defer] ⏸ ${enterTicker} transient-blocked (${r.regimeDecision}) — queued for retry (TTL ${(deferTtlMs / 1000).toFixed(0)}s)`);
+          }
         } catch (e) {
           dbLog("warn", "SYSTEM", `[ArmedWatcher] entry cycle threw for ${enterTicker}: ${String(e).slice(0, 80)}`);
         }
