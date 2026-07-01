@@ -1446,6 +1446,15 @@ export const livePositions = mysqlTable("livePositions", {
   // stopped origin's livePositions.id (lineage / per-ticker anti-loop join).
   phoenixGeneration:   tinyint("phoenixGeneration").notNull().default(0),
   originPosId:         int("originPosId"),
+  // ── THE WAITER v1.0 (2026-06-30, §7) — INERT BY DEFAULT ──
+  // A Waiter retest resting LMT is a livePositions row at status="pending_entry",
+  // countsTowardSlot=1 (committed slot), isWaiterEntry=1. ibkrEntryOrderId holds the
+  // resting LMT order id (cancel/re-quote handle). waiterEmaAtPlace = the EMA-20 the
+  // limit was computed off (R2 drift re-quote basis). waiterStage tracks the lifecycle.
+  // Default 0/null → existing rows + the flag-off path are byte-identical.
+  isWaiterEntry:       tinyint("isWaiterEntry").notNull().default(0),     // 1 = a Waiter retest resting LMT
+  waiterEmaAtPlace:    double("waiterEmaAtPlace"),                        // EMA-20 used for the resting limit (re-quote drift basis)
+  waiterStage:         varchar("waiterStage", { length: 24 }),           // 'RESTING' | 'FILLED_ARMING' | 'MANAGED'
 }, (t) => ({
   userIdx:     index("livePositions_userId_idx").on(t.userId),
   statusIdx:   index("livePositions_status_idx").on(t.status),
@@ -1589,6 +1598,34 @@ export const liveEngineConfig = mysqlTable("liveEngineConfig", {
   phoenixMaxPerDay:    int("phoenixMaxPerDay").notNull().default(3),        // ≤N phoenix re-entries / account / day
   phoenix5mPollSec:    int("phoenix5mPollSec").notNull().default(60),       // watcher cadence (seconds)
   phoenixQtyCapMult:   double("phoenixQtyCapMult").notNull().default(1.25), // re-entry qty ≤ originQty × this
+  // ── THE WAITER — retest resting-limit system (2026-06-30, §7) — INERT BY DEFAULT ──
+  // 0 = OFF (DEFAULT): the Waiter tick early-returns before ANY candidate load / order /
+  // DB write / extra fetch; the war cycle's R1 skip and ibkrSync's Waiter reconcile are
+  // no-ops → runtime byte-identical. 1 = arm managed resting-LMT retest entries (1%-risk,
+  // wideLungSL stop, Golden ladder exits — only the entry mechanism changes). Owner-only.
+  waiterEnabled:       tinyint("waiterEnabled").notNull().default(0),
+  // maxRetestSlots — # of concurrent resting/open retests (open + pending_entry LMTs),
+  // counted atomically under the shared entrySlotLock. The 30% sleeve is the harder bound.
+  maxRetestSlots:      int("maxRetestSlots").notNull().default(8),
+  // waiterNlvPct — HARD SUB-CAP within the shared budget+_optimisticBP (NOT a separate
+  // additive sleeve): Σ(open-retest value + resting-retest-LMT notional) + thisOrder ≤ pct×NLV.
+  waiterNlvPct:        double("waiterNlvPct").notNull().default(0.30),
+  // ── Entry Churn Guard (2026-07-01, entry-churn-min-r spec) — INERT BY DEFAULT ──
+  // 0 = OFF (DEFAULT): warEngine builds NO churn ledger (zero extra DB reads), the
+  // long/short blocked sets stay empty, and tryLiveEntry's churn check is a no-op →
+  // runtime byte-identical. 1 = arm: ≤1 automated entry / ticker / Israel calendar day
+  // (C1) + a churnCooldownMin cooldown after ANY close (C2, incl. MANUAL_CLOSE/SL/EOD).
+  // The Waiter retest pipeline is EXEMPT (managed re-entry, not churn). Manual entries
+  // (MANUAL_%) are NOT blocked in v1. Owner-only flip. Build != arm.
+  entryChurnGuardEnabled: tinyint("entryChurnGuardEnabled").notNull().default(0),
+  churnCooldownMin:    int("churnCooldownMin").notNull().default(90),   // C2: minutes after any close before re-entry
+  // ── MIN_R_PCT gate (2026-07-01) — INERT BY DEFAULT ──
+  // 0 = OFF (DEFAULT) or minRValuePct<=0: the geometry gate is skipped → byte-identical.
+  // 1 = arm: skip an entry when |entry−stop|/entry < minRValuePct (the too-tight scalp
+  // that RC-2's MAX_STRUCTURAL_RISK_PCT=0.12 max does NOT catch). Enforced in tryLiveEntry
+  // (the SSOT covering War + manual + alert). Owner-only flip. Build != arm.
+  minRValuePctEnabled: tinyint("minRValuePctEnabled").notNull().default(0),
+  minRValuePct:        double("minRValuePct").notNull().default(0.015),  // 1.5% min risk-per-share floor
   updatedAt:           timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 export type LiveEngineConfig = typeof liveEngineConfig.$inferSelect;

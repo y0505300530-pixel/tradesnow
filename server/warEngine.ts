@@ -49,6 +49,8 @@ import { getUserAssets, getDb } from "./db";
 import { getKronosAddonFromRow, loadKronosConvictionCache, mapKronosAddon, type TradeDir } from "./kronosConvictionJob";
 import { isHtbBlocked, htbRemainingMin, markHtb } from "./htbBlocklist";
 import { tryAcquireEntrySlot, releaseEntrySlot } from "./entrySlotLock";
+import { buildChurnLedger, isChurnBlocked, startOfIsraelDayMs, type ChurnLedger } from "./entryChurnGuard";
+import { assertMinRValuePct } from "./minRValueGate";
 // ── Elza v4.5 Golden-DNA SSOT (validated backtest brain). scoreLong is the SAME
 // pure scorer the validated backtest drives (parity pinned by
 // server/elzaV45ParityProof.test.ts). Used ONLY on the flag=1 entry path. ──
@@ -66,7 +68,7 @@ import { vixSizeBand, vixRiskSize, wideLungSL as elzaWideLungSL } from "./engine
 import { classifyTicker, VOL_CLASS, ELZA_V45_CFG, type VolClass } from "./engine/elzaV45Master";
 import { paperPositions, mentorPatterns, livePositions, liveEntryLock, liveEngineConfig as liveEngineConfigTable } from "../drizzle/schema"
 import { sendTelegramMessage } from "./telegram";;
-import { eq, and, gt, lt, inArray } from "drizzle-orm";
+import { eq, and, gt, lt, inArray, or, gte } from "drizzle-orm";
 import { dbLog } from "./persistentLogger";
 import pLimit from "p-limit";
 
@@ -801,6 +803,40 @@ export async function runWarEngineCycle(
     const shortOpenTickers = new Set<string>([
       ...openPositions.filter(p => p.direction === "short").map(p => p.ticker.toUpperCase()),
     ]);
+
+    // ── Entry Churn Guard ledger (per-cycle cache, like openTickerSet) — INERT@0 ──
+    // When entryChurnGuardEnabled=0 we do ZERO extra DB reads and the ledger stays
+    // empty → the per-candidate churn check below (also flag-gated) never blocks →
+    // runtime byte-identical. When ON, ONE cheap read builds both C1 (automated entry
+    // opened today) and C2 (any close within the cooldown); the pure helper classifies.
+    const _churnGuardOn = ((cfgKv as any)?.entryChurnGuardEnabled ?? 0) === 1;
+    const _churnCooldownMin = Number((cfgKv as any)?.churnCooldownMin ?? 90) || 90;
+    let churnLedger: ChurnLedger = { automatedToday: new Set(), lastCloseAt: new Map() };
+    if (_churnGuardOn) {
+      const _nowMs = Date.now();
+      const _dayStartMs = startOfIsraelDayMs(_nowMs);
+      const _cooldownFromMs = _nowMs - _churnCooldownMin * 60_000;
+      const _churnRows = await db
+        .select({
+          ticker: livePositions.ticker,
+          signal: livePositions.signal,
+          status: livePositions.status,
+          openedAt: livePositions.openedAt,
+          closedAt: livePositions.closedAt,
+        })
+        .from(livePositions)
+        .where(and(
+          eq(livePositions.userId, userId),
+          or(
+            gte(livePositions.openedAt, new Date(_dayStartMs)),
+            and(
+              eq(livePositions.status, "closed" as any),
+              gte(livePositions.closedAt, new Date(_cooldownFromMs)),
+            ),
+          ),
+        ));
+      churnLedger = buildChurnLedger(_churnRows as any, { dayStartMs: _dayStartMs, cooldownFromMs: _cooldownFromMs });
+    }
 
     // Build close series map for correlation checks (exposure set incl. zombies)
     const openCloseMap = new Map<string, number[]>();
@@ -1694,6 +1730,22 @@ export async function runWarEngineCycle(
         dbLog("info", "SYSTEM", `[HTB] ⏭ skip ${c.ticker} — no-fill cooldown (${htbRemainingMin(c.ticker)}m left)`);
         continue;
       }
+      // ── Entry Churn Guard (C1 ≤1 automated entry/ticker/day + C2 cooldown) — INERT@0 ──
+      // Consults the per-cycle ledger built above (empty when the flag is off). War routes
+      // are always automated (GOLD_*/BEAR_*), so no MANUAL_ exemption is needed here; the
+      // Waiter retest pipeline never reaches this loop (its own R1 lock skipped it above).
+      // Skips BEFORE any sizing/price work.
+      if (_churnGuardOn) {
+        const _cg = isChurnBlocked({
+          ticker: c.ticker, direction: c.direction,
+          automatedToday: churnLedger.automatedToday, lastCloseAt: churnLedger.lastCloseAt,
+          nowMs: Date.now(), cooldownMin: _churnCooldownMin,
+        });
+        if (_cg.blocked) {
+          dbLog("info", "SYSTEM", `[ChurnGuard] ${c.ticker} skip: ${_cg.reason}`);
+          continue;
+        }
+      }
       // Hard stop: both position count AND capital budget
       // Use currentOpenCount (updated after each entry) instead of stale openPositions.length
       // ── FIXED (2026-06-22): use running counters — NOT stale openPositions filter ──
@@ -1868,6 +1920,20 @@ export async function runWarEngineCycle(
             `entry $${currentPrice.toFixed(2)} stop $${entrySlTp.stopLoss.toFixed(2)} inval ${c.invalidationLevel != null ? "$" + c.invalidationLevel.toFixed(2) : "n/a"})`
           );
           continue;
+        }
+        // ── MIN_R_PCT gate (log-parity early-skip; the tryLiveEntry gate is authoritative) — INERT@0 ──
+        // RC-2 (above) skips a stop that is TOO FAR; this skips one TOO TIGHT. Cheap pre-sizing
+        // skip off the SAME structural stop so the War log shows the reason. The executor
+        // re-checks off the resolved broker entry (SSOT). INERT when minRValuePctEnabled!=1.
+        if (((cfgKv as any)?.minRValuePctEnabled ?? 0) === 1) {
+          const _mrEarly = assertMinRValuePct({
+            entry: currentPrice, stop: entrySlTp.stopLoss,
+            minRPct: Number((cfgKv as any)?.minRValuePct ?? 0.015),
+          });
+          if (_mrEarly.skip) {
+            dbLog("info", "SYSTEM", `[MinRPct] ${c.ticker} ${_mrEarly.reason}`);
+            continue;
+          }
         }
 
         // ── PER-TICKER TOTAL-EXPOSURE CAP (2026-06-25 concentration guard) ─────────

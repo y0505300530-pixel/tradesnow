@@ -19,7 +19,7 @@ import { resolveConid } from "./conidResolver";
 import { ENV } from "./_core/env";
 import { getDb, getSystemSetting, setSystemSetting } from "./db";
 import { livePositions, liveEngineConfig, liveTrades, liveEntryLock, userAssets } from "../drizzle/schema";
-import { eq, and, inArray, sql, lt } from "drizzle-orm";
+import { eq, and, inArray, sql, lt, or, gte } from "drizzle-orm";
 import { log } from "./logger";
 import { sendTelegramMessage } from "./telegram";
 import { fmtPrice, toPriceNumber } from "./utils/formatPrice";
@@ -29,6 +29,8 @@ import { isGapChase, gapPctFromEntryZone, GAP_GUARD_PCT } from "./gapGuard";
 import { calcZivHScore, type ZivHContext } from "./utils/zivHealth";
 import { safeInsertLivePosition } from "./livePositionsSyncCore";
 import { isGhostSlotsEnabled, rowCountsTowardSlot } from "./ghostSlots";
+import { buildChurnLedger, isChurnBlocked, startOfIsraelDayMs, isAutomatedSignal } from "./entryChurnGuard";
+import { assertMinRValuePct } from "./minRValueGate";
 import { pollEntryFill } from "./liveMarketOrder";
 import { executeLivePartialClose, realDeps, type PartialDeps } from "./executePartial";
 import { withStopModLock } from "./stopModMutex";
@@ -1100,6 +1102,50 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     return { entered: false, reason: `Insufficient budget: need $${actualSize.toFixed(0)} but only $${remainingBudget.toFixed(0)} remaining` };
   }
 
+  // ── Entry Churn Guard (SSOT for War / Armed / LiveEngine) — INERT@0 ───────────
+  // C1 (≤1 automated entry/ticker/Israel-day) + C2 (cooldown after any close). Applies to
+  // NON-manual signals only (MANUAL_% is exempt in v1); the Waiter retest (GOLD_RETEST_WAITER)
+  // is the MANAGED re-entry, not churn — EXEMPT. When the flag is off we do ZERO extra reads
+  // and never block → byte-identical. warEngine ALSO skips these BEFORE sizing; this is the
+  // authoritative backstop that additionally covers any non-warEngine automated caller.
+  if (((config as any)?.entryChurnGuardEnabled ?? 0) === 1
+      && isAutomatedSignal(signal)
+      && signal.toUpperCase() !== "GOLD_RETEST_WAITER") {
+    const _cooldownMin = Number((config as any)?.churnCooldownMin ?? 90) || 90;
+    const _nowMs = Date.now();
+    const _dayStartMs = startOfIsraelDayMs(_nowMs);
+    const _cooldownFromMs = _nowMs - _cooldownMin * 60_000;
+    const _churnRows = await db
+      .select({
+        ticker: livePositions.ticker,
+        signal: livePositions.signal,
+        status: livePositions.status,
+        openedAt: livePositions.openedAt,
+        closedAt: livePositions.closedAt,
+      })
+      .from(livePositions)
+      .where(and(
+        eq(livePositions.userId, userId),
+        or(
+          gte(livePositions.openedAt, new Date(_dayStartMs)),
+          and(
+            eq(livePositions.status, "closed" as any),
+            gte(livePositions.closedAt, new Date(_cooldownFromMs)),
+          ),
+        ),
+      ));
+    const _ledger = buildChurnLedger(_churnRows as any, { dayStartMs: _dayStartMs, cooldownFromMs: _cooldownFromMs });
+    const _cg = isChurnBlocked({
+      ticker, direction,
+      automatedToday: _ledger.automatedToday, lastCloseAt: _ledger.lastCloseAt,
+      nowMs: _nowMs, cooldownMin: _cooldownMin,
+    });
+    if (_cg.blocked) {
+      log.warn("LIVE_EXEC", `[ChurnGuard] ${ticker} skip: ${_cg.reason}`);
+      return { entered: false, reason: `Churn guard: ${_cg.reason}` };
+    }
+  }
+
   // Resolve conid
   // Auto-calculate SL/TP from current price if not provided
   let resolvedEntry = currentPrice;
@@ -1303,6 +1349,23 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     effectiveTp = goldenTp;
     goldenRValue = rValue;
     log.info("LIVE_EXEC", `[GoldenSSOT] ${ticker} ${direction} — wideLungSL stop=$${structuralSl.toFixed(2)} rValue=$${rValue.toFixed(2)} TP(+5R)=$${goldenTp.toFixed(2)} (entry=$${effectiveEntry} ema50=$${ema50Val})`);
+  }
+
+  // ── MIN_R_PCT gate (SSOT: War + manual + alert) — INERT@0 ─────────────────────
+  // Wired AFTER the structural stop is finalized (calcEntrySlTp / wideLungSL, both paths
+  // set effectiveSl above) and BEFORE the conid resolve / order transmit. RC-2's
+  // MAX_STRUCTURAL_RISK_PCT (0.12) skips a stop that is TOO FAR; this is the missing floor
+  // for a stop that is TOO TIGHT: |entry−stop|/entry below minRValuePct is a scalp, not a
+  // tradeable swing (AAPL $288.35 / $286.71 = 0.11% → skip). effectiveEntry/effectiveSl are
+  // the real broker stop across EVERY path here, so this ONE gate covers War, manual and
+  // alert entries. When minRValuePctEnabled!=1 (or minRValuePct<=0) it is a no-op → byte-identical.
+  if (((config as any)?.minRValuePctEnabled ?? 0) === 1) {
+    const _minRPct = Number((config as any)?.minRValuePct ?? 0.015);
+    const _mr = assertMinRValuePct({ entry: effectiveEntry, stop: effectiveSl, minRPct: _minRPct });
+    if (_mr.skip) {
+      log.warn("LIVE_EXEC", `[MinRPct] ${ticker} ${_mr.reason}`);
+      return { entered: false, reason: `Min-R gate: ${ticker} ${_mr.reason}` };
+    }
   }
 
   const conid = await resolveConid(ticker);

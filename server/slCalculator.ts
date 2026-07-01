@@ -58,6 +58,15 @@ export const STRUCT_INVAL_MIN_PCT = 0.002;  // or 0.2% of entry, whichever is la
 // far gone to risk — the CALLER must SKIP the entry. We NEVER rewrite the stop to a
 // flat line (the old `entry×0.85` clamp): a fabricated stop is not the invalidation.
 export const MAX_STRUCTURAL_RISK_PCT = 0.12; // 12%
+// ── MIN structural-risk floor (Entry-Churn / Min-R spec, 2026-07-01) ──────────
+// The MISSING mirror of MAX_STRUCTURAL_RISK_PCT: RC-2 skips a setup whose stop is
+// TOO FAR (risk > 12%); this is the floor for a stop that is TOO TIGHT. An extended
+// mega-cap whose structural stop sits ~0.11% below entry (AAPL $288.35 / stop $286.71
+// = rValue $0.33) is a scalp, not a swing trade — perShareRisk>0 so it passes today.
+// Below this fraction of entry the geometry is not tradeable. Mirrors the config
+// default `minRValuePct`. The GATE is flag-gated (minRValuePctEnabled) in the executor;
+// this constant is the shared default (see server/minRValueGate.ts).
+export const MIN_R_VALUE_PCT = 0.015; // 1.5%
 
 // ─── Scale-out (both modes) ───────────────────────────────────────────────────
 
