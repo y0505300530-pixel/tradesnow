@@ -1111,6 +1111,7 @@ export default function WarRoomLive({
   const { data: cb }    = trpc.liveEngine.getLiveCircuitBreaker.useQuery(undefined, { refetchInterval: 15000 });
   const { data: short } = trpc.liveEngine.getAllowShort.useQuery(undefined, { refetchInterval: 30000 });
   const { data: blk }   = trpc.liveEngine.getBlockedTickers.useQuery(undefined, { refetchInterval: 30000 });
+  const { data: vipMap } = trpc.portfolio.getDynamicVip.useQuery(undefined, { staleTime: 60_000 }); // dynamic VIP tiers → ⭐⭐/⭐/🪑
   const setShort = trpc.liveEngine.setAllowShort.useMutation({ onSuccess: () => refetch() });
 
 
@@ -1737,6 +1738,7 @@ export default function WarRoomLive({
                       onSnooze={(t) => snoozeTicker(t)}
                       watcherStatusMap={(data as any)?.summary?.watcherStatus}
                       selectedTeam={(data as any)?.selectedTeam}
+                      vipTierMap={vipMap as any}
                       openPositionTickers={((data as any)?.positions ?? []).map((p: any) => p?.ticker)}
                       headerExtra={
                         <>

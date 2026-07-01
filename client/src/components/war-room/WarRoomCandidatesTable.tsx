@@ -85,6 +85,8 @@ export type WarRoomCandidatesTableProps = {
    * Accepts an array of tickers (case-insensitive).
    */
   selectedTeam?: string[] | null;
+  /** Dynamic VIP tier map (ticker → VIP-A/VIP-B/BENCH) from getDynamicVip → renders ⭐⭐/⭐/🪑. */
+  vipTierMap?: Record<string, string> | null;
   className?: string;
 };
 
@@ -169,17 +171,25 @@ function SignalTypeBadge({ candidate, compact }: { candidate: WarRoomCandidate; 
 // ── ⭐ נבחרת (Selected Team) chip — owner's priority ticker ─────────────────────
 // Gold/amber, icon + text (never color-alone), ≥11px, wraps cleanly at 375px.
 // Renders nothing unless the ticker is in the owner's selectedTeam set.
-function SelectedTeamChip() {
-  return (
-    <Badge
-      title="נבחרת — טיקר עדיפות של הבעלים"
-      aria-label="נבחרת — טיקר עדיפות של הבעלים"
-      className="px-1.5 py-0.5 min-h-[20px] text-[11px] font-bold tracking-wide gap-1 whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-100"
-    >
+function VipTierChip({ tier }: { tier?: string }) {
+  if (tier === "VIP-A") return (
+    <Badge title="VIP-A — פצצה (מומנטום + מבנה חזק)" aria-label="VIP-A"
+      className="px-1.5 py-0.5 min-h-[20px] text-[11px] font-bold tracking-wide gap-0.5 whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-100">
       <Star className="w-3 h-3 shrink-0 fill-amber-500 text-amber-500" aria-hidden />
-      נבחרת
+      <Star className="w-3 h-3 shrink-0 -ml-1.5 fill-amber-500 text-amber-500" aria-hidden />VIP-A
     </Badge>
   );
+  if (tier === "VIP-B") return (
+    <Badge title="VIP-B — מועמד תקין" aria-label="VIP-B"
+      className="px-1.5 py-0.5 min-h-[20px] text-[11px] font-semibold tracking-wide gap-0.5 whitespace-nowrap bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50">
+      <Star className="w-3 h-3 shrink-0 text-amber-400" aria-hidden />VIP-B
+    </Badge>
+  );
+  if (tier === "BENCH") return (
+    <Badge title="BENCH — ספסל (חלש / מתחת לממוצע)" aria-label="BENCH"
+      className="px-1.5 py-0.5 min-h-[20px] text-[11px] font-medium tracking-wide gap-0.5 whitespace-nowrap bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-100">🪑 BENCH</Badge>
+  );
+  return null;
 }
 
 // Map a raw blockReason / flag → a prominent, color+icon+text badge (WCAG AA).
@@ -471,8 +481,12 @@ export function WarRoomCandidatesTable({
   watcherStatusMap,
   openPositionTickers,
   selectedTeam,
+  vipTierMap,
   className,
 }: WarRoomCandidatesTableProps) {
+  // Dynamic VIP tier per candidate (ticker → VIP-A/VIP-B/BENCH). Empty map ⇒ no chip.
+  const vipTierOf = (c: WarRoomCandidate): string | undefined =>
+    (vipTierMap ?? {})[String(c?.ticker ?? "").toUpperCase()];
   // Owner's "נבחרת" priority set — uppercase, defensive. Falls back to a `selectedTeam`
   // field threaded onto the candidates payload, so the ⭐ chip auto-lights-up whether
   // backhand surfaces it as a top-level prop or rides it on the rows. Empty ⇒ no chip.
@@ -583,7 +597,7 @@ export function WarRoomCandidatesTable({
                         <span className="inline-flex items-center gap-1.5 flex-wrap font-mono font-bold text-base text-slate-900 group-hover:text-blue-700 group-hover:underline">
                           {c.ticker}
                           <ChevronLeft className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
-                          {inSelectedTeam(c) ? <SelectedTeamChip /> : null}
+                          <VipTierChip tier={vipTierOf(c)} />
                         </span>
                         {c.tier ? (
                           <span className="block text-[11px] text-slate-400 font-medium mt-0.5">{c.tier}</span>
@@ -678,7 +692,7 @@ export function WarRoomCandidatesTable({
                       <span className="text-[11px] font-mono text-slate-400 shrink-0">{i + 1}</span>
                       <span className="font-mono font-bold text-base text-slate-900 shrink-0">{c.ticker}</span>
                       <ChevronLeft className="w-4 h-4 text-slate-300 shrink-0" />
-                      {inSelectedTeam(c) ? <span className="shrink-0"><SelectedTeamChip /></span> : null}
+                      <span className="shrink-0"><VipTierChip tier={vipTierOf(c)} /></span>
                       <span className="shrink-0"><SignalTypeBadge candidate={c} compact /></span>
                       {c.tier ? <span className="text-[11px] text-slate-400 truncate">{c.tier}</span> : null}
                     </div>
