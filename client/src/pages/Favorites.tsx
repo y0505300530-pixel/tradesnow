@@ -13,11 +13,27 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw, Upload, Loader2, ArrowUp, ArrowDown } from "lucide-react";
+import { RefreshCw, Upload, Loader2, ArrowUp, ArrowDown, Star } from "lucide-react";
 import { toast } from "sonner";
 
 type SortField = "ticker" | "cmp" | "chng" | "chngPct" | "score";
 type SortDir = "asc" | "desc";
+
+// ─── ⭐ VIP (SELECTED_TEAM) chip — owner's priority ticker ────────────────────
+// Amber, icon + text (never color-alone), ≥11px, wraps cleanly at 375px.
+// Matches the War Room ⭐ נבחרת aesthetic. Renders only when ticker ∈ vip set.
+function VipChip() {
+  return (
+    <span
+      title="נבחרת — VIP priority ticker (owner's SELECTED_TEAM)"
+      aria-label="VIP — SELECTED_TEAM priority ticker"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300 leading-none"
+    >
+      <Star className="w-3 h-3 shrink-0 fill-amber-500 text-amber-500" aria-hidden />
+      VIP
+    </span>
+  );
+}
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Favorites() {
@@ -70,6 +86,24 @@ export default function Favorites() {
     }
     return map;
   }, [portfolioState, h2Data]);
+
+  // ── ⭐ VIP (SELECTED_TEAM) set — owner's priority tickers ─────────────────────
+  // Defensive: backhand exposes `selectedTeam: string[]` (uppercased) on the
+  // favorites list query. It may land as a top-level field on the response OR
+  // ride on the first row — accept either. Empty/absent ⇒ no ⭐ renders, never crashes.
+  const { data: vipList } = trpc.favorites.getSelectedTeam.useQuery(undefined, { staleTime: 60_000 });
+  const vip = useMemo(() => {
+    const raw =
+      (vipList as any) ??
+      (favData as any)?.selectedTeam ??
+      (Array.isArray(favData) ? (favData[0] as any)?.selectedTeam : undefined) ??
+      [];
+    return new Set(
+      (Array.isArray(raw) ? raw : [])
+        .filter((t: any) => t != null)
+        .map((t: any) => String(t).toUpperCase()),
+    );
+  }, [favData, vipList]);
 
   // Map data
   const allAssets = useMemo(() => {
@@ -327,8 +361,11 @@ export default function Favorites() {
                   {/* Ticker — left, bold, large */}
                   <td className="py-2 px-3 text-left">
                     <div className="flex flex-col">
-                      <span className="text-base font-semibold text-gray-900">
-                        {asset.ticker.replace(".TA", "")}
+                      <span className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-base font-semibold text-gray-900">
+                          {asset.ticker.replace(".TA", "")}
+                        </span>
+                        {vip.has(asset.ticker.toUpperCase()) && <VipChip />}
                       </span>
                       <span className="text-[10px] text-gray-400 uppercase leading-tight">
                         {getExchange(asset.ticker)}

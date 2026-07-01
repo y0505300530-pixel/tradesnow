@@ -23,7 +23,7 @@ import {
   Loader2, Zap, ArrowRightLeft, TrendingUp, Search,
   ChevronsUpDown, ChevronUp, ChevronDown,
   Trash2, Plus, CheckSquare, Square, Archive, RotateCcw, ChevronRight, ShoppingCart,
-  BookmarkPlus, CheckCircle2, RefreshCw, BellPlus, X,
+  BookmarkPlus, CheckCircle2, RefreshCw, BellPlus, X, Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScoreBadge, TierBadge } from "@/components/DeepAnalysisModal";
@@ -183,6 +183,22 @@ function ZivBreakdownPopover({ ticker, score }: { ticker: string; score: number 
         )}
       </PopoverContent>
     </Popover>
+  );
+}
+
+// ─── ⭐ VIP (SELECTED_TEAM) chip — owner's priority ticker ────────────────────
+// Amber, icon + text (never color-alone), ≥11px, wraps cleanly at 375px.
+// Matches the War Room ⭐ נבחרת aesthetic. Renders only when ticker ∈ vip set.
+function VipChip() {
+  return (
+    <span
+      title="נבחרת — VIP priority ticker (owner's SELECTED_TEAM)"
+      aria-label="VIP — SELECTED_TEAM priority ticker"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300"
+    >
+      <Star className="w-3 h-3 shrink-0 fill-amber-500 text-amber-500" aria-hidden />
+      VIP
+    </span>
   );
 }
 
@@ -814,6 +830,24 @@ export default function AssetCatalogue() {
         .map(s => s.ticker.toUpperCase())
     );
   }, [mkData]);
+
+  // ── ⭐ VIP (SELECTED_TEAM) set — owner's priority tickers ─────────────────────
+  // Defensive: backhand exposes `selectedTeam: string[]` (uppercased) on the
+  // catalogue query. It may land as a top-level field on the response OR ride
+  // on the first row — accept either. Empty/absent ⇒ no ⭐ renders, never crashes.
+  const { data: vipList } = trpc.portfolio.getSelectedTeam.useQuery(undefined, { staleTime: 60_000 });
+  const vip = useMemo(() => {
+    const raw =
+      (vipList as any) ??
+      (catalogueDbData as any)?.selectedTeam ??
+      (Array.isArray(catalogueDbData) ? (catalogueDbData[0] as any)?.selectedTeam : undefined) ??
+      [];
+    return new Set(
+      (Array.isArray(raw) ? raw : [])
+        .filter((t: any) => t != null)
+        .map((t: any) => String(t).toUpperCase()),
+    );
+  }, [catalogueDbData, vipList]);
 
   // ── Active Price Alerts (for ✓ checkmark in catalogue) ──────────────────────
   const { data: activeAlertsData } = trpc.priceAlerts.getAll.useQuery(undefined, {
@@ -1447,6 +1481,7 @@ export default function AssetCatalogue() {
                   >
                     {r.ticker}
                   </button>
+                  {vip.has(r.ticker.toUpperCase()) && <VipChip />}
                   {holdingTickers.has(r.ticker.toUpperCase()) && (
                     <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-400">H1</span>
                   )}
@@ -1634,9 +1669,12 @@ export default function AssetCatalogue() {
                         </button>
                       </TableCell>
                       <TableCell>
-                        <button className="text-[#2563EB] hover:underline font-mono font-bold text-xs" onClick={() => navigate(`/deep-analysis/${encodeURIComponent(r.ticker)}`)}>
-                          {r.ticker}
-                        </button>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <button className="text-[#2563EB] hover:underline font-mono font-bold text-xs" onClick={() => navigate(`/deep-analysis/${encodeURIComponent(r.ticker)}`)}>
+                            {r.ticker}
+                          </button>
+                          {vip.has(r.ticker.toUpperCase()) && <VipChip />}
+                        </div>
                       </TableCell>
                       {/* Sector Badge */}
                       <TableCell>
@@ -1845,6 +1883,7 @@ export default function AssetCatalogue() {
                   >
                     {r.ticker}
                   </button>
+                  {vip.has(r.ticker.toUpperCase()) && <VipChip />}
                   {holdingTickers.has(r.ticker.toUpperCase()) && (
                     <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-400">H1</span>
                   )}
@@ -1965,9 +2004,12 @@ export default function AssetCatalogue() {
                         </button>
                       </TableCell>
                       <TableCell>
-                        <button className="text-[#2563EB] hover:underline font-mono font-bold text-xs" onClick={() => navigate(`/deep-analysis/${encodeURIComponent(r.ticker)}`)}>
-                          {r.ticker}
-                        </button>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <button className="text-[#2563EB] hover:underline font-mono font-bold text-xs" onClick={() => navigate(`/deep-analysis/${encodeURIComponent(r.ticker)}`)}>
+                            {r.ticker}
+                          </button>
+                          {vip.has(r.ticker.toUpperCase()) && <VipChip />}
+                        </div>
                       </TableCell>
                       {/* Sector Badge */}
                       <TableCell>

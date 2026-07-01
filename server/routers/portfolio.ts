@@ -67,6 +67,7 @@ import {
 import { log } from "../logger";
 import { swrGet, swrInvalidate } from "../swrCache";
 import { computeCompositeScore } from "../kronosEngine";
+import { getSelectedTeamSet } from "../selectedTeam";
 
 /** NYSE trading hours guard: Mon–Fri 09:30–16:00 ET */
 function isNyseOpen(): boolean {
@@ -1685,6 +1686,21 @@ Return structured JSON.`;
     });
       }, // end swrGet fetcher
     );
+  }),
+
+  /**
+   * getSelectedTeam — read-only VIP / SELECTED_TEAM ticker set (uppercased) so the
+   * Asset Catalogue UI can badge those rows. SSOT is systemSettings.selected_team via
+   * getSelectedTeamSet() (60s cache, fails open to DEFAULT_SELECTED_TEAM). No DB write,
+   * no userAssets.label mutation. Fails open to [] — never breaks the catalogue list.
+   */
+  getSelectedTeam: protectedProcedure.query(async () => {
+    try {
+      const team = await getSelectedTeamSet();
+      return [...team];
+    } catch {
+      return [] as string[];
+    }
   }),
 
   // ── Daily Review: Ziv-model daily portfolio health check ─────────────────

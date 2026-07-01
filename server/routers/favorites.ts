@@ -17,6 +17,7 @@ import { swrInvalidate } from "../swrCache";
 import { getDb } from "../db";
 import { ibkrConidCache, userAssets } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
+import { getSelectedTeamSet } from "../selectedTeam";
 
 // ── Helper: rebuild a single IBKR watchlist ─────────────────────────────────
 // Generate a random numeric ID (IBKR requires digits only, must be unique)
@@ -157,6 +158,21 @@ export const favoritesRouter = router({
       hotSignal: a.hotSignal === 1 || a.hotSignal === true,
       scannedAt: a.scannedAt ?? null,
     }));
+  }),
+
+  /**
+   * getSelectedTeam — read-only VIP / SELECTED_TEAM ticker set (uppercased) so the
+   * Favorites UI can badge those rows. SSOT is systemSettings.selected_team via
+   * getSelectedTeamSet() (60s cache, fails open to DEFAULT_SELECTED_TEAM). No DB
+   * write, no userAssets.label mutation. Fails open to [] — never breaks the list.
+   */
+  getSelectedTeam: protectedProcedure.query(async () => {
+    try {
+      const team = await getSelectedTeamSet();
+      return [...team];
+    } catch {
+      return [] as string[];
+    }
   }),
 
   /**
