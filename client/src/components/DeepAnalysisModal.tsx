@@ -348,8 +348,9 @@ export function DeepAnalysisModal({
       if (!data.success) {
         throw new Error(data.reason ?? "הפקודה נדחתה");
       }
-      const serverSl = data.stopLoss;
-      const serverTp = data.takeProfit;
+      const serverSl = (data as { sl?: number; stopLoss?: number }).sl ?? (data as { stopLoss?: number }).stopLoss;
+      const serverTp = (data as { tp?: number; takeProfit?: number }).tp ?? (data as { takeProfit?: number }).takeProfit;
+      const isPendingSubmit = !!(data.orderId && data.ibkrMessage?.includes("ממתינה"));
       const hasVerifiedProtection =
         serverSl != null && serverTp != null && serverSl > 0 && serverTp > 0;
       setOrderPopupData({
@@ -364,6 +365,7 @@ export function DeepAnalysisModal({
         estimatedValueUsd: estUsd,
         clientOrderId,
         trackPositionClose: input.intent === "close_long" || input.intent === "close_short",
+        immediateStatus: isPendingSubmit ? null : undefined,
         protection: hasVerifiedProtection
           ? { stopLoss: serverSl, takeProfit: serverTp, verified: true }
           : undefined,

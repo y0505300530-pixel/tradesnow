@@ -1208,9 +1208,22 @@ export const liveEngineRouter = {
             positionSizeUsd: input.quantity * px,
             companyName: ticker,
           });
-          log.info("LIVE_EXEC", `placeManualOrder ${input.intent} ${ticker} x${input.quantity} → entered=${res.entered} sl=${res.sl} tp=${res.tp}`, { userId, reason: res.reason });
-          // C3: surface the REAL orderId + SL/TP the server placed so the UI banner shows verified values
-          return done({ success: res.entered, orderId: res.orderId ?? null, sl: res.sl, tp: res.tp, ticker, side, quantity: input.quantity, orderType: "LMT", reason: res.reason });
+          log.info("LIVE_EXEC", `placeManualOrder ${input.intent} ${ticker} x${input.quantity} → entered=${res.entered} pending=${!!res.pending} sl=${res.sl} tp=${res.tp}`, { userId, reason: res.reason });
+          const submittedPending = !res.entered && !!res.pending && !!res.orderId;
+          return done({
+            success: res.entered || submittedPending,
+            orderId: res.orderId ?? null,
+            sl: res.sl,
+            tp: res.tp,
+            ticker,
+            side,
+            quantity: input.quantity,
+            orderType: "LMT",
+            reason: res.reason,
+            ibkrMessage: submittedPending
+              ? "פקודה הועברה ל-IBKR — ממתינה למילוי (LMT bracket)"
+              : res.reason,
+          });
         }
 
         // CLOSE — only on a tracked position. Engine-blind positions must be adopted by the

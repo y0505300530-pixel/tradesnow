@@ -1022,7 +1022,7 @@ async function attemptZivRotationFlush(args: {
   return { flushed: true, freedPositionId: weakest.id, reason: `flushed ${weakest.ticker} Ziv ${healthStr}` };
 }
 
-export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: boolean; reason: string; orderId?: string | null; sl?: number; tp?: number }> {
+export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: boolean; pending?: boolean; reason: string; orderId?: string | null; sl?: number; tp?: number }> {
   const { userId, ticker, direction, signal, zivScore, currentPrice, slPrice, tpPrice, positionSizeUsd, sizingStop, sizingEntryPrice } = params;
 
   const config = await getLiveConfig(userId);
@@ -1793,7 +1793,7 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   }
 
   // ── Phase 4: Poll real fill — do not assume full fill at submission ─────────
-  const fillInfo = await pollEntryFill(finalEntryOrderId, qty, 3);
+  const fillInfo = await pollEntryFill(finalEntryOrderId, qty, isManualEntry ? 10 : 3);
   if (fillInfo.status === "cancelled") {
     await releaseLock();
     return { entered: false, reason: `Entry order cancelled/rejected for ${ticker}` };
@@ -1934,7 +1934,16 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     // surfaced as "[WarEngine] Entry error … dbLog is not defined". Use the imported `log` instead.
     log.info("LIVE_EXEC", `[Entry] ${ticker} no fill yet — pending_entry pos ${newPosId} kept (orderId=${finalEntryOrderId})`);
     await releaseLock();
-    return { entered: false, reason: `${ticker} entry pending — no fill confirmed yet`, orderId: finalEntryOrderId, sl: effectiveSl, tp: effectiveTp };
+    return {
+      entered: false,
+      pending: true,
+      reason: isManualEntry
+        ? `פקודה נשלחה ל-IBKR — ממתינה למילוי (${ticker})`
+        : `${ticker} entry pending — no fill confirmed yet`,
+      orderId: finalEntryOrderId,
+      sl: effectiveSl,
+      tp: effectiveTp,
+    };
   }
 
   // Telegram notification
