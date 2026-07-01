@@ -163,9 +163,14 @@ function computeTodayPnl(
     return positionTodayPnlFromEntry(price, buyPrice, units);
   }
 
-  // Priority 1: IBKR live change $ — most accurate (0 is valid on flat days)
+  // Priority 1: IBKR live change $ — most accurate (0 is valid on a flat day)
   if (live?.change != null) {
-    return live.change * units;
+    if (live.change !== 0) return live.change * units;
+    // change=0 after TASE close may be server-stale; trust prevClose when price moved
+    if (live.price != null && live.prevClose != null && live.prevClose > 0 && live.price !== live.prevClose) {
+      return (live.price - live.prevClose) * units;
+    }
+    return 0;
   }
   // Priority 2: prevClose-based (when IBKR provides explicit prevClose)
   if (live?.price != null && live.prevClose != null && live.prevClose > 0) {
@@ -301,13 +306,18 @@ export function usePortfolioMetrics({
       h2TotalValue += price * absUnits;
       h2TotalCost  += h.buyPrice * absUnits;
       // Skip today PnL based on market state:
-      // - .TA tickers: skip when TASE is closed (Fri/Sat/holiday)
-      // - US tickers: skip when US market is fully closed AND no live IBKR data
-      //   (if IBKR returns valid change data from after-hours/futures, show it)
-      // - Crypto (-USD): always compute (24/7 market)
+      // - .TA tickers: on Sat/Sun/holiday skip only when no daily baseline
+      // - US tickers: skip when US market fully closed AND no live IBKR data
       const isTaTicker = h.ticker.toUpperCase().endsWith('.TA');
       const isCryptoTicker = h.ticker.toUpperCase().endsWith('-USD');
-      if (isTaTicker && taseClosedNow) continue;
+      if (isTaTicker && taseClosedNow) {
+        const hasDailyBaseline =
+          live?.change != null
+          || (live?.prevClose != null && live.prevClose > 0)
+          || (live?.changePercent != null && live.changePercent !== 0)
+          || (h.dailyBasePrice != null && h.dailyBasePrice > 0);
+        if (!hasDailyBaseline) continue;
+      }
       if (!isTaTicker && !isCryptoTicker && usClosedNow) {
         // Only skip if there's no live IBKR data for this ticker
         const hasLiveData = (live?.change != null && live.change !== 0)

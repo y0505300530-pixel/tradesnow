@@ -305,6 +305,17 @@ export function isTaseClosed(now: Date = new Date()): boolean {
   return !isTaseOpen(now) && !isTasePreOpen(now);
 }
 
+/**
+ * True when TASE does not trade **at all today** (Sat/Sun or TASE holiday).
+ * NOT true on weekday evenings after 17:30 — session results must still display.
+ * Mirrors client `isTaseClosedToday()` in `client/src/lib/marketStatus.ts`.
+ */
+export function isTaseClosedToday(now: Date = new Date()): boolean {
+  const { day } = getIsraelTime(now);
+  if (day === 0 || day === 6) return true;
+  return isTaseHoliday(now);
+}
+
 /** IBKR sync / live SL enforcement — run when either US or TASE regular session is open */
 export function isIbkrSyncMarketOpen(now: Date = new Date()): boolean {
   return isUsOpen(now) || isTaseOpen(now);

@@ -436,7 +436,14 @@ export function usePortfolioAnalytics(): PortfolioAnalyticsResult {
       const isCryptoTicker = h.ticker?.toUpperCase().endsWith('-USD');
       let todayPnl = 0;
       if (isTaTicker && taseClosedNow) {
-        todayPnl = 0;
+        const hasDailyBaseline =
+          live?.change != null
+          || (live?.prevClose != null && live.prevClose > 0)
+          || (live?.changePercent != null && live.changePercent !== 0)
+          || (h.dailyBasePrice != null && h.dailyBasePrice > 0);
+        todayPnl = hasDailyBaseline
+          ? computeTodayPnl(h.units, h.buyPrice, h.currentPrice, live, h.dailyChangePercent, h.priceUpdatedAt, h.dailyBasePrice, h.dailyBaseTs, undefined, h.transactionDate, h.createdAt)
+          : 0;
       } else if (!isTaTicker && !isCryptoTicker && usClosedNow) {
         todayPnl = 0;
       } else {

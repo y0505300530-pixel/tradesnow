@@ -677,8 +677,8 @@ Provide JSON with two fields:
       const tickers = input.tickers.map(t => t.toUpperCase());
       const priceMap = await fetchIbkrLivePricesBatch(tickers);
       // Check if TASE is closed (holiday/weekend) — zero out change for .TA tickers
-      const { isTaseClosed } = await import("../utils/marketHours");
-      const taseIsClosed = isTaseClosed();
+      const { isTaseClosedToday } = await import("../utils/marketHours");
+      const taseNoSessionToday = isTaseClosedToday();
 
       // Per-ticker DB fallback: if ANY ticker has null live price, load DB cache
       // so that ticker gets the last known price (fixes race condition where stocks
@@ -702,9 +702,10 @@ Provide JSON with two fields:
       return tickers.map(ticker => {
         const live = priceMap.get(ticker);
         const db = dbPriceMap.get(ticker);
-        // When TASE is closed (holiday/weekend), zero out today's change for .TA tickers
+        // Zero .TA change only when TASE has no session today (weekend/holiday) — NOT after
+        // weekday 17:30 close (owner needs end-of-TASE Today% on Overview).
         const isTaTicker = ticker.endsWith('.TA');
-        const zeroChange = isTaTicker && taseIsClosed;
+        const zeroChange = isTaTicker && taseNoSessionToday;
         return {
           ticker,
           price: live?.price ?? db?.price ?? null,

@@ -17,7 +17,7 @@
 import { Express, Request, Response } from "express";
 import { sdk } from "../_core/sdk";
 import { fetchIbkrLivePricesBatch } from "../marketData";
-import { isTaseClosed } from "../utils/marketHours";
+import { isTaseClosedToday } from "../utils/marketHours";
 
 // ── Trading hours helpers ──────────────────────────────────────────────────────
 
@@ -132,13 +132,12 @@ export function registerPriceStreamRoute(app: Express) {
       if (closed || res.writableEnded) return;
       try {
         const priceMap = await fetchIbkrLivePricesBatch(tickers);
-        const taseClosedNow = isTaseClosed();
+        const taseNoSessionToday = isTaseClosedToday();
         for (const ticker of tickers) {
           if (closed || res.writableEnded) break;
           const live = priceMap.get(ticker);
-          // When TASE is closed (holiday/weekend), zero out change for .TA tickers
           const isTaTicker = ticker.endsWith('.TA');
-          const zeroChange = isTaTicker && taseClosedNow;
+          const zeroChange = isTaTicker && taseNoSessionToday;
           const payload = {
             ticker,
             price: live?.price ?? null,
