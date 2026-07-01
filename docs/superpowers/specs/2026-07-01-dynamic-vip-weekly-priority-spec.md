@@ -1,17 +1,28 @@
-# Dynamic VIP — טבלת עדיפות שבועית למועמדים
+# Dynamic VIP — טבלת עדיפות יומית למועמדים
 
 > **תאריך:** 1 ביולי 2026  
-> **סטטוס:** **ACCEPTED** (owner-ratified 2026-07-01)  
+> **סטטוס:** **ACCEPTED** (owner-ratified 2026-07-01, **amendment v2** אותו יום)  
 > **מקור-אמת:** Git (`main`) · פריסה רק דרך `/root/deploy-tradesnow.sh`  
-> **קשור:** [`server/selectedTeam.ts`](../../../server/selectedTeam.ts), [`docs/bugs/2026-07-01-gold-retest-ema50-gate.md`](../../bugs/2026-07-01-gold-retest-ema50-gate.md), [`docs/superpowers/specs/2026-06-30-elza-priority-roadmap-spec.md`](./2026-06-30-elza-priority-roadmap-spec.md)
+> **Handoff לקלוד:** [`2026-07-01-dynamic-vip-claude-handoff.md`](./2026-07-01-dynamic-vip-claude-handoff.md)  
+> **קשור:** [`server/selectedTeam.ts`](../../../server/selectedTeam.ts) (**deprecated** כש-dynamic פעיל), [`docs/bugs/2026-07-01-gold-retest-ema50-gate.md`](../../bugs/2026-07-01-gold-retest-ema50-gate.md)
+
+---
+
+## Amendment v2 (owner — אותו יום)
+
+| נושא | v1 (מבוטל) | **v2 (מאושר)** |
+|------|------------|----------------|
+| תדירות | ראשון 17:00, שבועי | **כל יום 17:00 Asia/Jerusalem** |
+| `selected_team` | legacy + מינימום VIP-B | **לא רלוונטי** — מתעלמים לחלוטין כש-`dynamicVipEnabled=1` |
+| מקור VIP | מיזוג static + dynamic | **`dynamic_vip` בלבד** (+ pin/demote/snooze ידני) |
 
 ---
 
 ## Executive Summary
 
-**הבעיה:** מניות חלשות (דוגמה חיה: **MTSI**, **RIOT** — מתחת לממוצע, פוטנציאל נמוך) תופסות **סלוטים + תקציב** בזמן שבשוק יש **פצצות אנרגיה** עם ENTER אמיתי. רשימת ה-VIP (`SELECTED_TEAM`) היום **סטטית** ב-`systemSettings.selected_team` — לא מתעדכנת לפי מומנטום שבועי.
+**הבעיה:** מניות חלשות (דוגמה חיה: **MTSI**, **RIOT** — מתחת לממוצע, פוטנציאל נמוך) תופסות **סלוטים + תקציב** בזמן שבשוק יש **פצצות אנרגיה** עם ENTER אמיתי. רשימת `SELECTED_TEAM` הייתה **סטטית** — owner מאשר: **כבר לא רלוונטית**.
 
-**הפתרון המוצע:** להחליף/להרחיב את ה-VIP ל**טבלה דינמית שבועית** בתוך אוניברס המועמדים — שלוש דרגות (`VIP-A` / `VIP-B` / `BENCH`) שמשפיעות על **סדר כניסה, תצוגה, ותעדוף תקציב** — **בלי** לעקוף שערי ENTER קיימים.
+**הפתרון:** **טבלה דינמית יומית** — שלוש דרגות (`VIP-A` / `VIP-B` / `BENCH`) שמתעדכנות **כל יום 17:00 IL** לפני pre-RTH. משפיעות על **סדר כניסה, תצוגה, ותעדוף תקציב** — **בלי** לעקוף שערי ENTER.
 
 **עקרון זהב (נשמר):** `Rank boost ≠ gate bypass` — דרגה נמוכה **לא** מבטלת RC2 / gapGuard / sector cap; היא רק משנה **מי מקבל את הסלוט האחרון** כשיש תחרות.
 
@@ -24,7 +35,7 @@
 | **RIOT** | כניסת `GOLD_RETEST_WAR` מתחת ל-EMA50 ("סכין נופלת") | מכירה ידנית | Snooze 720h (DB) · תיקון Gold Retest ב-`elzaV45Master` (ענף multi-account) |
 | **MTSI** | חלשה, מתחת לממוצע, פוטנציאל נמוך | מכירה ידנית | Snooze 720h (DB) |
 
-**לקח:** Snooze הוא **פלסטר ידני**. צריך מנגנון שבועי שמוריד אוטומטית מניות כאלה ל-`BENCH` **לפני** שהן תופסות סלוט, ומעלה פצצות אנרגיה ל-`VIP-A`.
+**לקח:** Snooze הוא **פלסטר ידני**. צריך מנגנון **יומי** שמוריד אוטומטית מניות כאלה ל-`BENCH` **לפני** שהן תופסות סלוט, ומעלה פצצות אנרגיה ל-`VIP-A`.
 
 ---
 
@@ -32,7 +43,7 @@
 
 | ID | מטרה |
 |----|------|
-| G1 | **VIP דינמי** — רענון אוטומטי **פעם בשבוע** (לפני RTH יום שני) על כל אוניברס המועמדים |
+| G1 | **VIP דינמי** — רענון אוטומטי **כל יום 17:00 IL** (לפני pre-RTH) על כל אוניברס המועמדים |
 | G2 | **תעדוף סלוט/תקציב** — `VIP-A` נכנס לפני `VIP-B` לפני `BENCH` בלולאת ה-ENTER (בתנאי שכולם עברו gates) |
 | G3 | **שחרור סלוטים** — מניה ב-`BENCH` עם פוזיציה פתוחה: תג רוטציה · לא pyramid · **Phase 2:** exit אוטומטי מואץ (ZIM / Diamond Hands) |
 | G4 | **שקיפות** — War Room + קטלוג מציגים דרגה, סיבת דירוג, ותאריך רענון אחרון |
@@ -49,10 +60,10 @@
 
 ---
 
-## מצב נוכחי (AS-IS)
+## מצב נוכחי (AS-IS) — יוצא משימוש
 
 ```
-systemSettings.selected_team  →  JSON סטטי (~15 tickers)
+systemSettings.selected_team  →  JSON סטטי (~15 tickers)  ← DEPRECATED (v2)
        ↓
 getSelectedTeamSet()  (cache 60s)
        ↓
@@ -62,7 +73,9 @@ getSelectedTeamSet()  (cache 60s)
 └──────────────────────────────────────────────────────────────┘
 ```
 
-**פער:** רשימה סטטית לא משקפת:
+**v2:** כש-`dynamicVipEnabled=1` — **הנתיב למעלה לא רץ**. מקור יחיד: `dynamic_vip`.
+
+**פער שהיה:** רשימה סטטית לא משקפת:
 - מחיר מול EMA50 / EMA200
 - `kineticScore` (percentile 0–100 ב-`userAssets`)
 - חום סקטור (אנרגיה השבוע)
@@ -82,7 +95,7 @@ getSelectedTeamSet()  (cache 60s)
 
 **גודל יעד (מאושר):** `VIP-A` = עד **12** טיקרים (קבוע, לא קשור ל-`maxPositions`) · `VIP-B` = עד **20** · השאר = `BENCH`.
 
-### 2. קריטריוני דירוג שבועי (אלגוריתם v1)
+### 2. קריטריוני דירוג יומי (אלגוריתם v1)
 
 רץ על טיקרים עם `catalogStatus != IPO_INCUBATOR` ו-`kineticScore != null`.
 
@@ -117,23 +130,24 @@ structural + momentum + sector >= 3  →  VIP-B  (עד 20)
 
 **דוגמה:** MTSI/RIOT עם `close < EMA50` → **BENCH** אוטומטית (גם בלי snooze).
 
-### 3. רענון שבועי
+### 3. רענון יומי
 
 | פרמטר | ערך |
 |--------|-----|
-| תזמון | **ראשון 17:00 Asia/Jerusalem** (לפני pre-RTH) |
-| טריגר | `alertPoller` cron חדש או job ב-`scripts/refresh-dynamic-vip.ts` |
-| אחסון | `systemSettings.dynamic_vip` — JSON עם `weekId`, `refreshedAt`, `tiers: { VIP-A: [], VIP-B: [], BENCH: [] }`, `reasons: { TICKER: "below_ema50" }` |
-| גיבוי | שמירת snapshot קודם ב-`dynamic_vip_prev` לאודיט |
+| תזמון | **כל יום 17:00 Asia/Jerusalem** (לפני pre-RTH) |
+| טריגר | `alertPoller` cron יומי + `scripts/refresh-dynamic-vip.ts` (CLI / dry-run) |
+| אחסון | `systemSettings.dynamic_vip` — JSON עם `dayId` (`YYYY-MM-DD`), `refreshedAt`, `tiers: { "VIP-A": [], "VIP-B": [], "BENCH": [] }`, `scores: { TICKER: 6 }`, `reasons: { TICKER: "below_ema50" }` |
+| גיבוי | snapshot קודם ב-`dynamic_vip_prev` לאודיט |
 
-### 4. Override של owner
+### 4. Override של owner (היחיד מעל האלגוריתם)
 
 | פעולה | מפתח / טבלה | התנהגות |
 |--------|-------------|----------|
 | **Pin to VIP-A** | `dynamic_vip_pins` | נשאר VIP-A עד ביטול, גם אם אלגוריתם היה מוריד |
 | **Demote to BENCH** | `dynamic_vip_demotes` | נשאר BENCH עד ביטול |
-| **Snooze** | `snoozedTickers` (קיים) | לא נסרק לכניסה — **חזק מ-BENCH** |
-| **Legacy selected_team** | נשמר | Phase 0: merge — pin קיים ב-`selected_team` → auto VIP-B minimum |
+| **Snooze** | `snoozedTickers` (קיים) | לא נסרק לכניסה — **חזק מכל tier** |
+
+> **`selected_team` — נמחק (v2).** migration 0149 מסיר את השורה. אין legacy, אין merge.
 
 ### 5. אינטגרציה במנוע
 
@@ -147,7 +161,7 @@ structural + momentum + sector >= 3  →  VIP-B  (עד 20)
 שלב א — מיון ראשי (תמיד):
   1. finalScore desc
   2. kineticScore desc
-  3. legacy selectedTeam tiebreak
+  3. ticker asc (tiebreak יציב — אין selected_team)
 
 שלב ב — שבירת שוויון tier (רק אם |scoreA − scoreB| ≤ 0.5):
   tierRank desc   (VIP-A=3, VIP-B=2, BENCH=1)
@@ -168,7 +182,7 @@ Snoozed מסוננים לפני המיון (כמו היום).
 #### 5.2 תצוגה / Armed Watcher
 
 - `effectiveSortScore` משתמש ב-boost לפי דרגה: A=+0.6, B=+0.2, BENCH=0
-- `buildArmList`: tiebreak לפי tier לפני selectedTeam
+- `buildArmList`: tiebreak לפי tier (אין selectedTeam)
 
 #### 5.3 תקציב / pyramid
 
@@ -197,8 +211,8 @@ Snoozed מסוננים לפני המיון (כמו היום).
 
 ```typescript
 // systemSettings / liveConfig
-dynamicVipEnabled: 0      // default — התנהגות AS-IS (selected_team בלבד)
-dynamicVipEnabled: 1      // owner arm — דירוג שבועי פעיל
+dynamicVipEnabled: 0      // default — התנהגות AS-IS (selected_team legacy בלבד)
+dynamicVipEnabled: 1      // owner arm — דירוג יומי; selected_team מתעלם
 benchAutoExitEnabled: 0   // default — Phase 2 exit כבוי
 benchAutoExitEnabled: 1   // owner arm — ZIM/Diamond מואץ על BENCH
 ```
@@ -212,7 +226,7 @@ benchAutoExitEnabled: 1   // owner arm — ZIM/Diamond מואץ על BENCH
 | **War Room — מועמדים** | עמודת `VIP` (⭐⭐ / ⭐ / 🪑) + tooltip סיבה |
 | **War Room — פוזיציות** | תג רוטציה ל-BENCH |
 | **קטלוג** | מיון ברירת מחדל: VIP-A → VIP-B → kineticScore; ⭐ דינמי במקום רשימה סטטית |
-| **הגדרות** | פאנל "VIP שבועי": רשימה, תאריך רענון, כפתורי Pin/Demote, לינק ל-snapshot |
+| **הגדרות** | פאנל "VIP יומי": רשימה, `dayId`, תאריך רענון, Pin/Demote, snapshot אתמול |
 
 ---
 
@@ -223,7 +237,7 @@ benchAutoExitEnabled: 1   // owner arm — ZIM/Diamond מואץ על BENCH
 | `systemSettings.dynamic_vip` | JSON — **אין migration 0147** (settings row בלבד) |
 | `systemSettings.dynamic_vip_pins` | JSON array |
 | `systemSettings.dynamic_vip_demotes` | JSON array |
-| `selected_team` | **לא נמחק** — נשאר fallback + seed; deprecate בהדרגה |
+| `selected_team` | **נמחק** — migration `0149_delete_selected_team.sql` · לא לשחזר seed |
 
 אין שינוי `userAssets` schema ב-Phase 0.
 
@@ -233,13 +247,13 @@ benchAutoExitEnabled: 1   // owner arm — ZIM/Diamond מואץ על BENCH
 
 | קובץ | שינוי |
 |------|--------|
-| `server/dynamicVip.ts` | **חדש** — SSOT: `getVipTier()`, `refreshWeeklyVip()`, `tierSortKey()` |
-| `server/selectedTeam.ts` | deprecate הדרגתי; re-export מ-`dynamicVip` כש-flag על |
-| `server/warEngine.ts` | מיון ENTER + sort display |
-| `server/intradayArmedWatcher.ts` | tiebreak tier |
+| `server/dynamicVip.ts` | **חדש** — SSOT: `getVipTier()`, `refreshDailyVip()`, `tierSortKey()` |
+| `server/selectedTeam.ts` | **@deprecated** — כש-flag על: delegate ל-`dynamicVip` / Set ריק |
+| `server/warEngine.ts` | מיון ENTER + sort display; הסר selectedTeam |
+| `server/intradayArmedWatcher.ts` | tiebreak tier בלבד |
 | `server/pyramidEngine.ts` | BENCH skip |
 | `server/liveEngine.ts` / manage loop | Phase 2: BENCH accelerated ZIM/Diamond |
-| `server/alertPoller.ts` | cron שבועי |
+| `server/alertPoller.ts` | cron **יומי** 17:00 IL |
 | `scripts/refresh-dynamic-vip.ts` | CLI ידני + dry-run |
 | `server/routers/portfolio.ts` | `getDynamicVip` tRPC |
 | `client/.../WarRoomCandidatesTable.tsx` | עמודת tier |
@@ -255,9 +269,11 @@ benchAutoExitEnabled: 1   // owner arm — ZIM/Diamond מואץ על BENCH
 | INV-2 | `finalScore` גבוה ב-**>0.5** תמיד מנצח tier נמוך בלולאת ENTER |
 | INV-3 | Snooze חזק מכל tier — לא נסרק |
 | INV-4 | `VIP-A` count ≤ 12, `VIP-B` ≤ 20 אחרי refresh |
-| INV-5 | `dynamicVipEnabled=0` → byte-identical sort ל-SELECTED_TEAM הנוכחי |
-| INV-6 | Pin/Demote של owner שורד refresh שבועי |
+| INV-5 | `dynamicVipEnabled=0` → התנהגות legacy `selected_team` (עד arm) |
+| INV-5b | `dynamicVipEnabled=1` → `selected_team` **אפס השפעה** גם אם ticker ברשימה הישנה |
+| INV-6 | Pin/Demote של owner שורד **refresh יומי** |
 | INV-7 | Phase 2: VIP-A/B **לא** מקבלים Diamond 3-close — רק BENCH |
+| INV-8 | `dayId` = תאריך IL של הרענון; `refreshedAt` < 24h אחרי cron |
 
 ---
 
@@ -306,9 +322,11 @@ benchAutoExitEnabled: 1   // owner arm — ZIM/Diamond מואץ על BENCH
 | 2 | מכירת BENCH Phase 2 | **כן** — exit אוטומטי מואץ: ZIM רגיל + Diamond **3** closes על BENCH בלבד |
 | 3 | גודל VIP-A | **12** קבוע (לא קשור ל-`maxPositions`) |
 | 4 | סטטוס spec | **ACCEPTED** — מותר Phase 0 (dry-run) |
+| 5 | תדירות (amendment v2) | **יומי 17:00 IL** — לא שבועי |
+| 6 | `selected_team` (amendment v2) | **נמחק** — migration 0149 + קוד ריק |
 
 ---
 
 ## סיכום בשורה
 
-> **VIP חייב להיות דינמי ושבועי** — לא רשימת 15 סטטית. מניות חלשות מתחת לממוצע (`BENCH`) לא יתפסו סלוט ותקציב כשיש **פצצות אנרגיה** ב-`VIP-A` — בלי לשבור את כלל `rank boost ≠ gate bypass`.
+> **VIP דינמי ויומי** — לא רשימת 15 סטטית. כל יום 17:00 IL נקבעות מחדש VIP-A ⭐⭐ / VIP-B ⭐ / BENCH 🪑. `selected_team` הישנה לא משפיעה. מניות חלשות מתחת לממוצע לא יתפסו סלוט כשיש פצצות ב-VIP-A — בלי לשבור `rank boost ≠ gate bypass`.
