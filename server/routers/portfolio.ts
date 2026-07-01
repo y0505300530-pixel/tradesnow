@@ -1612,16 +1612,17 @@ Return structured JSON.`;
   }),
 
   getCatalogueWithScores: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.id;
+    const { resolveCatalogUserIdForViewer } = await import("../tradingAccounts");
+    const catalogUserId = await resolveCatalogUserIdForViewer(ctx.user.id, ctx.user.role);
     const db = await getDb();
     if (!db) {
       throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
     }
     return swrGet(
-      `portfolio:catalogue:${userId}`,
+      `portfolio:catalogue:${catalogUserId}`,
       120_000, // TTL 120s — Static Catalogue (scanned daily)
       async () => {
-    let assets = await getUserAssets(userId);
+    let assets = await getUserAssets(catalogUserId);
 
     // Dedupe by ticker (keep highest id) — guards against legacy duplicate rows
     if (assets.length > 1) {

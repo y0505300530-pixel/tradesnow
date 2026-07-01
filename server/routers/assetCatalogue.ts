@@ -184,7 +184,9 @@ export const assetCatalogueRouter = router({
 
   // ─── User Asset List (DB persistence) ────────────────────────────────────────
   getUserAssets: protectedProcedure.query(async ({ ctx }) => {
-    return getUserAssets(ctx.user.id);
+    const { resolveCatalogUserIdForViewer } = await import("../tradingAccounts");
+    const catalogUserId = await resolveCatalogUserIdForViewer(ctx.user.id, ctx.user.role);
+    return getUserAssets(catalogUserId);
   }),
 
   /**

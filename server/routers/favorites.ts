@@ -142,8 +142,9 @@ export const favoritesRouter = router({
    * Reuses the same data as getCatalogueWithScores (SWR cached).
    */
   list: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.id;
-    const assets = await getUserAssets(userId);
+    const { resolveCatalogUserIdForViewer } = await import("../tradingAccounts");
+    const catalogUserId = await resolveCatalogUserIdForViewer(ctx.user.id, ctx.user.role);
+    const assets = await getUserAssets(catalogUserId);
     return assets.map((a: any) => ({
       id: a.id,
       ticker: a.ticker,

@@ -100,6 +100,21 @@ export async function assertTradingAccountAccess(
   throw new Error("TRADING_ACCOUNT_FORBIDDEN");
 }
 
+/** Catalogue SSOT userId — scoped viewers (Dror) read shared catalogUserId=1, not their own row. */
+export async function resolveCatalogUserIdForViewer(
+  appUserId: number,
+  role: string,
+): Promise<number> {
+  const all = await listTradingAccounts();
+  if (role === "admin") {
+    const ceo = all.find((a) => a.slug === "ceo");
+    return ceo?.catalogUserId ?? appUserId;
+  }
+  const linked = all.filter((a) => a.linkedLocalUserId === appUserId && a.isActive === 1);
+  if (linked.length > 0) return linked[0].catalogUserId;
+  return appUserId;
+}
+
 export async function getLiveConfigForTradingAccount(
   tradingAccountId: number,
 ): Promise<typeof liveEngineConfig.$inferSelect | null> {
