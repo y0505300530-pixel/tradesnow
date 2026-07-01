@@ -177,6 +177,20 @@ export const favoritesRouter = router({
   }),
 
   /**
+   * getDynamicVip — read-only ticker→tier map (VIP-A / VIP-B / BENCH) for UI badges. Reads the
+   * persisted systemSettings.dynamic_vip snapshot + owner pins/demotes (getVipTierMap). Fails open
+   * to {} — never breaks the list. Display only; never gates a trade.
+   */
+  getDynamicVip: protectedProcedure.query(async () => {
+    try {
+      const { getVipTierMap } = await import("../dynamicVipRefresh");
+      return Object.fromEntries(await getVipTierMap()) as Record<string, string>;
+    } catch {
+      return {} as Record<string, string>;
+    }
+  }),
+
+  /**
    * refreshQuotes — fetches live IBKR prices for all catalog tickers.
    * Updates cmp + dailyChangePercent in userAssets table.
    */
