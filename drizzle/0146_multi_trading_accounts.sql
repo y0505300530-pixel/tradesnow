@@ -65,7 +65,10 @@ JOIN `tradingAccounts` ta ON ta.slug = 'ceo'
 SET lec.`tradingAccountId` = ta.id
 WHERE lec.`tradingAccountId` IS NULL AND lec.`userId` = 1;
 
--- Dror live config: $20k, 8 slots, ~$5k/position, 1.8× leverage
+-- Allow multiple liveEngineConfig rows (CEO + Dror share catalog userId=1) — MUST precede Dror INSERT
+ALTER TABLE `liveEngineConfig` DROP INDEX `liveEngineConfig_userId_unique`;
+
+-- Dror live config: $20k, 8 slots, ~$5k/position, 1.8× leverage (DORMANT: isEnabled=0)
 INSERT INTO `liveEngineConfig` (
   `userId`, `tradingAccountId`, `isEnabled`, `allocatedPct`, `maxPositions`, `maxLongPositions`, `maxShortPositions`,
   `positionSizePct`, `accountId`, `totalNlv`, `minPositionUsd`, `maxPositionUsd`, `minOrderUsd`,
@@ -82,9 +85,6 @@ WHERE ta.slug = 'dror'
   );
 
 CREATE UNIQUE INDEX `liveEngineConfig_tradingAccountId_idx` ON `liveEngineConfig` (`tradingAccountId`);
-
--- Allow multiple liveEngineConfig rows (CEO + Dror share catalog userId=1)
-ALTER TABLE `liveEngineConfig` DROP INDEX `liveEngineConfig_userId_unique`;
 
 -- Backfill CEO positions to trading account
 UPDATE `livePositions` lp

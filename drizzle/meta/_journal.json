@@ -1030,6 +1030,13 @@
       "when": 1782462301298,
       "tag": "0146_multi_trading_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 147,
+      "version": "5",
+      "when": 1782462302298,
+      "tag": "0147_multi_account_fixup",
+      "breakpoints": true
     }
   ]
 }

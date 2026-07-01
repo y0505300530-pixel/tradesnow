@@ -74,3 +74,12 @@ War Engine: runWarEngineAllAccounts() — one cycle per enabled account
 | `MULTI_ACCOUNT_LIVE_ENABLED` | Must be `1` for `runWarEngineAllAccounts` to scan multiple books |
 | Gateway default | No ALS context → port **5000** + CEO env secrets |
 | Dror UI | Read-only `getStatus` / Overview; uses `runWithTradingAccount` (no context leak) |
+
+## Dormant provisioning (Phase 0)
+
+```bash
+npm run provision:dror-dormant
+```
+
+Creates Dror local user + links `tradingAccounts.linkedLocalUserId`. Credentials → `secrets/dror-dormant-login.txt` (gitignored).  
+Team checklist: `docs/superpowers/specs/2026-07-01-multi-trading-accounts-TEAM.md`
