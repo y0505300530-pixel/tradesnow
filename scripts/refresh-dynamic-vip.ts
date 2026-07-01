@@ -26,10 +26,13 @@ async function main() {
     const [ws] = await db.query("select value from systemSettings where `key`='war_upcoming_signals'") as any;
     if (ws[0]) {
       const parsed = JSON.parse(ws[0].value);
-      const arr: any[] = Array.isArray(parsed) ? parsed : (parsed.signals ?? parsed.candidates ?? parsed.upcoming ?? []);
+      // war_upcoming_signals = { ts, items: [{ ticker, combined, score, ziv, ... }] }.
+      // finalScore is the war engine's `combined` (alias). Only the ~last-cycle upcoming names
+      // carry one — it's an optional momentum bonus point, not required for every ticker.
+      const arr: any[] = Array.isArray(parsed) ? parsed : (parsed.items ?? parsed.signals ?? parsed.candidates ?? []);
       for (const s of arr) {
         const t = String(s.ticker ?? "").toUpperCase();
-        const fs = Number(s.finalScore ?? s.zivScore ?? s.score);
+        const fs = Number(s.combined ?? s.finalScore ?? s.score ?? s.ziv);
         if (t && Number.isFinite(fs)) finalScoreByTicker.set(t, fs);
       }
     }
