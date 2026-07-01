@@ -29,7 +29,7 @@ import { isGapChase, gapPctFromEntryZone, GAP_GUARD_PCT } from "./gapGuard";
 import { calcZivHScore, type ZivHContext } from "./utils/zivHealth";
 import { safeInsertLivePosition } from "./livePositionsSyncCore";
 import { isGhostSlotsEnabled, rowCountsTowardSlot } from "./ghostSlots";
-import { buildChurnLedger, isChurnBlocked, startOfIsraelDayMs, isAutomatedSignal } from "./entryChurnGuard";
+import { buildChurnLedger, isChurnBlocked, startOfIsraelDayMs, isAutomatedSignal, shouldBypassChurnForPhoenix } from "./entryChurnGuard";
 import { assertMinRValuePct } from "./minRValueGate";
 import { pollEntryFill } from "./liveMarketOrder";
 import { executeLivePartialClose, realDeps, type PartialDeps } from "./executePartial";
@@ -1110,7 +1110,8 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   // authoritative backstop that additionally covers any non-warEngine automated caller.
   if (((config as any)?.entryChurnGuardEnabled ?? 0) === 1
       && isAutomatedSignal(signal)
-      && signal.toUpperCase() !== "GOLD_RETEST_WAITER") {
+      && signal.toUpperCase() !== "GOLD_RETEST_WAITER"
+      && !shouldBypassChurnForPhoenix(signal, (config as any)?.phoenixProtocolEnabled)) {
     const _cooldownMin = Number((config as any)?.churnCooldownMin ?? 90) || 90;
     const _nowMs = Date.now();
     const _dayStartMs = startOfIsraelDayMs(_nowMs);

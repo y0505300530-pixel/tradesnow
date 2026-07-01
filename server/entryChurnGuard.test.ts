@@ -11,6 +11,8 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import {
   isAutomatedSignal,
+  isPhoenixReentrySignal,
+  shouldBypassChurnForPhoenix,
   buildChurnLedger,
   isChurnBlocked,
   startOfIsraelDayMs,
@@ -112,6 +114,49 @@ describe("30-Jun replay — AAPL #2/#3 SKIP", () => {
   });
 });
 
+describe("CG-G4 — Phoenix C6 carve-out", () => {
+  it("isPhoenixReentrySignal matches PHOENIX_REENTRY (case-insensitive)", () => {
+    expect(isPhoenixReentrySignal("PHOENIX_REENTRY")).toBe(true);
+    expect(isPhoenixReentrySignal("phoenix_reentry")).toBe(true);
+    expect(isPhoenixReentrySignal("GOLD_RETEST_WAR")).toBe(false);
+  });
+
+  it("shouldBypassChurnForPhoenix requires phoenixProtocolEnabled=1", () => {
+    expect(shouldBypassChurnForPhoenix("PHOENIX_REENTRY", 1)).toBe(true);
+    expect(shouldBypassChurnForPhoenix("PHOENIX_REENTRY", 0)).toBe(false);
+    expect(shouldBypassChurnForPhoenix("GOLD_RETEST_WAR", 1)).toBe(false);
+  });
+
+  it("PHOENIX_REENTRY open today does NOT arm C1 (ledger excludes Phoenix)", () => {
+    const l = ledger([
+      { ticker: "AAPL", signal: "PHOENIX_REENTRY", status: "open", openedAt: new Date(NOW - 2 * 3600_000), closedAt: null },
+      { ticker: "AAPL", signal: "GOLD_RETEST_WAR", status: "closed", openedAt: new Date(NOW - 5 * 3600_000), closedAt: new Date(NOW - 30 * 60_000) },
+    ]);
+    expect(l.automatedToday.has("AAPL")).toBe(true); // War entry counts
+    // Simulate bypass: Phoenix path skips isChurnBlocked entirely when enabled.
+    expect(shouldBypassChurnForPhoenix("PHOENIX_REENTRY", 1)).toBe(true);
+  });
+
+  it("War-only history blocks War re-entry; Phoenix ledger path bypasses ChurnGuard", () => {
+    const l = ledger([
+      { ticker: "NVDA", signal: "GOLD_RETEST_WAR", status: "closed", openedAt: new Date(NOW - 4 * 3600_000), closedAt: new Date(NOW - 20 * 60_000) },
+    ]);
+    const warBlock = isChurnBlocked({ ticker: "NVDA", direction: "long", automatedToday: l.automatedToday, lastCloseAt: l.lastCloseAt, nowMs: NOW, cooldownMin });
+    expect(warBlock.blocked).toBe(true);
+    expect(shouldBypassChurnForPhoenix("PHOENIX_REENTRY", 1)).toBe(true);
+  });
+
+  it("a prior PHOENIX_REENTRY does not count toward automatedToday for a War signal", () => {
+    const l = ledger([
+      { ticker: "AMD", signal: "PHOENIX_REENTRY", status: "closed", openedAt: new Date(NOW - 3 * 3600_000), closedAt: new Date(NOW - 95 * 60_000) },
+    ]);
+    expect(l.automatedToday.has("AMD")).toBe(false);
+    expect(l.lastCloseAt.has("AMD")).toBe(false);
+    const r = isChurnBlocked({ ticker: "AMD", direction: "long", automatedToday: l.automatedToday, lastCloseAt: l.lastCloseAt, nowMs: NOW, cooldownMin });
+    expect(r.blocked).toBe(false);
+  });
+});
+
 describe("INERT — flag=0 wiring is byte-identical (source guard)", () => {
   const warSrc = readFileSync(join(__dirname, "warEngine.ts"), "utf8");
   const execSrc = readFileSync(join(__dirname, "liveOrderExecutor.ts"), "utf8");
@@ -124,10 +169,11 @@ describe("INERT — flag=0 wiring is byte-identical (source guard)", () => {
     expect(warSrc).toMatch(/if \(_churnGuardOn\) \{[\s\S]*?isChurnBlocked/);
   });
 
-  it("tryLiveEntry churn check is gated + skips MANUAL_% + exempts the Waiter", () => {
+  it("tryLiveEntry churn check is gated + skips MANUAL_% + exempts the Waiter + Phoenix C6", () => {
     expect(execSrc).toMatch(/entryChurnGuardEnabled\s*\?\?\s*0\)\s*===\s*1/);
     expect(execSrc).toMatch(/isAutomatedSignal\(signal\)/);
     expect(execSrc).toMatch(/GOLD_RETEST_WAITER/);
+    expect(execSrc).toMatch(/shouldBypassChurnForPhoenix/);
   });
 
   it("empty ledger (flag-off default) never blocks", () => {

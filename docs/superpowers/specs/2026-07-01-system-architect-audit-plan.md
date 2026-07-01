@@ -1,14 +1,16 @@
 # TradeSnow — System Architect Audit & Improvement Plan
 
 > **Date:** 2026-07-01  
-> **Status:** Phase 0 SHIPPED (2026-07-01) · **SSOT:** Git `main` · deploy via `/root/deploy-tradesnow.sh`  
+> **Status:** ✅ **Phase 0 COMPLETE** (2026-07-01) · Phoenix C6 shipped · **553 tests green** · CI on `main`  
+> **Recovery tag:** `v2026.07.01-phase0` — annotated baseline after Phase 0 ship (churn C6 + CI + P0 fixes)  
+> **SSOT:** Git `main` · deploy via `/root/deploy-tradesnow.sh`  
 > **Related:** [`2026-06-30-elza-priority-roadmap-spec.md`](2026-06-30-elza-priority-roadmap-spec.md), [`2026-07-01-entry-churn-min-r-spec.md`](2026-07-01-entry-churn-min-r-spec.md), [`../../QA_PLAN_WAITER_V45.md`](../../QA_PLAN_WAITER_V45.md), [`../../drizzle/ORPHAN_MIGRATIONS_APPLIED.md`](../../drizzle/ORPHAN_MIGRATIONS_APPLIED.md)
 
 ---
 
 ## Executive Summary
 
-TradeSnow is a **production-grade live engine** with never-naked, circuit breaker, EOD deleverage, and flag-gated rollout (515 vitest tests, build green). **Money leaks on 30-Jun** trace to three axes — not one bug:
+TradeSnow is a **production-grade live engine** with never-naked, circuit breaker, EOD deleverage, and flag-gated rollout (**553 vitest tests**, build green, GitHub CI on `main`). **Money leaks on 30-Jun** trace to three axes — not one bug:
 
 | Axis | Root cause | Evidence |
 |------|------------|----------|
@@ -24,10 +26,10 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 
 | Metric | Value |
 |--------|-------|
-| `pnpm test` | 513/515 pass (2 stale invariant tests) |
+| `pnpm test` | **553/553 pass** |
 | `pnpm build` | ✅ pass |
 | God files | `warEngine.ts` 2468 LOC · `liveOrderExecutor.ts` 3128 LOC |
-| CI | **None** — no `.github/workflows` |
+| CI | ✅ `.github/workflows/ci.yml` — pnpm install, build, test on push/PR to `main` |
 | Modules without dedicated tests | warEngine, liveOrderExecutor, ibkrSync, alertPoller, pyramidEngine |
 
 ---
@@ -40,7 +42,7 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 |----|-------|------|-----|
 | E1 | Armed Watcher enters **wrong ticker** (full war cycle, no `onlyTicker`) | `intradayArmedWatcher.ts` | ✅ **FIXED** — `onlyTicker` scoped `runWarEngineCycle` |
 | E2 | HardSync marks **mass zombie** on empty IBKR response (no disappearance guard) | `liveOrderExecutor.ts` | ✅ **FIXED** — mass-disappearance guard (mirror ibkrSync) |
-| E3 | Anti-churn **removed** — same-day re-entry after close | `warEngine.ts:782-800` | ✅ **SHIPPED INERT** (`entryChurnGuardEnabled`, 5b7beef→03446c6) |
+| E3 | Anti-churn **removed** — same-day re-entry after close | `warEngine.ts:782-800` | ✅ **SHIPPED INERT** (`entryChurnGuardEnabled`) + **Phoenix C6 bypass** (`shouldBypassChurnForPhoenix`) |
 | E4 | **MIN_R_PCT** missing — 0.11% rValue passes RC2 max-only gate | `slCalculator.ts`, AAPL 30-Jun | ✅ **SHIPPED INERT** (`minRValuePctEnabled`) |
 | E5 | Pyramid: IBKR fill, **DB insert fail** → SL/TP qty mismatch | `pyramidEngine.ts:268`, NSC 30-Jun | Atomic insert + schema verify |
 | E6 | `CLOSED_IBKR_NO_PRICE` → `realizedPnl=0` | `ibkrSync.ts:273-274` | Recover fill price before close |
@@ -59,10 +61,10 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 
 ### Tests (merge blockers per QA constitution)
 
-| Test | Cause |
-|------|-------|
-| `waiterEngine.test.ts` INERT invariant | `ibkrSync.ts` lacks `reconcileWaiterPositions` |
-| `ibkrAuth.test.ts` closePosition | Hebrew message / contract drift |
+| Test | Cause | Status |
+|------|-------|--------|
+| `waiterEngine.test.ts` INERT invariant | `ibkrSync.ts` lacks `reconcileWaiterPositions` | ✅ fixed (P7) |
+| `ibkrAuth.test.ts` closePosition | Hebrew message / contract drift | ✅ fixed |
 
 ---
 
@@ -93,14 +95,16 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 
 ## Phased Plan
 
-### Phase 0 — Stabilize (week 1, OFF-HOURS)
+### Phase 0 — Stabilize (week 1, OFF-HOURS) ✅ COMPLETE
 
-1. Fix 2 failing tests + wire `reconcileWaiterPositions`
-2. Schema SSOT: Waiter + Phoenix + journal 0134–0144
-3. Fix `warReport` RECONCILE filter
-4. Unify `LIVE_ACCOUNT_ID`
-5. Ship E1 (Armed scope) + E2 (HardSync guard)
-6. `pnpm test` → 515/515
+1. ✅ Fix 2 failing tests + wire `reconcileWaiterPositions`
+2. Schema SSOT: Waiter + Phoenix + journal 0134–0144 (metadata registered; runtime reconcile pending)
+3. ✅ Fix `warReport` RECONCILE filter
+4. ✅ Unify `LIVE_ACCOUNT_ID`
+5. ✅ Ship E1 (Armed scope) + E2 (HardSync guard)
+6. ✅ Phoenix C6 churn bypass (`isPhoenixReentrySignal`, `shouldBypassChurnForPhoenix`, CG-G4)
+7. ✅ GitHub CI workflow (`.github/workflows/ci.yml`)
+8. ✅ `pnpm test` → **553/553** · recovery tag `v2026.07.01-phase0`
 
 ### Phase 1 — Money leaks (week 1–2)
 
@@ -111,7 +115,7 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 
 ### Phase 2 — Integrity (week 2–3)
 
-Exit price recovery · pyramid atomic · deleverage reserve in `tryLiveEntry` · DB manual idempotency · CI workflow
+Exit price recovery · pyramid atomic · deleverage reserve in `tryLiveEntry` · DB manual idempotency
 
 ### Phase 3 — Waiter G2 (P2 roadmap)
 
@@ -134,7 +138,7 @@ Split god files · `entryGuards.ts` SSOT · short SSOT unification
 | P0 | E2 HardSync guard + journal 0134–0145 | ✅ shipped |
 | P0 | 2 tests + ibkrSync hook + E1 + P4/P5/P6 | ✅ shipped |
 | P1a | MIN_R_PCT (INERT, await arm) | 🔴🔴🔴 |
-| P1b | Churn Guard (INERT, await arm + Phoenix C6) | 🔴🔴🔴 |
+| P1b | Churn Guard (INERT, await arm) + Phoenix C6 | ✅ shipped (INERT; arm after min-R) |
 | P1c | Armed scope + HardSync guard | ✅ shipped |
 | P1d | War race | 🔴🔴 |
 | P2 | Platform P1–P7 | 🟠🟠 |
@@ -150,7 +154,7 @@ Split god files · `entryGuards.ts` SSOT · short SSOT unification
 - [ ] Zero `CLOSED_IBKR_NO_PRICE` without Telegram reconcile
 - [ ] EOD excess < $20K before 22:00 IST
 - [ ] IBKR positions = DB ± reconcile log
-- [ ] `pnpm test` 515/515 pre-deploy
+- [x] `pnpm test` 553/553 pre-deploy (Phase 0 gate)
 
 ---
 

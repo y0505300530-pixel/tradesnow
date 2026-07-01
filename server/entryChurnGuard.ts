@@ -12,6 +12,8 @@
  *   C2 — a `cooldownMin` cooldown after ANY close (`closedAt`), regardless of the exit
  *        reason (MANUAL_CLOSE / SL / EOD all count). Prevents the same-day re-entry that
  *        burned budget on 30-Jun (AAPL closed 15:33 → re-entered 16:03/19:03).
+ *   C6 — Phoenix carve-out: `PHOENIX_REENTRY` when `phoenixProtocolEnabled=1` bypasses
+ *        ChurnGuard entirely; `phoenixLedger` owns ≤1/ticker/day + cooldown for reclaim.
  *
  * The Waiter retest pipeline is EXEMPT — it is the MANAGED re-entry (a resting LMT the
  * system itself placed), not churn. The caller (warEngine / tryLiveEntry) does not route
@@ -42,6 +44,22 @@ export interface ChurnLedger {
 export function isAutomatedSignal(signal: string | null | undefined): boolean {
   const s = (signal ?? "").toUpperCase();
   return s.length > 0 && !s.startsWith("MANUAL_");
+}
+
+/** C6 — Phoenix reclaim signal string (case-insensitive). */
+export function isPhoenixReentrySignal(signal: string | null | undefined): boolean {
+  return (signal ?? "").toUpperCase() === "PHOENIX_REENTRY";
+}
+
+/**
+ * C6 — skip ChurnGuard when Phoenix Protocol is armed and this is a reclaim entry.
+ * `checkPhoenixAntiLoop()` + `phoenixLedger` are authoritative for Phoenix paths.
+ */
+export function shouldBypassChurnForPhoenix(
+  signal: string | null | undefined,
+  phoenixProtocolEnabled: number | boolean | null | undefined,
+): boolean {
+  return isPhoenixReentrySignal(signal) && ((phoenixProtocolEnabled ?? 0) === 1);
 }
 
 function toMs(v: Date | string | null | undefined): number | null {
@@ -87,7 +105,12 @@ export function buildChurnLedger(
     const tkr = (r.ticker ?? "").toUpperCase();
     if (!tkr) continue;
     const openedMs = toMs(r.openedAt);
-    if (openedMs != null && openedMs >= opts.dayStartMs && isAutomatedSignal(r.signal)) {
+    if (
+      openedMs != null
+      && openedMs >= opts.dayStartMs
+      && isAutomatedSignal(r.signal)
+      && !isPhoenixReentrySignal(r.signal)
+    ) {
       automatedToday.add(tkr);
     }
     if (r.status === "closed") {
