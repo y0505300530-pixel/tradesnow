@@ -46,7 +46,7 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `ibkrGateways` WHERE `slug` = 'ceo');
 
 -- Seed Dror gateway (separate login — configure env + ibkrAccountId after account opens)
 INSERT INTO `ibkrGateways` (`slug`, `label`, `baseUrl`, `apiSecretEnvKey`, `hmacSecretEnvKey`, `isActive`)
-SELECT 'dror', 'דרור', 'http://127.0.0.1:5001', 'IBIND_API_SECRET_DROR', 'IBIND_HMAC_SECRET_DROR', 1
+SELECT 'dror', 'דרור', 'http://127.0.0.1:5002', 'IBIND_API_SECRET_DROR', 'IBIND_HMAC_SECRET_DROR', 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `ibkrGateways` WHERE `slug` = 'dror');
 
 INSERT INTO `tradingAccounts` (`slug`, `label`, `gatewayId`, `ibkrAccountId`, `ownerUserId`, `catalogUserId`, `sortOrder`, `isActive`)

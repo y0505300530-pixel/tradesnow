@@ -8,7 +8,7 @@ Run ELZA Live on **multiple IBKR accounts** with separate logins, shared USA cat
 | Slug | Label | Gateway | NLV | Leverage | Max pos | Position | minOrderUsd |
 |------|-------|---------|-----|----------|---------|----------|-------------|
 | `ceo` | CEO ELZA | `:5000` | ~$123k | 1.9× overnight | 12 | up to $85k | $5,000 |
-| `dror` | דרור | `:5001` | $20,000 | 1.8× intraday | 8 | ~$5,000 | $4,000 |
+| `dror` | דרור | `:5002` | $20,000 | 1.8× intraday | 8 | ~$5,000 | $4,000 |
 
 - **Duplicates across accounts:** allowed (same ticker in CEO + Dror).
 - **Dror engine:** seeded `isEnabled=0` until IBKR account id is wired and QA passes.
@@ -29,7 +29,7 @@ War Engine: runWarEngineAllAccounts() — one cycle per enabled account
 
 - `IBIND_API_SECRET_DROR`
 - `IBIND_HMAC_SECRET_DROR`
-- Gateway base URL: `http://127.0.0.1:5001`
+- Gateway base URL: `http://127.0.0.1:5002` (5001 = paper)
 
 ## API
 

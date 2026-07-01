@@ -15,7 +15,8 @@
     "test:e2e:report": "playwright show-report tests/report",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "audit:sltp": "node --env-file=.env --import tsx scripts/audit-sltp.ts",
-    "provision:dror-dormant": "node --env-file=.env --import tsx scripts/provision-dror-dormant.ts"
+    "provision:dror-dormant": "node --env-file=.env --import tsx scripts/provision-dror-dormant.ts",
+    "setup:ibind2-dror": "bash scripts/setup-ibind2-dror.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",
