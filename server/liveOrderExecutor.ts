@@ -2260,6 +2260,24 @@ export async function runLiveSlMonitor(userId: number, opts?: SlMonitorTestOpts)
   }
 }
 
+/** Mirror ibkrSync.ts:182-189 — abort mass-zombie when IBKR response is degraded/empty. */
+export function hardSyncMassDisappearanceGuard(
+  dbOpenTickers: string[],
+  ibkrPositions: Array<{ ticker?: string; contractDesc?: string; symbol?: string }>,
+): { abort: boolean; missingCount: number; missingPct: number; ibkrFoundCount: number } {
+  const ibkrTickersWithAnyRecord = new Set(
+    ibkrPositions.map((p) => (p.ticker ?? p.contractDesc ?? p.symbol ?? "").toUpperCase().trim()),
+  );
+  const ibkrFoundCount = dbOpenTickers.filter((t) =>
+    ibkrTickersWithAnyRecord.has(t.toUpperCase()),
+  ).length;
+  const missingCount = dbOpenTickers.length - ibkrFoundCount;
+  const missingPct = dbOpenTickers.length > 0 ? missingCount / dbOpenTickers.length : 0;
+  const abort =
+    dbOpenTickers.length >= 3 && missingPct > 0.7 && ibkrPositions.length < 3;
+  return { abort, missingCount, missingPct, ibkrFoundCount };
+}
+
 async function _runLiveSlMonitorImpl(userId: number, opts?: SlMonitorTestOpts): Promise<void> {
   if (!opts?.bypassMarketHours && !isLiveMarketOpen()) return;
   if (_liveRunning && !opts?.bypassThrottle) return;
@@ -2289,19 +2307,40 @@ async function _runLiveSlMonitorImpl(userId: number, opts?: SlMonitorTestOpts): 
     const ibkrPositions: any[] = ibkrRes.ok ? (ibkrRes.body as any[]) ?? [] : [];
 
     if (!opts?.skipHardSync && ibkrRes.ok) {
-      // Build set of live IBKR tickers with non-zero qty
-      const ibkrActiveTickers = new Set(
-        ibkrPositions
-          .filter(p => Math.abs(p.position ?? 0) > 0)
-          .map(p => (p.ticker ?? p.contractDesc ?? "").toUpperCase().trim())
+      const guard = hardSyncMassDisappearanceGuard(
+        openPos.map((p) => p.ticker),
+        ibkrPositions,
       );
-      // For each DB-open position — if IBKR has zero or no entry, mark as zombie
-      for (const pos of openPos) {
-        if (!ibkrActiveTickers.has(pos.ticker.toUpperCase()) && pos.status === "open") {
-          log.warn("LIVE_EXEC", `[HardSync] ${pos.ticker} in DB as open but IBKR reports 0 qty — marking zombie (broker closed)`);
-          await db.update(livePositions)
-            .set({ status: "zombie", exitReason: "hard_sync_ibkr_zero", closedAt: new Date() })
-            .where(eq(livePositions.id, pos.id));
+      if (guard.abort) {
+        log.warn(
+          "LIVE_EXEC",
+          `[HardSync] ABORTED — mass-disappearance guard: ${guard.missingCount}/${openPos.length} DB opens absent from IBKR response, IBKR returned ${ibkrPositions.length} records — skipping zombie-marking (gateway blip).`,
+          { missingPct: guard.missingPct },
+        );
+        await sendTelegramMessage(
+          `⚠️ <b>HardSync ABORTED — Mass Disappearance Guard</b>\n` +
+            `DB has ${openPos.length} open positions, IBKR returned only ${guard.ibkrFoundCount} matching tickers (${(guard.missingPct * 100).toFixed(0)}% missing).\n` +
+            `IBKR total positions list: ${ibkrPositions.length} records. Possible gateway disconnect.\n` +
+            `Zombie-marking skipped. Check IBKR session/gateway.`,
+        ).catch(() => {});
+      } else {
+        // Build set of live IBKR tickers with non-zero qty
+        const ibkrActiveTickers = new Set(
+          ibkrPositions
+            .filter((p) => Math.abs(p.position ?? 0) > 0)
+            .map((p) => (p.ticker ?? p.contractDesc ?? "").toUpperCase().trim()),
+        );
+        // For each DB-open position — if IBKR has zero or no entry, mark as zombie
+        for (const pos of openPos) {
+          if (!ibkrActiveTickers.has(pos.ticker.toUpperCase()) && pos.status === "open") {
+            log.warn(
+              "LIVE_EXEC",
+              `[HardSync] ${pos.ticker} in DB as open but IBKR reports 0 qty — marking zombie (broker closed)`,
+            );
+            await db.update(livePositions)
+              .set({ status: "zombie", exitReason: "hard_sync_ibkr_zero", closedAt: new Date() })
+              .where(eq(livePositions.id, pos.id));
+          }
         }
       }
     }
