@@ -410,6 +410,8 @@ export async function runWarEngineCycle(
   opts?: {
     manual?: boolean;
     scanOnly?: boolean;
+    /** Armed Watcher: restrict entry attempts to this ticker only (full cycle still runs manage/scan). */
+    onlyTicker?: string;
     /**
      * Optional progress sink (War Room "Run Cycle" UI). DISPLAY ONLY — purely a
      * pct/Hebrew-phase callback, NEVER consulted for any trading decision. Best-
@@ -1360,6 +1362,11 @@ export async function runWarEngineCycle(
         return tb - ta; // team wins ONLY on equal raw score
       });
 
+    if (opts?.onlyTicker) {
+      dbLog("info", "SYSTEM",
+        `[WarEngine] Armed-scoped entry: onlyTicker=${opts.onlyTicker.toUpperCase()} (${candidates.length} ENTER candidates in book)`);
+    }
+
     const warLiveConfig = await getLiveConfig(userId);
     const dynamicMaxPos      = warLiveConfig?.maxPositions      ?? MAX_WAR_POSITIONS;
     const dynamicMaxLong     = warLiveConfig?.maxLongPositions  ?? 12;
@@ -1687,6 +1694,7 @@ export async function runWarEngineCycle(
       // ELZA 2.0 — refresh-candidates (scan-only): re-score + persist the forecast,
       // but place NO live orders. The autonomous cycle still handles real entries.
       if (opts?.scanOnly) break;
+      if (opts?.onlyTicker && c.ticker.toUpperCase() !== opts.onlyTicker.toUpperCase()) continue;
       // ── R1 cross-pipeline lock (THE WAITER mutual-exclusion) — INERT at waiterEnabled=0 ──
       // The slow War cycle ALSO enters GOLD_RETEST_WAR names (market buy). The SAME ticker
       // could get a Waiter resting LMT AND a War market buy → double-fill / over-size. When

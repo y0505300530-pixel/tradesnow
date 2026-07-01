@@ -400,7 +400,7 @@ export async function runArmedWatcherTick(userId: number): Promise<void> {
       if (liveOn) {
         try {
           const { runWarEngineCycle } = await import("./warEngine");
-          const r = await runWarEngineCycle(userId, { manual: true });
+          const r = await runWarEngineCycle(userId, { manual: true, onlyTicker: enterTicker });
           dbLog("info", "SYSTEM",
             `[ArmedWatcher] entry cycle for ${enterTicker} → entered=${r.entered} scanned=${r.scanned}`);
         } catch (e) {

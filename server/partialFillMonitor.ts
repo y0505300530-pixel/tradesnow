@@ -21,7 +21,7 @@ import { fetchIbkrLivePricesBatch } from "./marketData";
 import { sendTelegramMessage } from "./telegram";
 import { log }                 from "./logger";
 
-const LIVE_ACCOUNT_ID = "U16881054";
+import { LIVE_ACCOUNT_ID } from "./liveOrderExecutor";
 const MAX_HALT_RETRIES = 12;         // 12 × 5min = 1 hour max wait after halt lifts
 const HALT_EXIT_OFFSET_PCT = 0.015; // 1.5% aggressive offset on halt recovery
 

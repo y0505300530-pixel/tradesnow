@@ -66,7 +66,7 @@ import { tryAcquireEntrySlot, releaseEntrySlot } from "./entrySlotLock";
 import { dbLog } from "./persistentLogger";
 import { log } from "./logger";
 
-export const LIVE_ACCOUNT_ID = "U16881054";
+export { LIVE_ACCOUNT_ID } from "./liveOrderExecutor";
 const CONFIRM_HEADERS = { "X-Confirm-Live-Order": "yes" };
 
 // ── Constants (Appendix — pinned, backtestable) ──────────────────────────────────

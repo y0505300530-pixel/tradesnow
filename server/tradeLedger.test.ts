@@ -35,14 +35,9 @@ function rawPos(over: Record<string, any> = {}): any {
   };
 }
 
-// Replicate the warReport endpoint's PRE-FILTER + P&L summation EXACTLY
-// (server/routers/liveEngine.ts ~1256 + 1287-1294 + 1264-1279). The endpoint uses
-// LEDGER_DROP_REASONS = [...PHANTOM_REASONS, ...NO_PRICE_REASONS] — it does NOT include
-// the RECONCILE catch-all that isExcludedFromStats applies. This is the audited drift.
-const LEDGER_DROP_REASONS = [...PHANTOM_REASONS, ...NO_PRICE_REASONS];
+// Replicate the warReport endpoint pre-filter (uses isExcludedFromStats — unified with computeStats).
 function endpointFilteredRows(rows: LedgerRow[]): LedgerRow[] {
-  const dropSet = new Set<string>(LEDGER_DROP_REASONS);
-  return rows.filter((r) => !(r.exitReason !== null && dropSet.has(r.exitReason)));
+  return rows.filter((r) => !isExcludedFromStats(r.exitReason));
 }
 function endpointPnlSum(rows: LedgerRow[]): number {
   // mirrors daily/weekly/sinceInception loop: sum realizedPnl over the pre-filtered rows
@@ -198,17 +193,17 @@ describe("RECONCILE drift between computeStats and endpoint P&L sums", () => {
     toLedgerRow(rawPos({ realizedPnl: 9999, exitReason: "RECONCILE_PHANTOM_2026-06-25" })),
   ];
 
-  it("documents the divergence: endpoint sum leaks the reconcile $9999", () => {
-    expect(computeStats(rows).totalPnl).toBe(100);   // stats: reconcile excluded
-    expect(endpointPnlSum(rows)).toBe(10099);         // endpoint: reconcile INCLUDED (bug)
+  it("endpoint pre-filter now excludes reconcile rows (P4 fix)", () => {
+    expect(computeStats(rows).totalPnl).toBe(100);
+    expect(endpointPnlSum(rows)).toBe(100);
   });
 
-  it("the reconcile row also survives the endpoint pre-filter and shows in the trade table", () => {
+  it("the reconcile row is excluded from the endpoint measurable set", () => {
     const surviving = endpointFilteredRows(rows);
-    expect(surviving.some((r) => RECONCILE_REASON_PATTERN.test(r.exitReason ?? ""))).toBe(true);
+    expect(surviving.some((r) => RECONCILE_REASON_PATTERN.test(r.exitReason ?? ""))).toBe(false);
   });
 
-  it.fails("INVARIANT (currently broken): stats totalPnl must equal endpoint P&L sum", () => {
+  it("INVARIANT: stats totalPnl equals endpoint P&L sum", () => {
     expect(endpointPnlSum(rows)).toBe(computeStats(rows).totalPnl);
   });
 });

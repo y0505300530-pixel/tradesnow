@@ -1,8 +1,8 @@
 # TradeSnow — System Architect Audit & Improvement Plan
 
 > **Date:** 2026-07-01  
-> **Status:** ACCEPTED (advisor-ratified) · **SSOT:** Git `main` · deploy via `/root/deploy-tradesnow.sh`  
-> **Related:** [`2026-06-30-elza-priority-roadmap-spec.md`](2026-06-30-elza-priority-roadmap-spec.md), [`2026-07-01-entry-churn-min-r-spec.md`](2026-07-01-entry-churn-min-r-spec.md), [`../../QA_PLAN_WAITER_V45.md`](../../QA_PLAN_WAITER_V45.md)
+> **Status:** Phase 0 SHIPPED (2026-07-01) · **SSOT:** Git `main` · deploy via `/root/deploy-tradesnow.sh`  
+> **Related:** [`2026-06-30-elza-priority-roadmap-spec.md`](2026-06-30-elza-priority-roadmap-spec.md), [`2026-07-01-entry-churn-min-r-spec.md`](2026-07-01-entry-churn-min-r-spec.md), [`../../QA_PLAN_WAITER_V45.md`](../../QA_PLAN_WAITER_V45.md), [`../../drizzle/ORPHAN_MIGRATIONS_APPLIED.md`](../../drizzle/ORPHAN_MIGRATIONS_APPLIED.md)
 
 ---
 
@@ -38,10 +38,10 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 
 | ID | Issue | Path | Fix |
 |----|-------|------|-----|
-| E1 | Armed Watcher enters **wrong ticker** (full war cycle, no `onlyTicker`) | `intradayArmedWatcher.ts:399-405` | Scoped entry or direct `tryLiveEntry` |
-| E2 | HardSync marks **mass zombie** on empty IBKR response (no disappearance guard) | `liveOrderExecutor.ts:2228-2241` | Mirror `ibkrSync.ts:182-189` guard |
-| E3 | Anti-churn **removed** — same-day re-entry after close | `warEngine.ts:782-800` | `entryChurnGuardEnabled` — see churn spec |
-| E4 | **MIN_R_PCT** missing — 0.11% rValue passes RC2 max-only gate | `slCalculator.ts`, AAPL 30-Jun | `minRValuePctEnabled` — see churn spec |
+| E1 | Armed Watcher enters **wrong ticker** (full war cycle, no `onlyTicker`) | `intradayArmedWatcher.ts` | ✅ **FIXED** — `onlyTicker` scoped `runWarEngineCycle` |
+| E2 | HardSync marks **mass zombie** on empty IBKR response (no disappearance guard) | `liveOrderExecutor.ts` | ✅ **FIXED** — mass-disappearance guard (mirror ibkrSync) |
+| E3 | Anti-churn **removed** — same-day re-entry after close | `warEngine.ts:782-800` | ✅ **SHIPPED INERT** (`entryChurnGuardEnabled`, 5b7beef→03446c6) |
+| E4 | **MIN_R_PCT** missing — 0.11% rValue passes RC2 max-only gate | `slCalculator.ts`, AAPL 30-Jun | ✅ **SHIPPED INERT** (`minRValuePctEnabled`) |
 | E5 | Pyramid: IBKR fill, **DB insert fail** → SL/TP qty mismatch | `pyramidEngine.ts:268`, NSC 30-Jun | Atomic insert + schema verify |
 | E6 | `CLOSED_IBKR_NO_PRICE` → `realizedPnl=0` | `ibkrSync.ts:273-274` | Recover fill price before close |
 
@@ -51,11 +51,11 @@ TradeSnow is a **production-grade live engine** with never-naked, circuit breake
 |----|-------|------|-----|
 | P1 | Waiter columns in SQL + code, **missing from `schema.ts`** | `0143_waiter.sql`, `waiterEngine.ts` | Reconcile Drizzle schema |
 | P2 | Phoenix ledger **three incompatible definitions** | `0139_*`, `0140`, `schema.ts` | Pick one SSOT |
-| P3 | Drizzle journal stops at **0133** — 0134–0144 orphan SQL | `drizzle/meta/_journal.json` | Register migrations |
-| P4 | `warReport` includes RECONCILE P&L; `computeStats` excludes | `liveEngine.ts:~1764` | Unified `isExcludedFromStats()` |
-| P5 | `closePosition` **IBKR-only fallback** bypasses engine guards | `liveEngine.ts:~1119` | Gate behind confirm token or remove |
-| P6 | Hardcoded `LIVE_ACCOUNT_ID = "U16881054"` | `ibkrSync.ts`, `ibkrPositionSync.ts` | `ENV.ibkrLiveAccountId` everywhere |
-| P7 | `ibkrSync` missing `reconcileWaiterPositions` hook | `waiterEngine.test.ts:76` | Wire flag-gated hook |
+| P3 | Drizzle journal stops at **0133** — 0134–0144 orphan SQL | `drizzle/meta/_journal.json` | ✅ **REGISTERED** — metadata only; see `ORPHAN_MIGRATIONS_APPLIED.md` |
+| P4 | `warReport` includes RECONCILE P&L; `computeStats` excludes | `liveEngine.ts` | ✅ **FIXED** — `isExcludedFromStats()` unified |
+| P5 | `closePosition` **IBKR-only fallback** bypasses engine guards | `liveEngine.ts` | ✅ **FIXED** — tracked row required |
+| P6 | `LIVE_ACCOUNT_ID = "U16881054"` hardcoded | multiple | ✅ **FIXED** — `ENV.ibkrLiveAccountId` via `liveOrderExecutor` |
+| P7 | `ibkrSync` missing `reconcileWaiterPositions` hook | `ibkrSync.ts` | ✅ **FIXED** — flag-gated hook wired |
 
 ### Tests (merge blockers per QA constitution)
 
@@ -131,10 +131,11 @@ Split god files · `entryGuards.ts` SSOT · short SSOT unification
 
 | Priority | Item | ROI |
 |----------|------|-----|
-| P0 | 2 tests + schema drift | merge blocked |
-| P1a | MIN_R_PCT | 🔴🔴🔴 |
-| P1b | Churn Guard | 🔴🔴🔴 |
-| P1c | Armed scope + HardSync guard | 🔴🔴 |
+| P0 | E2 HardSync guard + journal 0134–0145 | ✅ shipped |
+| P0 | 2 tests + ibkrSync hook + E1 + P4/P5/P6 | ✅ shipped |
+| P1a | MIN_R_PCT (INERT, await arm) | 🔴🔴🔴 |
+| P1b | Churn Guard (INERT, await arm + Phoenix C6) | 🔴🔴🔴 |
+| P1c | Armed scope + HardSync guard | ✅ shipped |
 | P1d | War race | 🔴🔴 |
 | P2 | Platform P1–P7 | 🟠🟠 |
 | P3 | Golden parity | 🟢 |

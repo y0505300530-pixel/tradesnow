@@ -29,8 +29,8 @@ import {
   toLedgerRow,
   computeStats,
   groupBy,
+  isExcludedFromStats,
   PHANTOM_REASONS,
-  NO_PRICE_REASONS,
   type LedgerRow,
 } from "../tradeLedger";
 import {
@@ -1116,79 +1116,10 @@ export const liveEngineRouter = {
         }
       }
 
-      // Fallback: no DB row — close directly on IBKR by ticker
-      if (ticker) {
-        try {
-          const { resolveConid } = await import("../liveOrderExecutor");
-          const conid = await resolveConid(ticker);
-          if (!conid) throw new TRPCError({ code: "BAD_REQUEST", message: `No conid for ${ticker}` });
-          if (!LIVE_ACCOUNT_ID) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "IBKR_LIVE_ACCOUNT_ID not configured" });
-
-          const posRes = await ibindRequest("GET", "/positions");
-          const ibkrPos = ((posRes.body as any)?.positions ?? []).find((p: any) => {
-            const sym = (p.contractDesc ?? p.ticker ?? "").toUpperCase();
-            return sym === ticker || sym.startsWith(`${ticker} `);
-          });
-          if (!ibkrPos || ibkrPos.position === 0) {
-            throw new TRPCError({ code: "NOT_FOUND", message: `Position not found on IBKR: ${ticker}` });
-          }
-
-          const side = ibkrPos.position > 0 ? "SELL" : "BUY";
-          const qty = Math.abs(ibkrPos.position);
-
-          const ordersRes = await ibindRequest("GET", "/orders");
-          const allOrders: any[] = (ordersRes.body as any)?.orders ?? [];
-          const brackets = allOrders.filter((o: any) => {
-            const sym = (o.description1 ?? o.ticker ?? "").toUpperCase();
-            return (sym === ticker || sym.startsWith(`${ticker} `)) &&
-              ["PreSubmitted", "Submitted"].includes(o.status);
-          });
-          for (const ord of brackets) {
-            await ibindRequest("DELETE", `/iserver/account/${LIVE_ACCOUNT_ID}/order/${ord.orderId}`);
-          }
-
-          const mktPrice = ibkrPos.mktPrice ?? ibkrPos.avgCost ?? 0;
-          const lmtPrice = side === "SELL"
-            ? +(mktPrice * 0.99).toFixed(2)
-            : +(mktPrice * 1.01).toFixed(2);
-
-          // ENDPOINT FIX 2026-06-29: /orders/limit 405s on the gateway; route through /orders/close-position.
-          const sellRes = await ibindRequest("POST", "/orders/close-position", {
-            account_id: LIVE_ACCOUNT_ID,
-            conid,
-            side,
-            quantity: qty,
-            orderType: "LMT",
-            limitPrice: lmtPrice,
-            outsideRth: false,
-            tif: "IOC",
-            orderRef: `WARROOM_EXIT_${ticker}_${Date.now()}`,
-          }, { "X-Confirm-Live-Order": "yes" });
-
-          if (!sellRes.ok) {
-            const msg = ((sellRes.body as any)?.message ?? `HTTP ${sellRes.status}`).toString();
-            throw new TRPCError({ code: "BAD_REQUEST", message: msg });
-          }
-
-          log.info("LIVE_EXEC", `closePosition IBKR-only ${ticker} ${side} x${qty}`, { orderBody: sellRes.body });
-          invalidateIbkrCache(["/positions", "/orders"]);
-          const orderId = String((sellRes.body as any)?.order_id ?? (sellRes.body as any)?.result?.order_id ?? "");
-          return {
-            success: true,
-            reason: "פקודה נשלחה ל-IBKR",
-            orderId: orderId || null,
-            orderType: "LMT",
-            quantity: qty,
-            ticker,
-            side: side as "BUY" | "SELL",
-          };
-        } catch (e: any) {
-          if (e instanceof TRPCError) throw e;
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: e.message ?? "IBKR close failed" });
-        }
-      }
-
-      throw new TRPCError({ code: "BAD_REQUEST", message: "No ticker or positionId provided" });
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: ticker ? `אין פוזיציה במעקב עבור ${ticker}` : "אין פוזיציה במעקב",
+      });
     }),
 
   // ── Manual order — BUY/SELL × open/close long/short (UI manual trading) ─────
@@ -1759,12 +1690,8 @@ export const liveEngineRouter = {
       // Project to canonical ledger rows (pure, never throws).
       const projected = rawRows.map(toLedgerRow);
 
-      // CRITICAL pre-filter — drop phantom (no-fill) + no-price (fabricated $0)
-      // closes BEFORE stats. computeStats trusts its input is the measurable set.
-      const dropSet = new Set<string>([...PHANTOM_REASONS, ...NO_PRICE_REASONS]);
-      const rows = projected.filter(
-        (r) => !(r.exitReason !== null && dropSet.has(r.exitReason)),
-      );
+      // CRITICAL pre-filter — drop phantom / no-price / RECONCILE closes BEFORE stats.
+      const rows = projected.filter((r) => !isExcludedFromStats(r.exitReason));
       const droppedCount = projected.length - rows.length;
 
       // ── "What happened today" — EVERY real position that closed today ────────

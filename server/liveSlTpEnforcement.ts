@@ -17,7 +17,7 @@ import { ibindRequest } from "./routers/ibkrProxy";
 import { isLiveMarketOpen } from "./liveOrderExecutor";
 import { log } from "./logger";
 
-export const LIVE_ACCOUNT_ID = "U16881054";
+import { LIVE_ACCOUNT_ID } from "./liveOrderExecutor";
 
 export type SlTpEnforcementTrigger = "MANUAL" | "CRON";
 

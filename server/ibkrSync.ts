@@ -25,7 +25,7 @@ import {
 } from "./livePositionsSyncCore";
 import { isOpsNoiseClose } from "./tradeLedger";
 
-const LIVE_ACCOUNT_ID = "U16881054";
+import { LIVE_ACCOUNT_ID } from "./liveOrderExecutor";
 let _ibkrSyncRunning = false;
 
 // ── Prime IBKR iserver/accounts (required before order queries) ──────────────
@@ -191,6 +191,18 @@ export async function runIbkrSync(userId: number = 1): Promise<{
   // Log if all positions are being closed (normal after full liquidation)
   if (ibkrActiveCount === 0 && dbPositions.length > 0) {
     log.info("IBKR_SYNC", `All ${dbPositions.length} DB positions appear closed in IBKR (position=0) — processing closures`, { ibkrFoundCount });
+  }
+
+  // ── Waiter R3/R4 reconcile hook (INERT at waiterEnabled=0) ─────────────────
+  try {
+    const brokerQtyByTicker = new Map<string, number>();
+    for (const [sym, p] of ibkrPosMap) {
+      brokerQtyByTicker.set(sym, Number(p.position ?? 0));
+    }
+    const { reconcileWaiterPositions } = await import("./waiterEngine");
+    await reconcileWaiterPositions(userId, brokerQtyByTicker);
+  } catch (e: any) {
+    log.warn("IBKR_SYNC", `Waiter reconcile hook failed: ${e.message}`);
   }
 
   for (const pos of dbPositions) {

@@ -17,7 +17,7 @@ import {
 } from "./livePositionsSyncCore";
 import { isIbkrSyncMarketOpen } from "./utils/marketHours";
 
-const LIVE_ACCOUNT_ID = "U16881054";
+import { LIVE_ACCOUNT_ID } from "./liveOrderExecutor";
 const SYNC_INTERVAL_MS = 60_000;
 let _syncTimer: ReturnType<typeof setTimeout> | null = null;
 let _syncRunning = false;
