@@ -1580,6 +1580,12 @@ export const liveEngineConfig = mysqlTable("liveEngineConfig", {
   // breakout-cross detection (ARMED→CROSSED→HELD_5M→ENTER, anti-chase, fail-closed),
   // fired ONLY after the §5 backtest arm-gate passes. Owner-only flip. Build != arm.
   elzaIntradayWatcherEnabled: tinyint("elzaIntradayWatcherEnabled").notNull().default(0),
+  // War-race deferred Armed-entry retry (2026-07-01, P1d) — INERT BY DEFAULT.
+  // 0 = OFF: a transient-blocked (busy/cooldown) Armed breakout is logged + dropped as today
+  // (byte-identical). 1 = arm: park it and re-attempt at the top of later watcher ticks via the
+  // SAME runWarEngineCycle, until it enters / the cycle terminally declines it / TTL expires.
+  warRaceDeferQueueEnabled: tinyint("warRaceDeferQueueEnabled").notNull().default(0),
+  warRaceDeferTtlSec:  int("warRaceDeferTtlSec").notNull().default(120),
   // Armed-Watcher SHADOW MODE (2026-06-30) — detect + log would-be entries, NO order. Default 0.
   elzaIntradayWatcherShadow: tinyint("elzaIntradayWatcherShadow").notNull().default(0),
   // ── Ghost Slots (2026-06-29, ghost-slots-phoenix-protocol §6) — INERT BY DEFAULT ──
