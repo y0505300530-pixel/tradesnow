@@ -2391,9 +2391,17 @@ async function _runLiveSlMonitorImpl(userId: number, opts?: SlMonitorTestOpts): 
       const pnl = positionUnrealizedPnl(pos.direction, pos.entryPrice, currentTickPrice, pos.units);
       const pnlPct = pos.entryPrice > 0 ? (pnl / pos.allocatedCapital) * 100 : 0;
 
-      await db.update(livePositions)
-        .set({ currentPrice: currentTickPrice, unrealizedPnl: +pnl.toFixed(2), unrealizedPnlPct: +pnlPct.toFixed(3) })
-        .where(eq(livePositions.id, pos.id));
+      // Tier-1 #7a: dirty-check against the row's existing DB values (pos came from the
+      // syncedOpenPos select) — skip the no-op write when price + P&L are unchanged.
+      const _newPnl = +pnl.toFixed(2);
+      const _newPnlPct = +pnlPct.toFixed(3);
+      if (Math.abs(((pos as any).currentPrice ?? 0) - currentTickPrice) > 1e-4 ||
+          Math.abs(((pos as any).unrealizedPnl ?? 0) - _newPnl) > 1e-2 ||
+          Math.abs(((pos as any).unrealizedPnlPct ?? 0) - _newPnlPct) > 1e-3) {
+        await db.update(livePositions)
+          .set({ currentPrice: currentTickPrice, unrealizedPnl: _newPnl, unrealizedPnlPct: _newPnlPct })
+          .where(eq(livePositions.id, pos.id));
+      }
 
       // ── ZIV Shadow Monitor — log only, no exit actions ─────────────────────
       try {
