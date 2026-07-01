@@ -16,6 +16,7 @@ import { eq, and } from "drizzle-orm";
 import { fetchLivePrice, fetchIbkrLivePricesBatch, fetchBarsForTicker, getUsdIlsRate } from "../marketData";
 import { calcZivEngineScore } from "../zivEngine";
 import { calcSlTp } from "../slCalculator";
+import { resolveTaQuotePersist } from "@shared/taTodayQuote";
 
 /** Returns true if the ticker is an Israeli stock (TASE). */
 function isIsraeliTicker(ticker: string): boolean {
@@ -196,13 +197,27 @@ export const holding2Router = router({
       try {
         const live = priceMap.get(row.ticker) ?? priceMap.get(row.ticker.toUpperCase());
         if (!live) continue;
-        const prevClose = live.prevClose ?? (live.price - (live.change ?? 0));
+        const rawPrevClose = live.prevClose ?? (live.price - (live.change ?? 0));
+        const { prevClose, changePercent } = resolveTaQuotePersist(
+          row.ticker,
+          {
+            price: live.price,
+            prevClose: rawPrevClose > 0 ? rawPrevClose : null,
+            changePercent: live.changePercent ?? null,
+          },
+          {
+            dailyBasePrice: row.dailyBasePrice,
+            prevClose: row.prevClose,
+            prevCloseDb: row.prevClose,
+            dailyChangePercent: row.dailyChangePercent,
+          },
+        );
         await db
           .update(holding2)
           .set({
             currentPrice: live.price,
-            prevClose: prevClose > 0 ? prevClose : null,
-            dailyChangePercent: live.changePercent ?? null,
+            prevClose: prevClose != null && prevClose > 0 ? prevClose : null,
+            dailyChangePercent: changePercent,
             priceUpdatedAt: new Date(),
           })
           .where(eq(holding2.id, row.id));
@@ -230,12 +245,10 @@ export const holding2Router = router({
       const updated: string[] = [];
       for (const p of input.prices) {
         try {
-          const sym = p.ticker.toUpperCase();
-          const isTa = sym.endsWith(".TA");
           let prevClose = p.prevClose;
           let changePercent = p.changePercent;
 
-          if (isTa) {
+          if (p.ticker.toUpperCase().endsWith(".TA")) {
             const [existing] = await db
               .select({
                 prevClose: holding2.prevClose,
@@ -246,33 +259,18 @@ export const holding2Router = router({
               .where(and(eq(holding2.userId, ctx.user.id), eq(holding2.ticker, p.ticker)))
               .limit(1);
 
-            const base =
-              existing?.dailyBasePrice != null && existing.dailyBasePrice > 0
-                ? existing.dailyBasePrice
-                : existing?.prevClose != null && existing.prevClose > 0
-                  ? existing.prevClose
-                  : null;
-
-            const ibkrFlat =
-              (changePercent == null || changePercent === 0)
-              && prevClose != null && prevClose > 0
-              && Math.abs(p.price - prevClose) / prevClose < 1e-6;
-
-            if (base != null && ibkrFlat && Math.abs(p.price - base) / base > 1e-6) {
-              prevClose = base;
-              changePercent = +(((p.price - base) / base) * 100).toFixed(4);
-            } else if (
-              base != null
-              && (changePercent == null || changePercent === 0)
-              && Math.abs(p.price - base) / base > 1e-6
-            ) {
-              prevClose = base;
-              changePercent = +(((p.price - base) / base) * 100).toFixed(4);
-            } else if (ibkrFlat && existing?.dailyChangePercent != null && existing.dailyChangePercent !== 0) {
-              // Don't let a stale IBKR flat quote wipe a valid session %
-              changePercent = existing.dailyChangePercent;
-              prevClose = existing.prevClose ?? prevClose;
-            }
+            const resolved = resolveTaQuotePersist(
+              p.ticker,
+              { price: p.price, prevClose, changePercent },
+              {
+                dailyBasePrice: existing?.dailyBasePrice,
+                prevClose: existing?.prevClose,
+                prevCloseDb: existing?.prevClose,
+                dailyChangePercent: existing?.dailyChangePercent,
+              },
+            );
+            prevClose = resolved.prevClose;
+            changePercent = resolved.changePercent;
           }
 
           const result = await db

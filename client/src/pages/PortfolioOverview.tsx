@@ -620,7 +620,6 @@ export default function PortfolioOverview() {
   }, [h1LivePriceMapRaw, h1YahooPriceMap, ibkrMarketData.h1PriceMap]);
 
   // H2 price map: 3-layer — DB baseline → Yahoo live → IBKR override (skip IBKR for crypto)
-  const ibkrH2QuotesArrived = Object.keys(ibkrMarketData.h2PriceMap).length > 0;
   const h2LivePriceMap = useMemo((): Record<string, LivePriceEntry> => {
     const merged: Record<string, LivePriceEntry> = {};
     for (const h of h2Holdings) {
@@ -659,10 +658,10 @@ export default function PortfolioOverview() {
   const h2PersistMut = trpc.holding2.updateCurrentPrices.useMutation();
   const h2PersistRef = useRef<string>("");
   useEffect(() => {
-    if (!isLive || !ibkrH2QuotesArrived) return;
-    const entries = Object.entries(ibkrMarketData.h2PriceMap);
+    if (!isLive) return;
+    const entries = Object.entries(h2LivePriceMap).filter(([sym]) => !isCrypto(sym));
     if (entries.length === 0) return;
-    const fp = entries.map(([s, q]) => `${s}:${q?.price}`).join(',');
+    const fp = entries.map(([s, q]) => `${s}:${q?.price}:${q?.changePercent}`).join(',');
     if (fp === h2PersistRef.current) return;
     h2PersistRef.current = fp;
     const prices = entries
@@ -674,7 +673,7 @@ export default function PortfolioOverview() {
         changePercent: q!.changePercent as number | null,
       }));
     if (prices.length > 0) h2PersistMut.mutate({ prices });
-  }, [isLive, ibkrH2QuotesArrived, ibkrMarketData.h2PriceMap]);
+  }, [isLive, h2LivePriceMap, h2PersistMut]);
 
   // Cash balance
   const scopedCashBalance = useMemo(() => {
@@ -887,8 +886,7 @@ export default function PortfolioOverview() {
     });
 
     return built.filter(isVisiblePortfolioRow);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metrics, h2Tase, h2Usa, h2Crypto, cashBalance, h1HoldingsEffective.length, h1ShortLiability, isScopedViewer, primaryAccountLabel]);
+  }, [metrics, h2Tase, h2Usa, h2Crypto, h2LivePriceMap, cashBalance, h1HoldingsEffective.length, h1ShortLiability, isScopedViewer, primaryAccountLabel]);
 
   // ── Footer totals ─────────────────────────────────────────────────────────────
   const footer = useMemo(() => {

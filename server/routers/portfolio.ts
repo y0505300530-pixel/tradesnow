@@ -678,7 +678,37 @@ Provide JSON with two fields:
       const priceMap = await fetchIbkrLivePricesBatch(tickers);
       // Check if TASE is closed (holiday/weekend) — zero out change for .TA tickers
       const { isTaseClosedToday } = await import("../utils/marketHours");
+      const { enrichTaTodayQuote } = await import("@shared/taTodayQuote");
       const taseNoSessionToday = isTaseClosedToday();
+
+      const taTickers = tickers.filter(t => t.endsWith(".TA"));
+      const h2TaBaselineMap = new Map<string, { dailyBasePrice?: number | null; prevClose?: number | null }>();
+      if (taTickers.length > 0) {
+        try {
+          const db = await getDb();
+          if (db) {
+            const { holding2: h2Table } = await import("../../drizzle/schema");
+            const { eq: eqOp } = await import("drizzle-orm");
+            const rows = await db
+              .select({
+                ticker: h2Table.ticker,
+                dailyBasePrice: h2Table.dailyBasePrice,
+                prevClose: h2Table.prevClose,
+              })
+              .from(h2Table)
+              .where(eqOp(h2Table.userId, ctx.user.id));
+            for (const r of rows) {
+              const sym = r.ticker.toUpperCase();
+              if (taTickers.includes(sym)) {
+                h2TaBaselineMap.set(sym, {
+                  dailyBasePrice: r.dailyBasePrice,
+                  prevClose: r.prevClose,
+                });
+              }
+            }
+          }
+        } catch { /* ignore DB errors */ }
+      }
 
       // Per-ticker DB fallback: if ANY ticker has null live price, load DB cache
       // so that ticker gets the last known price (fixes race condition where stocks
@@ -706,12 +736,28 @@ Provide JSON with two fields:
         // weekday 17:30 close (owner needs end-of-TASE Today% on Overview).
         const isTaTicker = ticker.endsWith('.TA');
         const zeroChange = isTaTicker && taseNoSessionToday;
+        const price = live?.price ?? db?.price ?? null;
+        let change = zeroChange ? 0 : (live?.change ?? null);
+        let changePercent = zeroChange ? 0 : (live?.changePercent ?? db?.changePercent ?? null);
+        let prevClose = live?.prevClose ?? null;
+
+        if (isTaTicker && !zeroChange && price != null && price > 0) {
+          const enriched = enrichTaTodayQuote(
+            ticker,
+            { price, change, changePercent, prevClose },
+            h2TaBaselineMap.get(ticker) ?? {},
+          );
+          change = enriched.change ?? change;
+          changePercent = enriched.changePercent ?? changePercent;
+          prevClose = enriched.prevClose ?? prevClose;
+        }
+
         return {
           ticker,
-          price: live?.price ?? db?.price ?? null,
-          change: zeroChange ? 0 : (live?.change ?? null),
-          changePercent: zeroChange ? 0 : (live?.changePercent ?? db?.changePercent ?? null),
-          prevClose: live?.prevClose ?? null,
+          price,
+          change,
+          changePercent,
+          prevClose,
           isExtendedHours: live?.isExtendedHours ?? false,
           fromCache: live?.price == null && db?.price != null,
         };
