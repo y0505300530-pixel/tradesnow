@@ -19,20 +19,32 @@ import { toast } from "sonner";
 type SortField = "ticker" | "cmp" | "chng" | "chngPct" | "score";
 type SortDir = "asc" | "desc";
 
-// ─── ⭐ VIP (SELECTED_TEAM) chip — owner's priority ticker ────────────────────
-// Amber, icon + text (never color-alone), ≥11px, wraps cleanly at 375px.
-// Matches the War Room ⭐ נבחרת aesthetic. Renders only when ticker ∈ vip set.
-function VipChip() {
-  return (
-    <span
-      title="נבחרת — VIP priority ticker (owner's SELECTED_TEAM)"
-      aria-label="VIP — SELECTED_TEAM priority ticker"
-      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300 leading-none"
-    >
+// ─── VIP tier chip — DYNAMIC daily tier (VIP-A ⭐⭐ / VIP-B ⭐ / BENCH 🪑) ─────────
+// Icon + text (never color-alone), ≥11px, wraps cleanly at 375px. Renders null for
+// unknown tickers (empty snapshot ⇒ nothing shows, never crashes).
+function VipChip({ tier }: { tier?: string }) {
+  if (tier === "VIP-A") return (
+    <span title="VIP-A — פצצה (מומנטום + מבנה חזק)" aria-label="VIP-A priority"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300 leading-none">
       <Star className="w-3 h-3 shrink-0 fill-amber-500 text-amber-500" aria-hidden />
-      VIP
+      <Star className="w-3 h-3 shrink-0 -ml-1.5 fill-amber-500 text-amber-500" aria-hidden />
+      VIP-A
     </span>
   );
+  if (tier === "VIP-B") return (
+    <span title="VIP-B — מועמד תקין" aria-label="VIP-B priority"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide whitespace-nowrap bg-amber-50 text-amber-700 border border-amber-200 leading-none">
+      <Star className="w-3 h-3 shrink-0 text-amber-400" aria-hidden />
+      VIP-B
+    </span>
+  );
+  if (tier === "BENCH") return (
+    <span title="BENCH — ספסל (חלש / מתחת לממוצע)" aria-label="BENCH"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide whitespace-nowrap bg-slate-100 text-slate-500 border border-slate-200 leading-none">
+      🪑 BENCH
+    </span>
+  );
+  return null;
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -91,19 +103,13 @@ export default function Favorites() {
   // Defensive: backhand exposes `selectedTeam: string[]` (uppercased) on the
   // favorites list query. It may land as a top-level field on the response OR
   // ride on the first row — accept either. Empty/absent ⇒ no ⭐ renders, never crashes.
-  const { data: vipList } = trpc.favorites.getSelectedTeam.useQuery(undefined, { staleTime: 60_000 });
-  const vip = useMemo(() => {
-    const raw =
-      (vipList as any) ??
-      (favData as any)?.selectedTeam ??
-      (Array.isArray(favData) ? (favData[0] as any)?.selectedTeam : undefined) ??
-      [];
-    return new Set(
-      (Array.isArray(raw) ? raw : [])
-        .filter((t: any) => t != null)
-        .map((t: any) => String(t).toUpperCase()),
-    );
-  }, [favData, vipList]);
+  // Dynamic VIP tier map (ticker → VIP-A/VIP-B/BENCH) from the daily dynamic_vip snapshot.
+  // Fails open to {} → no chip renders, never crashes.
+  const { data: vipMap } = trpc.favorites.getDynamicVip.useQuery(undefined, { staleTime: 60_000 });
+  const vipTier = useMemo(() => {
+    const m = (vipMap ?? {}) as Record<string, string>;
+    return (ticker: string) => m[String(ticker).toUpperCase()];
+  }, [vipMap]);
 
   // Map data
   const allAssets = useMemo(() => {
@@ -365,7 +371,7 @@ export default function Favorites() {
                         <span className="text-base font-semibold text-gray-900">
                           {asset.ticker.replace(".TA", "")}
                         </span>
-                        {vip.has(asset.ticker.toUpperCase()) && <VipChip />}
+                        <VipChip tier={vipTier(asset.ticker)} />
                       </span>
                       <span className="text-[10px] text-gray-400 uppercase leading-tight">
                         {getExchange(asset.ticker)}

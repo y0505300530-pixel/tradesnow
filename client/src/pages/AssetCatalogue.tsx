@@ -186,20 +186,31 @@ function ZivBreakdownPopover({ ticker, score }: { ticker: string; score: number 
   );
 }
 
-// ─── ⭐ VIP (SELECTED_TEAM) chip — owner's priority ticker ────────────────────
-// Amber, icon + text (never color-alone), ≥11px, wraps cleanly at 375px.
-// Matches the War Room ⭐ נבחרת aesthetic. Renders only when ticker ∈ vip set.
-function VipChip() {
-  return (
-    <span
-      title="נבחרת — VIP priority ticker (owner's SELECTED_TEAM)"
-      aria-label="VIP — SELECTED_TEAM priority ticker"
-      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300"
-    >
+// ─── VIP tier chip — DYNAMIC daily tier (VIP-A ⭐⭐ / VIP-B ⭐ / BENCH 🪑) ─────────
+// Icon + text (never color-alone), ≥11px, wraps cleanly at 375px. Null for unknown tickers.
+function VipChip({ tier }: { tier?: string }) {
+  if (tier === "VIP-A") return (
+    <span title="VIP-A — פצצה (מומנטום + מבנה חזק)" aria-label="VIP-A priority"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide whitespace-nowrap bg-amber-100 text-amber-800 border border-amber-300">
       <Star className="w-3 h-3 shrink-0 fill-amber-500 text-amber-500" aria-hidden />
-      VIP
+      <Star className="w-3 h-3 shrink-0 -ml-1.5 fill-amber-500 text-amber-500" aria-hidden />
+      VIP-A
     </span>
   );
+  if (tier === "VIP-B") return (
+    <span title="VIP-B — מועמד תקין" aria-label="VIP-B priority"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide whitespace-nowrap bg-amber-50 text-amber-700 border border-amber-200">
+      <Star className="w-3 h-3 shrink-0 text-amber-400" aria-hidden />
+      VIP-B
+    </span>
+  );
+  if (tier === "BENCH") return (
+    <span title="BENCH — ספסל (חלש / מתחת לממוצע)" aria-label="BENCH"
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide whitespace-nowrap bg-slate-100 text-slate-500 border border-slate-200">
+      🪑 BENCH
+    </span>
+  );
+  return null;
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -835,19 +846,13 @@ export default function AssetCatalogue() {
   // Defensive: backhand exposes `selectedTeam: string[]` (uppercased) on the
   // catalogue query. It may land as a top-level field on the response OR ride
   // on the first row — accept either. Empty/absent ⇒ no ⭐ renders, never crashes.
-  const { data: vipList } = trpc.portfolio.getSelectedTeam.useQuery(undefined, { staleTime: 60_000 });
-  const vip = useMemo(() => {
-    const raw =
-      (vipList as any) ??
-      (catalogueDbData as any)?.selectedTeam ??
-      (Array.isArray(catalogueDbData) ? (catalogueDbData[0] as any)?.selectedTeam : undefined) ??
-      [];
-    return new Set(
-      (Array.isArray(raw) ? raw : [])
-        .filter((t: any) => t != null)
-        .map((t: any) => String(t).toUpperCase()),
-    );
-  }, [catalogueDbData, vipList]);
+  // Dynamic VIP tier map (ticker → VIP-A/VIP-B/BENCH) from the daily dynamic_vip snapshot.
+  // Fails open to {} → no chip renders, never crashes.
+  const { data: vipMap } = trpc.portfolio.getDynamicVip.useQuery(undefined, { staleTime: 60_000 });
+  const vipTier = useMemo(() => {
+    const m = (vipMap ?? {}) as Record<string, string>;
+    return (ticker: string) => m[String(ticker).toUpperCase()];
+  }, [vipMap]);
 
   // ── Active Price Alerts (for ✓ checkmark in catalogue) ──────────────────────
   const { data: activeAlertsData } = trpc.priceAlerts.getAll.useQuery(undefined, {
@@ -1481,7 +1486,7 @@ export default function AssetCatalogue() {
                   >
                     {r.ticker}
                   </button>
-                  {vip.has(r.ticker.toUpperCase()) && <VipChip />}
+                  <VipChip tier={vipTier(r.ticker)} />
                   {holdingTickers.has(r.ticker.toUpperCase()) && (
                     <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-400">H1</span>
                   )}
@@ -1673,7 +1678,7 @@ export default function AssetCatalogue() {
                           <button className="text-[#2563EB] hover:underline font-mono font-bold text-xs" onClick={() => navigate(`/deep-analysis/${encodeURIComponent(r.ticker)}`)}>
                             {r.ticker}
                           </button>
-                          {vip.has(r.ticker.toUpperCase()) && <VipChip />}
+                          <VipChip tier={vipTier(r.ticker)} />
                         </div>
                       </TableCell>
                       {/* Sector Badge */}
@@ -1883,7 +1888,7 @@ export default function AssetCatalogue() {
                   >
                     {r.ticker}
                   </button>
-                  {vip.has(r.ticker.toUpperCase()) && <VipChip />}
+                  <VipChip tier={vipTier(r.ticker)} />
                   {holdingTickers.has(r.ticker.toUpperCase()) && (
                     <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-400">H1</span>
                   )}
@@ -2008,7 +2013,7 @@ export default function AssetCatalogue() {
                           <button className="text-[#2563EB] hover:underline font-mono font-bold text-xs" onClick={() => navigate(`/deep-analysis/${encodeURIComponent(r.ticker)}`)}>
                             {r.ticker}
                           </button>
-                          {vip.has(r.ticker.toUpperCase()) && <VipChip />}
+                          <VipChip tier={vipTier(r.ticker)} />
                         </div>
                       </TableCell>
                       {/* Sector Badge */}
