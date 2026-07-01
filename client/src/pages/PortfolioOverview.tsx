@@ -31,6 +31,7 @@ import {
   positionValue,
   isPositionOpenedToday,
 } from "@/lib/positionMath";
+import { enrichTaTodayQuote } from "../../shared/taTodayQuote";
 import {
   ShortLiabilitySummary,
   aggregateShortLiability,
@@ -644,6 +645,12 @@ export default function PortfolioOverview() {
     }
     for (const [ticker, data] of Object.entries(h2LivePriceMapRaw)) {
       if (data?.price != null) merged[ticker] = { ...merged[ticker], ...data };
+    }
+    // IBKR after TASE close overwrites good DB/Yahoo quotes with change=0 — restore from baseline
+    for (const h of h2Holdings) {
+      if (merged[h.ticker]) {
+        merged[h.ticker] = enrichTaTodayQuote(h.ticker, merged[h.ticker], h);
+      }
     }
     return merged;
   }, [h2Holdings, h2YahooPriceMap, ibkrMarketData.h2PriceMap, h2LivePriceMapRaw, isLive]);

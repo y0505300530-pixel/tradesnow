@@ -230,12 +230,57 @@ export const holding2Router = router({
       const updated: string[] = [];
       for (const p of input.prices) {
         try {
+          const sym = p.ticker.toUpperCase();
+          const isTa = sym.endsWith(".TA");
+          let prevClose = p.prevClose;
+          let changePercent = p.changePercent;
+
+          if (isTa) {
+            const [existing] = await db
+              .select({
+                prevClose: holding2.prevClose,
+                dailyBasePrice: holding2.dailyBasePrice,
+                dailyChangePercent: holding2.dailyChangePercent,
+              })
+              .from(holding2)
+              .where(and(eq(holding2.userId, ctx.user.id), eq(holding2.ticker, p.ticker)))
+              .limit(1);
+
+            const base =
+              existing?.dailyBasePrice != null && existing.dailyBasePrice > 0
+                ? existing.dailyBasePrice
+                : existing?.prevClose != null && existing.prevClose > 0
+                  ? existing.prevClose
+                  : null;
+
+            const ibkrFlat =
+              (changePercent == null || changePercent === 0)
+              && prevClose != null && prevClose > 0
+              && Math.abs(p.price - prevClose) / prevClose < 1e-6;
+
+            if (base != null && ibkrFlat && Math.abs(p.price - base) / base > 1e-6) {
+              prevClose = base;
+              changePercent = +(((p.price - base) / base) * 100).toFixed(4);
+            } else if (
+              base != null
+              && (changePercent == null || changePercent === 0)
+              && Math.abs(p.price - base) / base > 1e-6
+            ) {
+              prevClose = base;
+              changePercent = +(((p.price - base) / base) * 100).toFixed(4);
+            } else if (ibkrFlat && existing?.dailyChangePercent != null && existing.dailyChangePercent !== 0) {
+              // Don't let a stale IBKR flat quote wipe a valid session %
+              changePercent = existing.dailyChangePercent;
+              prevClose = existing.prevClose ?? prevClose;
+            }
+          }
+
           const result = await db
             .update(holding2)
             .set({
               currentPrice: p.price,
-              prevClose: p.prevClose,
-              dailyChangePercent: p.changePercent,
+              prevClose,
+              dailyChangePercent: changePercent,
               priceUpdatedAt: new Date(),
             })
             .where(

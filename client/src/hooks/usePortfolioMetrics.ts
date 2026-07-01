@@ -157,6 +157,9 @@ function computeTodayPnl(
   createdAt?: string | Date | null,
 ): number {
   const price = live?.price ?? currentPrice ?? buyPrice;
+  const livePrevStale =
+    live?.prevClose != null && live.prevClose > 0 && price > 0
+    && Math.abs(price - live.prevClose) / live.prevClose < 1e-6;
 
   // Entry-price override: positions opened today never use prevClose
   if (isPositionOpenedToday(transactionDate, createdAt)) {
@@ -164,16 +167,15 @@ function computeTodayPnl(
   }
 
   // Priority 1: IBKR live change $ — most accurate (0 is valid on a flat day)
-  if (live?.change != null) {
-    if (live.change !== 0) return live.change * units;
-    // change=0 after TASE close may be server-stale; trust prevClose when price moved
-    if (live.price != null && live.prevClose != null && live.prevClose > 0 && live.price !== live.prevClose) {
-      return (live.price - live.prevClose) * units;
-    }
-    return 0;
+  if (live?.change != null && live.change !== 0) {
+    return live.change * units;
+  }
+  // Priority 1b: stale change=0 (TASE after close) — fall through to baseline
+  if (live?.change === 0 && live.price != null && live.prevClose != null && live.prevClose > 0 && !livePrevStale) {
+    return (live.price - live.prevClose) * units;
   }
   // Priority 2: prevClose-based (when IBKR provides explicit prevClose)
-  if (live?.price != null && live.prevClose != null && live.prevClose > 0) {
+  if (live?.price != null && live.prevClose != null && live.prevClose > 0 && !livePrevStale) {
     return (live.price - live.prevClose) * units;
   }
   // Priority 3: changePercent — correctly captures overnight gaps (e.g. ENTG +15% gap)
@@ -182,11 +184,13 @@ function computeTodayPnl(
     const prevCloseFromPct = price / (1 + live.changePercent / 100);
     return (price - prevCloseFromPct) * units;
   }
-  // Priority 4: dailyBasePrice fallback — skip when IBKR quotes provide prevClose
-  if (dailyBasePrice != null && dailyBasePrice > 0 && price > 0 && !live?.prevClose) {
-    const snapshotAge = dailyBaseTs ? Date.now() - dailyBaseTs : Infinity;
-    if (snapshotAge < 26 * 3600 * 1000) {
-      return (price - dailyBasePrice) * units;
+  // Priority 4: dailyBasePrice fallback — also when IBKR prevClose is stale (price≈prevClose)
+  if (dailyBasePrice != null && dailyBasePrice > 0 && price > 0) {
+    if (!live?.prevClose || livePrevStale) {
+      const snapshotAge = dailyBaseTs ? Date.now() - dailyBaseTs : Infinity;
+      if (snapshotAge < 26 * 3600 * 1000) {
+        return (price - dailyBasePrice) * units;
+      }
     }
   }
   // Priority 4: DB-cached daily change percent — ONLY if updated today (not stale)

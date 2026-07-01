@@ -14,7 +14,7 @@
 1. `portfolio.ts` `getLivePrices` and `priceStream.ts` used **`isTaseClosed()`** (outside RTH hours) to force `change=0` for all `.TA` tickers.
 2. At **19:07 weekday** TASE RTH is over → server zeroed `change` / `changePercent`.
 3. `computeTodayPnl` Priority 1: `change != null` → `0 * units` → never reached `prevClose`.
-4. Overview fix `2a1eb19` could not help — poisoned API data arrived first.
+4. **v2:** IBKR poll every 3s (US open) overwrites merged quotes with `change=0, price≈prevClose`; `updateCurrentPrices` persisted zeros to DB → flicker.
 
 **Naming bug:** comment said "holiday/weekend" but code used **any after-hours**.
 
@@ -25,8 +25,10 @@
 | `server/utils/marketHours.ts` | `isTaseClosedToday()` — Sat/Sun/holiday only |
 | `server/routers/portfolio.ts` | `zeroChange` only when `isTaseClosedToday()` |
 | `server/routers/priceStream.ts` | same |
-| `client/src/hooks/usePortfolioMetrics.ts` | `computeTodayPnl`: if `change===0` but `price≠prevClose`, use prevClose; H2 skip aligned with Overview |
-| `client/src/hooks/usePortfolioAnalytics.ts` | same baseline logic for .TA |
+| `client/src/hooks/usePortfolioMetrics.ts` | `computeTodayPnl`: dailyBasePrice when IBKR prevClose stale |
+| `client/src/lib/taTodayQuote.ts` | **v2** — enrich flat IBKR .TA quotes from DB baseline |
+| `client/src/pages/PortfolioOverview.tsx` | apply `enrichTaTodayQuote` after IBKR merge |
+| `server/routers/holding2.ts` | `updateCurrentPrices` — don't persist IBKR flat zeros over valid session % |
 
 ## Verification
 
