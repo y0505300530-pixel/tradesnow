@@ -12,7 +12,7 @@ export const ELZA_V5_BLOODHOUND_CONFIG = {
   /** Wide Lung inverted SL: max(entry×1.08, EMA-50×1.01). */
   SL_PCT_CEILING: 1.08,
   SL_EMA50_MULT: 1.01,
-  RC2_MAX_RISK_PCT: 12,
+  RC2_MAX_RISK_PCT: 14,
 
   /** Golden DNA short exits. */
   STAGE1_BE_R: 1.5,

@@ -251,7 +251,16 @@ export function GlobalNav() {
     href === "/" ? location === "/" : location === href || location.startsWith(href);
 
   const knowledgeRoutes = ["/master", "/knowledge"];
-  const settingsRoutes = ["/settings", "/ibkr-account", "/logs"];
+  const settingsMenuItems = [
+    { href: "/settings", icon: <Settings className="w-4 h-4 shrink-0" />, label: "General Settings" },
+    ...(isAdmin
+      ? [
+          { href: "/ibkr-account", icon: <Activity className="w-4 h-4 shrink-0" />, label: "IBKR Account" },
+          { href: "/logs", icon: <ScrollText className="w-4 h-4 shrink-0" />, label: "System Logs" },
+        ]
+      : []),
+  ];
+  const settingsRoutes = settingsMenuItems.map((item) => item.href);
   const isSettingsActive = settingsRoutes.some((r) => location === r || location.startsWith(r));
   const isKnowledgeActive = knowledgeRoutes.some((r) => location === r || (r !== "/" && location.startsWith(r)));
 
@@ -413,8 +422,7 @@ export function GlobalNav() {
                 </div>
                 )}
 
-                {isAdmin && (<>
-                {/* Settings Dropdown */}
+                {nav.showSettings && (
                 <div className="relative" ref={settingsRef}>
                   <button
                     onClick={() => setSettingsOpen((v) => !v)}
@@ -444,11 +452,7 @@ export function GlobalNav() {
                         <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: BLUE }}>System</p>
                       </div>
                       <div className="p-2 flex flex-col gap-0.5">
-                        {[
-                          { href: "/settings", icon: <Settings className="w-4 h-4 shrink-0" />, label: "General Settings" },
-                          { href: "/ibkr-account", icon: <Activity className="w-4 h-4 shrink-0" />, label: "IBKR Account" },
-                          { href: "/logs", icon: <ScrollText className="w-4 h-4 shrink-0" />, label: "System Logs" },
-                        ].map(({ href, icon, label }) => (
+                        {settingsMenuItems.map(({ href, icon, label }) => (
                           <Link
                             key={href}
                             href={href}
@@ -463,7 +467,7 @@ export function GlobalNav() {
                     </div>
                   )}
                 </div>
-                </>)}{/* end admin-only settings */}
+                )}
               </>
             )}
           </nav>
@@ -604,8 +608,8 @@ export function GlobalNav() {
                   </>
                   )}
 
-                  {/* ── SYSTEM ── */}
-                  {isAdmin && (
+                  {/* ── SETTINGS ── */}
+                  {nav.showSettings && (
                     <>
                       <div className="mt-3 mb-1 px-2">
                         <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(100,116,139,0.95)" }}>System</p>

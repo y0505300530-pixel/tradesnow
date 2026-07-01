@@ -17,7 +17,7 @@ export const ELZA_V5_SHORT_CONFIG = {
   SL_ABOVE_BREAKDOWN_BPS: 0.0005,
 
   /** RC-2 guard: skip if (SL − entry) / entry exceeds this %. */
-  RC2_MAX_RISK_PCT: 12,
+  RC2_MAX_RISK_PCT: 14,
 
   /** Parabolic Free-Fall Lock stages (short R-multiples). */
   STAGE1_BE_R: 1.5,

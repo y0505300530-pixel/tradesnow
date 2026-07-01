@@ -179,3 +179,34 @@ export async function syncAllElzaHoldingsFromLivePositions(
   }
   return { synced: tickers.length, tickers };
 }
+
+/** Drop portfolioHoldings row when live position is gone (IBKR sync close path). */
+export async function removePortfolioHoldingForTicker(
+  db: Db,
+  userId: number,
+  ticker: string,
+): Promise<boolean> {
+  const t = ticker.toUpperCase();
+  const result = await db
+    .delete(portfolioHoldings)
+    .where(and(eq(portfolioHoldings.userId, userId), eq(portfolioHoldings.ticker, t)));
+  const affected = (result as any)?.[0]?.affectedRows ?? (result as any)?.rowsAffected ?? 0;
+  return affected > 0;
+}
+
+/** Remove portfolioHoldings rows with no matching open livePosition (fixes stale UI totals). */
+export async function pruneStalePortfolioHoldings(
+  db: Db,
+  userId: number,
+): Promise<{ removed: string[] }> {
+  const liveByTicker = await fetchOpenLivePositionsByTicker(db, userId);
+  const rows = await db.select().from(portfolioHoldings).where(eq(portfolioHoldings.userId, userId));
+  const removed: string[] = [];
+  for (const h of rows) {
+    const t = h.ticker.toUpperCase();
+    if ((h.units ?? 0) === 0) continue;
+    if (liveByTicker.has(t)) continue;
+    if (await removePortfolioHoldingForTicker(db, userId, t)) removed.push(t);
+  }
+  return { removed };
+}

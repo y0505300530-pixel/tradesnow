@@ -54,6 +54,7 @@ export const tradingAccountsRouter = router({
         showH1H2: !isScopedViewer,
         showTransfers: !isScopedViewer,
         showKnowledge: !isScopedViewer,
+        showSettings: true,
         showSystemLogs: ctx.user.role === "admin",
         showWarReport: ctx.user.role === "admin",
         overviewOnlyHolding1: isScopedViewer,

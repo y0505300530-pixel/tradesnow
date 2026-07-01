@@ -269,7 +269,7 @@ function hasBullishPA(window: Bar[]): boolean {
  * OMITTED because it needs price < EMA200, violating the §0 macro guard):
  *   Gold Breakout (Tier-4): price ≥ Donchian20High×0.995 & > EMA50 & > EMA200.
  *                           base 9, or 10 with Bullish PA.
- *   Gold Retest   (Tier-3): price > EMA200 & weekly-EMA50 slope > 0 & |Δ EMA50| ≤ 3%.
+ *   Gold Retest   (Tier-3): price > EMA200 & price > EMA50 (within 3% above) & weekly-EMA50 slope > 0.
  *                           base 7, or 8 with Bullish PA.
  *
  * The 8 sub-scores (Σ capped at +0.99) match the backtest term-for-term: RSI band,
@@ -323,7 +323,13 @@ export function genesisScore(bars: Bar[], i: number): GenesisScore {
     tier = "Gold Breakout";
     baseScore = bullishPA ? 10 : 9;
     isBreakoutTier = true;
-  } else if (price > ema200 && weeklyEma50Slope > 0 && distEma50 <= 0.03) {
+  } else if (
+    price > ema200 &&
+    price > ema50 &&
+    weeklyEma50Slope > 0 &&
+    ema50 > 0 &&
+    (price - ema50) / ema50 <= 0.03
+  ) {
     tier = "Gold Retest";
     baseScore = bullishPA ? 8 : 7;
   }

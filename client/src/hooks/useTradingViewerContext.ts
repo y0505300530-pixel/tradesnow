@@ -18,6 +18,7 @@ export function useTradingViewerContext() {
       showH1H2: nav?.showH1H2 ?? true,
       showTransfers: nav?.showTransfers ?? true,
       showKnowledge: nav?.showKnowledge ?? true,
+      showSettings: nav?.showSettings ?? true,
       showSystemLogs: nav?.showSystemLogs ?? false,
       showWarReport: nav?.showWarReport ?? false,
       overviewOnlyHolding1: nav?.overviewOnlyHolding1 ?? false,

@@ -8,7 +8,7 @@ export const ELZA_V45_GOLDEN_CONFIG = {
   SL_PCT_FLOOR: 0.92,
   SL_EMA50_MULT: 0.99,
 
-  RC2_MAX_RISK_PCT: 12,
+  RC2_MAX_RISK_PCT: 14,
 
   /** Golden Scale-Out @ +2.5R: bank 40%, BE on 60%. Runner → +5R or 2.5×ATR trail. */
   GOLDEN_SCALE_R: 2.5,

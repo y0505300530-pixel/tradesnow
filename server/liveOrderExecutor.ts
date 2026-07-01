@@ -1409,7 +1409,7 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   // ── MIN_R_PCT gate (SSOT: War + manual + alert) — INERT@0 ─────────────────────
   // Wired AFTER the structural stop is finalized (calcEntrySlTp / wideLungSL, both paths
   // set effectiveSl above) and BEFORE the conid resolve / order transmit. RC-2's
-  // MAX_STRUCTURAL_RISK_PCT (0.12) skips a stop that is TOO FAR; this is the missing floor
+  // MAX_STRUCTURAL_RISK_PCT (0.14) skips a stop that is TOO FAR; this is the missing floor
   // for a stop that is TOO TIGHT: |entry−stop|/entry below minRValuePct is a scalp, not a
   // tradeable swing (AAPL $288.35 / $286.71 = 0.11% → skip). effectiveEntry/effectiveSl are
   // the real broker stop across EVERY path here, so this ONE gate covers War, manual and

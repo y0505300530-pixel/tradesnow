@@ -85,7 +85,7 @@ export async function listTradingAccountsForViewer(
 ): Promise<TradingAccountRow[]> {
   const all = await listTradingAccounts();
   if (role === "admin") return all;
-  return all.filter((a) => a.linkedLocalUserId === appUserId);
+  return all.filter((a) => Number(a.linkedLocalUserId) === appUserId);
 }
 
 export async function assertTradingAccountAccess(
@@ -96,7 +96,7 @@ export async function assertTradingAccountAccess(
   const account = await getTradingAccountBySlug(accountSlug);
   if (!account) throw new Error("TRADING_ACCOUNT_NOT_FOUND");
   if (role === "admin") return account;
-  if (account.linkedLocalUserId === appUserId) return account;
+  if (Number(account.linkedLocalUserId) === appUserId) return account;
   throw new Error("TRADING_ACCOUNT_FORBIDDEN");
 }
 
@@ -110,7 +110,7 @@ export async function resolveCatalogUserIdForViewer(
     const ceo = all.find((a) => a.slug === "ceo");
     return ceo?.catalogUserId ?? appUserId;
   }
-  const linked = all.filter((a) => a.linkedLocalUserId === appUserId && a.isActive === 1);
+  const linked = all.filter((a) => Number(a.linkedLocalUserId) === appUserId && a.isActive === 1);
   if (linked.length > 0) return linked[0].catalogUserId;
   return appUserId;
 }

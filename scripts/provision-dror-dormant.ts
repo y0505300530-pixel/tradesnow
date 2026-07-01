@@ -13,7 +13,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 import { execSync } from "child_process";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { getDb } from "../server/db";
 import {
   localUsers,
@@ -157,8 +157,13 @@ async function main() {
 
   await db
     .update(liveEngineConfig)
-    .set({ isEnabled: 0 })
-    .where(eq(liveEngineConfig.tradingAccountId, drorAcct[0].id));
+    .set({ isEnabled: 0, tradingAccountId: drorAcct[0].id })
+    .where(
+      or(
+        eq(liveEngineConfig.tradingAccountId, drorAcct[0].id),
+        eq(liveEngineConfig.userId, linkedUserId),
+      ),
+    );
 
   const credPath = join(process.cwd(), "secrets/dror-dormant-login.txt");
   mkdirSync(join(process.cwd(), "secrets"), { recursive: true });

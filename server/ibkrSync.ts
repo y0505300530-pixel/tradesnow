@@ -321,6 +321,10 @@ export async function runIbkrSync(userId: number = 1): Promise<{
           // realized-P&L sums and the trade journal (A5) MUST exclude this exitReason from totals/win-rate.
           log.warn("IBKR_SYNC", `[${ticker}] closed with NO valid exit price → P&L UNKNOWN (stored 0, reason CLOSED_IBKR_NO_PRICE) — needs manual reconcile`, { ticker, posId: pos.id });
           await safeUpdateLivePosition(db, pos.id, { status: "closed", realizedPnl: 0, exitReason: "CLOSED_IBKR_NO_PRICE", closedAt: new Date() });
+          try {
+            const { removePortfolioHoldingForTicker } = await import("./portfolioHoldingsSync");
+            await removePortfolioHoldingForTicker(db, userId, ticker);
+          } catch { /* best-effort holdings mirror */ }
           result.closedByFill++;
           result.synced++;
           continue;
@@ -387,6 +391,10 @@ export async function runIbkrSync(userId: number = 1): Promise<{
 
         result.closedByFill++;
         result.synced++;
+        try {
+          const { removePortfolioHoldingForTicker } = await import("./portfolioHoldingsSync");
+          await removePortfolioHoldingForTicker(db, userId, ticker);
+        } catch { /* best-effort holdings mirror */ }
         continue;
       }
 
@@ -564,6 +572,14 @@ export async function runIbkrSync(userId: number = 1): Promise<{
       result.synced++;
     }
   } catch (e: any) { log.error("IBKR_SYNC", `[Adopt] pass failed: ${e.message}`); }
+
+  try {
+    const { pruneStalePortfolioHoldings } = await import("./portfolioHoldingsSync");
+    const pruned = await pruneStalePortfolioHoldings(db, userId);
+    if (pruned.removed.length > 0) {
+      log.info("IBKR_SYNC", `[HoldingsPrune] removed stale portfolioHoldings: ${pruned.removed.join(", ")}`, pruned);
+    }
+  } catch { /* best-effort */ }
 
   log.info("IBKR_SYNC",
     `Sync complete: ${result.synced} synced, ${result.closedByFill} closed by fill, ${result.cancelledOrphans} orphans cancelled, ${result.priceUpdates} price updates`,

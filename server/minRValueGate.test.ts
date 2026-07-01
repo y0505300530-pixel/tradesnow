@@ -69,7 +69,7 @@ describe("degraded inputs fail-open (executor guards own them)", () => {
 });
 
 describe("constants", () => {
-  it("MIN_R_VALUE_PCT mirrors the config default (1.5%) and sits below the RC-2 max (12%)", () => {
+  it("MIN_R_VALUE_PCT mirrors the config default (1.5%) and sits below the RC-2 max (14%)", () => {
     expect(MIN_R_VALUE_PCT).toBe(0.015);
     expect(MIN_R_VALUE_PCT).toBeLessThan(MAX_STRUCTURAL_RISK_PCT);
   });

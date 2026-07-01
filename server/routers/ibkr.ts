@@ -572,9 +572,13 @@ export const ibkrRouter = {
       }
 
       // Remove holdings that are no longer in IBKR (closed positions)
-      // Only remove holdings that were synced from IBKR (source='ibkr'), NOT manual holdings
+      // IBKR-synced rows always; Elza rows when no matching open livePosition remains.
       for (const h of existing) {
-        if (!ibkrTickers.has(h.ticker.toUpperCase()) && (h as any).source === 'ibkr') {
+        const tkr = h.ticker.toUpperCase();
+        if (ibkrTickers.has(tkr)) continue;
+        const isIbkrSource = (h as any).source === "ibkr";
+        const hasOpenLive = liveByTicker.has(tkr);
+        if (!isIbkrSource && hasOpenLive) continue;
           // ── Record CLOSED position change ──────────────────────────────────
           const closedUnits = h.units ?? 0;
           const realizedPnl = closedUnits > 0 && h.buyPrice
@@ -596,7 +600,6 @@ export const ibkrRouter = {
           await db.delete(portfolioHoldings)
             .where(and(eq(portfolioHoldings.id, h.id), eq(portfolioHoldings.userId, userId)));
           removed++;
-        }
       }
 
       // Save IBKR account data to DB (persists across offline periods)
