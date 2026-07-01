@@ -29,7 +29,7 @@ import { fetchBarsBatch, fetchBarsForTicker, fetchIbkrLivePricesBatch, type Bar 
 import { calcEntrySlTp, ema50FromBars, ensureDirectionalSlTp, validateSlTpDirection, freeRollTriggerGain } from "./slCalculator";
 import { isGapChase, gapPctFromEntryZone, GAP_GUARD_PCT } from "./gapGuard";
 import { calcZivHScore, type ZivHContext } from "./utils/zivHealth";
-import { safeInsertLivePosition } from "./livePositionsSyncCore";
+import { safeInsertLivePosition, safeUpdateLivePosition } from "./livePositionsSyncCore";
 import { isGhostSlotsEnabled, rowCountsTowardSlot } from "./ghostSlots";
 import { buildChurnLedger, isChurnBlocked, startOfIsraelDayMs, isAutomatedSignal, shouldBypassChurnForPhoenix } from "./entryChurnGuard";
 import { assertMinRValuePct } from "./minRValueGate";
@@ -1115,6 +1115,9 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   // Block duplicate ticker for AUTOMATED entries only (prevents engine double-entry).
   // Manual orders (MANUAL_*) may add to an existing IBKR/DB position — owner discretion.
   const isManualEntry = String(signal ?? "").toUpperCase().startsWith("MANUAL_");
+  const manualMergePos = isManualEntry
+    ? openPos.find((p) => p.ticker.toUpperCase() === ticker.toUpperCase() && p.direction === direction)
+    : undefined;
   if (!isManualEntry) {
     const dup = openPos.find(p => p.ticker.toUpperCase() === ticker.toUpperCase());
     if (dup) {
@@ -1808,7 +1811,7 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   );
 
   // ── Save to DB with all three IBKR order IDs ─────────────────────────────
-  await safeInsertLivePosition(db, {
+  const insertPayload = {
     userId,
     tradingAccountId: getTradingAccountId() ?? null,
     accountId: getLiveAccountId(),
@@ -1826,9 +1829,8 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     currentPrice: fillPrice,
     signal,
     zivScore,
-    entryStructMeta: params.entryStructMeta ?? null,   // ledger-fix: route-attributed closes
+    entryStructMeta: params.entryStructMeta ?? null,
     sector: params.sector ?? null,
-    // Phoenix lineage (optional; undefined ⇒ schema defaults 0/null ⇒ byte-identical).
     phoenixGeneration: params.phoenixGeneration ?? 0,
     originPosId: params.originPosId ?? null,
     ibkrEntryOrderId: finalEntryOrderId,
@@ -1842,29 +1844,73 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     fillStatus,
     ibkrAvgCost: fillPrice,
     ibkrUnits: filledQty > 0 ? filledQty : 0,
-    // ── Fat-Tail v2.0 metadata ────────────────────────────────────────────────
-    // FIX R1: behind the flag, rValue is the wideLungSL basis (goldenRValue, computed off
-    // effectiveEntry — NOT aggressiveEntry — so it matches the backtest's |entry − stop|).
-    // Flag OFF: byte-identical legacy (slTpResult.rValue ?? |aggressiveEntry − RC-2 stop|).
     rValue: goldenRValue ?? slTpResult.rValue ?? Math.abs(+(aggressiveEntry - effectiveSl).toFixed(2)),
-    peakPrice: aggressiveEntry,   // seed peak = entry price
+    peakPrice: aggressiveEntry,
     isFreeRolled: 0,
     atr14: slTpResult.atr14 ?? null,
     pyramidDone: 0,
     pyramidUnits: 0,
-  });
+  };
 
-  // Log trade — fetch inserted id
-  const insertedRows = await db.select({ id: livePositions.id })
-    .from(livePositions)
-    .where(and(
-      eq(livePositions.userId, userId),
-      eq(livePositions.ticker, ticker),
-      inArray(livePositions.status, ["open", "pending_entry"]),
-    ))
-    .orderBy(livePositions.openedAt)
-    .limit(1);
-  const newPosId = insertedRows[0]?.id ?? 0;
+  let newPosId = 0;
+  if (manualMergePos) {
+    // uq_active_ticker allows one active row per user+ticker — merge manual add-ons.
+    const oldUnits = Number(manualMergePos.units) || 0;
+    const oldAlloc = Number(manualMergePos.allocatedCapital) || 0;
+    const prevOrig = Number((manualMergePos as { originalUnits?: number }).originalUnits) || oldUnits;
+    if (filledQty > 0) {
+      const newUnits = oldUnits + filledQty;
+      const newEntry = newUnits > 0
+        ? (manualMergePos.entryPrice * oldUnits + fillPrice * filledQty) / newUnits
+        : fillPrice;
+      await safeUpdateLivePosition(db, manualMergePos.id, {
+        units: newUnits,
+        originalUnits: prevOrig + filledQty,
+        entryPrice: newEntry,
+        allocatedCapital: oldAlloc + fillPrice * filledQty,
+        currentPrice: fillPrice,
+        currentSl: effectiveSl,
+        currentTp: effectiveTp,
+        ibkrEntryOrderId: finalEntryOrderId,
+        ibkrSlOrderId: finalSlOrderId ?? manualMergePos.ibkrSlOrderId,
+        ibkrTpOrderId: ibkrTpOrderId ?? manualMergePos.ibkrTpOrderId,
+        status: "open",
+        requestedQty: qty,
+        filledQty: (Number((manualMergePos as { filledQty?: number }).filledQty) || oldUnits) + filledQty,
+        remainingQty: Math.max(0, qty - filledQty),
+        fillStatus,
+        ibkrAvgCost: newEntry,
+        ibkrUnits: newUnits,
+        signal,
+      });
+    } else {
+      await safeUpdateLivePosition(db, manualMergePos.id, {
+        ibkrEntryOrderId: finalEntryOrderId,
+        ibkrSlOrderId: finalSlOrderId ?? manualMergePos.ibkrSlOrderId,
+        ibkrTpOrderId: ibkrTpOrderId ?? manualMergePos.ibkrTpOrderId,
+        requestedQty: (Number((manualMergePos as { requestedQty?: number }).requestedQty) || oldUnits) + qty,
+        remainingQty: (Number((manualMergePos as { remainingQty?: number }).remainingQty) || 0) + qty,
+        fillStatus: "none",
+        currentSl: effectiveSl,
+        currentTp: effectiveTp,
+        signal,
+      });
+    }
+    newPosId = manualMergePos.id;
+    log.info("LIVE_EXEC", `[ManualMerge] ${ticker} add ${filledQty > 0 ? filledQty : qty}u onto pos #${newPosId} (fill=${fillStatus})`);
+  } else {
+    await safeInsertLivePosition(db, insertPayload);
+    const insertedRows = await db.select({ id: livePositions.id })
+      .from(livePositions)
+      .where(and(
+        eq(livePositions.userId, userId),
+        eq(livePositions.ticker, ticker),
+        inArray(livePositions.status, ["open", "pending_entry"]),
+      ))
+      .orderBy(livePositions.openedAt)
+      .limit(1);
+    newPosId = insertedRows[0]?.id ?? 0;
+  }
   if (newPosId > 0) {
     await db.update(liveEntryLock).set({ positionId: newPosId })
       .where(and(eq(liveEntryLock.userId, userId), eq(liveEntryLock.ticker, lockTicker)));
