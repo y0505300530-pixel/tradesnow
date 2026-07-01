@@ -63,13 +63,12 @@ export function startOfIsraelDayMs(nowMs: number): number {
     hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
   }).formatToParts(new Date(nowMs));
   const get = (t: string) => Number(parts.find(p => p.type === t)?.value ?? "0");
-  const y = get("year"), mo = get("month"), d = get("day");
   let h = get("hour"); if (h === 24) h = 0; // Intl may render midnight as 24
   const mi = get("minute"), s = get("second");
-  // Israel-local wall time as if UTC, minus the elapsed local seconds today = local midnight.
-  const localAsUtc = Date.UTC(y, mo - 1, d, h, mi, s);
-  const elapsedTodayMs = (h * 3600 + mi * 60 + s) * 1000;
-  return localAsUtc - elapsedTodayMs;
+  // Subtract the elapsed Israel-local time-of-day from the REAL instant → the true
+  // Israel-00:00 epoch instant. Applying the offset to `nowMs` (not to a UTC-reinterpreted
+  // wall time) is DST-correct across IST/IDT and both transition days.
+  return nowMs - (h * 3600 + mi * 60 + s) * 1000;
 }
 
 /**

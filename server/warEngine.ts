@@ -816,26 +816,34 @@ export async function runWarEngineCycle(
       const _nowMs = Date.now();
       const _dayStartMs = startOfIsraelDayMs(_nowMs);
       const _cooldownFromMs = _nowMs - _churnCooldownMin * 60_000;
-      const _churnRows = await db
-        .select({
-          ticker: livePositions.ticker,
-          signal: livePositions.signal,
-          status: livePositions.status,
-          openedAt: livePositions.openedAt,
-          closedAt: livePositions.closedAt,
-        })
-        .from(livePositions)
-        .where(and(
-          eq(livePositions.userId, userId),
-          or(
-            gte(livePositions.openedAt, new Date(_dayStartMs)),
-            and(
-              eq(livePositions.status, "closed" as any),
-              gte(livePositions.closedAt, new Date(_cooldownFromMs)),
+      // Fail-OPEN: this read sits under the cycle-wide try/finally (no catch), so an
+      // unhandled throw here would abort the whole war cycle. A degraded churn read must
+      // never block entries or skip exit management — wrap locally, empty-ledger on error.
+      try {
+        const _churnRows = await db
+          .select({
+            ticker: livePositions.ticker,
+            signal: livePositions.signal,
+            status: livePositions.status,
+            openedAt: livePositions.openedAt,
+            closedAt: livePositions.closedAt,
+          })
+          .from(livePositions)
+          .where(and(
+            eq(livePositions.userId, userId),
+            or(
+              gte(livePositions.openedAt, new Date(_dayStartMs)),
+              and(
+                eq(livePositions.status, "closed" as any),
+                gte(livePositions.closedAt, new Date(_cooldownFromMs)),
+              ),
             ),
-          ),
-        ));
-      churnLedger = buildChurnLedger(_churnRows as any, { dayStartMs: _dayStartMs, cooldownFromMs: _cooldownFromMs });
+          ));
+        churnLedger = buildChurnLedger(_churnRows as any, { dayStartMs: _dayStartMs, cooldownFromMs: _cooldownFromMs });
+      } catch (e) {
+        dbLog("warn", "SYSTEM", `[ChurnGuard] ledger read failed — fail-open (no churn block this cycle): ${String(e).slice(0, 80)}`);
+        churnLedger = { automatedToday: new Set(), lastCloseAt: new Map() };
+      }
     }
 
     // Build close series map for correlation checks (exposure set incl. zombies)

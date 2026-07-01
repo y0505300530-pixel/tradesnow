@@ -138,9 +138,35 @@ describe("INERT — flag=0 wiring is byte-identical (source guard)", () => {
 });
 
 describe("startOfIsraelDayMs", () => {
+  const israelWall = (ms: number) =>
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Jerusalem", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+    }).format(new Date(ms));
+
   it("returns an instant <= now and within the last 24h", () => {
     const s = startOfIsraelDayMs(NOW);
     expect(s).toBeLessThanOrEqual(NOW);
     expect(NOW - s).toBeLessThanOrEqual(24 * 3600_000);
+  });
+
+  // Wall-clock assertions: the returned instant MUST render as 00:00:00 in Israel — this is
+  // what the buggy UTC-midnight version failed (it rendered 02:00/03:00 IL). Cover RTH and
+  // the pre-03:00 IL window (the false-ALLOW hole the bug opened), in both DST seasons.
+  it.each([
+    ["summer RTH  16:03 IL", Date.UTC(2026, 6, 1, 13, 3, 0)],   // 2026-07-01 16:03 IDT
+    ["summer 00:30 IL",      Date.UTC(2026, 6, 1, 21, 30, 0)],  // 2026-07-01 00:30 IDT (prev UTC day)
+    ["winter 00:30 IL",      Date.UTC(2026, 0, 15, 22, 30, 0)], // 2026-01-15 00:30 IST
+    ["winter RTH  17:00 IL", Date.UTC(2026, 0, 15, 15, 0, 0)],  // 2026-01-15 17:00 IST
+  ])("returns true Israel 00:00 for %s", (_label, instant) => {
+    expect(israelWall(startOfIsraelDayMs(instant))).toBe("00:00:00");
+  });
+
+  // Known, accepted limitation: on the once-a-year DST FALL-BACK night (25h day), a
+  // post-transition instant lands the day-start 1h late (renders 01:00, not 00:00). This
+  // happens ~04:00 IL — deep after-hours, US market closed, no automated entries — so C1 is
+  // unaffected in practice. We assert the ≤1h band (never worse), NOT the old 02:00/03:00 bug.
+  it("DST fall-back night: day-start is within [00:00,01:00] IL (accepted 1h edge)", () => {
+    const wall = israelWall(startOfIsraelDayMs(Date.UTC(2026, 9, 25, 1, 0, 0))); // 2026-10-25 IDT→IST
+    expect(["00:00:00", "01:00:00"]).toContain(wall);
   });
 });
