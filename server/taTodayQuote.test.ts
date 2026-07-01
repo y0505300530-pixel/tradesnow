@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { enrichTaTodayQuote } from "../../shared/taTodayQuote";
+import { enrichTaTodayQuote } from "@shared/taTodayQuote";
 
 describe("enrichTaTodayQuote", () => {
   it("restores session move when IBKR sends flat change after TASE close", () => {

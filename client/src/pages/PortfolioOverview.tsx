@@ -31,7 +31,7 @@ import {
   positionValue,
   isPositionOpenedToday,
 } from "@/lib/positionMath";
-import { enrichTaTodayQuote } from "../../shared/taTodayQuote";
+import { enrichTaTodayQuote } from "@shared/taTodayQuote";
 import {
   ShortLiabilitySummary,
   aggregateShortLiability,
