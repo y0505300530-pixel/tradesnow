@@ -22,23 +22,42 @@ Two P&L leaks on 30-Jun: (1) **churn** — automated re-entry after a same-day c
 **Rules (flag=1):**
 | # | Rule |
 |---|---|
-| C1 | **1 automated entry / ticker / calendar day (Israel)** — count `livePositions` where `signal NOT LIKE 'MANUAL_%'` |
-| C2 | **Cooldown 90 min** after any close (`closedAt`) incl. MANUAL_CLOSE / SL / EOD |
+| C1 | **1 automated entry / ticker / Israel calendar day** — count rows where `signal NOT LIKE 'MANUAL_%'` **and** `signal != 'PHOENIX_REENTRY'` (see C6) |
+| C2 | **Cooldown 90 min** after any close (`closedAt`) incl. MANUAL_CLOSE / SL / EOD — **except** rows whose *next* entry is `PHOENIX_REENTRY` (see C6) |
 | C3 | War loop: skip + log `[ChurnGuard] {ticker} skip: {reason}` BEFORE sizing |
 | C4 | Same check in `tryLiveEntry` (War / Armed / LiveEngine) — **NOT** manual (C5) |
 | C5 | Manual not blocked in v1 (v2 optional: cooldown for manual too) |
+| C6 | **Phoenix carve-out:** when `phoenixProtocolEnabled=1` and `signal === 'PHOENIX_REENTRY'`, **skip ChurnGuard entirely** — `checkPhoenixAntiLoop()` + `phoenixLedger` are the authoritative ≤1/ticker/day + cooldown gate. ChurnGuard must NOT double-block reclaim after a Wide-Lung stop on the same ticker/day. |
 
-**Phoenix:** if `phoenixLedger` active it already caps ≤1/ticker/day; ChurnGuard is the broader layer (all signal types).
+**Phoenix interaction (Bugbot 2026-07-01):** ChurnGuard targets **War/Armed churn** (GOLD_RETEST_WAR, etc.), not Phoenix reclaim. With both flags armed, a ticker may have 1 War entry + 1 Phoenix re-entry max — Phoenix ledger owns the latter.
 
 **Data (cache per-cycle in warEngine, like `openTickerSet` — NOT per-candidate query):**
+
+Day boundary SSOT = `israelDateKey()` (`Asia/Jerusalem`) — **same helper as** `phoenixProtocol.ts`, circuit breaker, Armed watcher. **Do NOT use `CURDATE()`** (MySQL session TZ ≠ Israel).
+
+```typescript
+// Pseudocode — implement in entryChurnGuard.ts (pure, unit-tested)
+import { israelDateKey } from "./phoenixProtocol"; // or shared dateUtil
+
+function openedOnIsraelDay(openedAt: Date, day = israelDateKey()): boolean {
+  return israelDateKey(openedAt) === day;
+}
+
+// Per-cycle cache (userId, day):
+//   churnTickersToday = rows where openedOnIsraelDay(openedAt) && !MANUAL && signal !== 'PHOENIX_REENTRY'
+//   cooldownUntil[ticker] = max(closedAt) + 90min for closes today (skip if next path is Phoenix — C6)
+```
+
 ```sql
-SELECT DISTINCT ticker FROM livePositions WHERE userId=? AND openedAt>=CURDATE() AND signal NOT LIKE 'MANUAL_%';
-SELECT ticker,closedAt,exitReason FROM livePositions WHERE userId=? AND status='closed' AND closedAt >= NOW()-INTERVAL 90 MINUTE;
+-- Illustrative only — prefer JS filter with israelDateKey() in application layer
+SELECT ticker, openedAt, signal FROM livePositions
+WHERE userId=? AND signal NOT LIKE 'MANUAL_%' AND signal <> 'PHOENIX_REENTRY';
+-- then filter openedOnIsraelDay(openedAt) in TS
 ```
 **INERT:** `entryChurnGuardEnabled=0` ⇒ zero DB reads, zero skips, byte-identical.
 
 **Files (future LOOP):** `drizzle/0145_entry_churn_guard.sql` (col default 0) · `server/entryChurnGuard.ts` (NEW pure helpers) · `server/warEngine.ts` (gate) · `server/liveOrderExecutor.ts` (gate, non-manual) · `server/entryChurnGuard.test.ts`.
-**GO:** CG-G0 tests green · CG-G1 flag=0 byte-identical · CG-G2 30-Jun replay: AAPL #2/#3 → SKIP · CG-G3 armed RTH day: 0 re-entry churn.
+**GO:** CG-G0 tests green · CG-G1 flag=0 byte-identical · CG-G2 30-Jun replay: AAPL #2/#3 → SKIP · CG-G3 armed RTH day: 0 re-entry churn · **CG-G4** Phoenix: Wide-Lung stop → `PHOENIX_REENTRY` same day **allowed** when ledger permits (ChurnGuard does not block).
 
 ---
 
