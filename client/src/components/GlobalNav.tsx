@@ -32,6 +32,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { APP_VERSION } from "../../../shared/version";
 import { Z } from "@/lib/zIndex";
+import { useTradingViewerContext } from "@/hooks/useTradingViewerContext";
 
 // ── Prefetch map: route → dynamic import for hover-prefetch ──────────────────
 const PREFETCH_MAP: Record<string, () => Promise<any>> = {
@@ -64,9 +65,10 @@ const TEXT_ACTIVE = "#4F46E5";
 const MINT = "#0F766E";
 
 // ─── TradeDropdown ───────────────────────────────────────────────────────────
-function TradeDropdown({ isActive, dropdownItem }: {
+function TradeDropdown({ isActive, dropdownItem, showH1H2 = true }: {
   isActive: (href: string) => boolean;
   dropdownItem: (href: string) => string;
+  showH1H2?: boolean;
 }) {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
@@ -81,7 +83,7 @@ function TradeDropdown({ isActive, dropdownItem }: {
   }, []);
   useEffect(() => { setOpen(false); }, [location]);
 
-  const tradeRoutes = ["/trade", "/h1h2"];
+  const tradeRoutes = showH1H2 ? ["/trade", "/h1h2"] : ["/trade"];
   const isTradeActive = tradeRoutes.some(r => location === r || location.startsWith(r));
 
   return (
@@ -117,7 +119,7 @@ function TradeDropdown({ isActive, dropdownItem }: {
           <div className="p-2 flex flex-col gap-0.5">
             {[
               { href: "/trade",         icon: <TrendingUp className="w-4 h-4 shrink-0" />,   label: "Trade Manager",       color: BLUE },
-              { href: "/h1h2",          icon: <PieChart className="w-4 h-4 shrink-0" />,     label: "H1H2 Holding",        color: "#34d399" },
+              ...(showH1H2 ? [{ href: "/h1h2", icon: <PieChart className="w-4 h-4 shrink-0" />, label: "H1H2 Holding", color: "#34d399" }] : []),
             ].map(({ href, icon, label, color }) => (
               <Link key={href} href={href} className={dropdownItem(href)}>
                 <span style={{ color: isActive(href) ? BLUE : color }}>{icon}</span>
@@ -132,9 +134,10 @@ function TradeDropdown({ isActive, dropdownItem }: {
 }
 
 // ─── ToolsDropdown ───────────────────────────────────────────────────────────
-function ToolsDropdown({ isActive, dropdownItem }: {
+function ToolsDropdown({ isActive, dropdownItem, showTransfers = true }: {
   isActive: (href: string) => boolean;
   dropdownItem: (href: string) => string;
+  showTransfers?: boolean;
 }) {
   const [location] = useLocation();
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -150,7 +153,10 @@ function ToolsDropdown({ isActive, dropdownItem }: {
 
   useEffect(() => { setToolsOpen(false); }, [location]);
 
-  const toolsRoutes = ["/catalogue", "/dip-analysis", "/ai-insights", "/money-transfers", "/favorites"];
+  const toolsRoutes = [
+    "/catalogue", "/dip-analysis", "/ai-insights", "/favorites",
+    ...(showTransfers ? ["/money-transfers"] : []),
+  ];
   const isToolsActive = toolsRoutes.some(r => location === r || location.startsWith(r));
 
   return (
@@ -189,7 +195,7 @@ function ToolsDropdown({ isActive, dropdownItem }: {
               { href: "/dip-analysis", icon: <TrendingDown className="w-4 h-4 shrink-0" />, label: "Deep Analysis", color: "#60A5FA" },
               { href: "/ai-insights", icon: <Brain className="w-4 h-4 shrink-0" />, label: "AI Insights 🧠", color: "#8b5cf6" },
               { href: "/favorites", icon: <Star className="w-4 h-4 shrink-0" />, label: "Favorites ⭐", color: "#f59e0b" },
-              { href: "/money-transfers", icon: <ArrowLeftRight className="w-4 h-4 shrink-0" />, label: "Transfer Ledger", color: "#2563EB" },
+              ...(showTransfers ? [{ href: "/money-transfers", icon: <ArrowLeftRight className="w-4 h-4 shrink-0" />, label: "Transfer Ledger", color: "#2563EB" }] : []),
             ].map(({ href, icon, label, color }) => (
               <Link key={href} href={href} className={dropdownItem(href)}>
                 <span style={{ color: isActive(href) ? BLUE : color }}>{icon}</span>
@@ -207,6 +213,7 @@ function ToolsDropdown({ isActive, dropdownItem }: {
 export function GlobalNav() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const isAdmin = (user as any)?.role === 'admin';
+  const { nav, warRoomPath } = useTradingViewerContext();
   const [location] = useLocation();
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -329,14 +336,15 @@ export function GlobalNav() {
 
             {isAuthenticated && (
               <>
-                <Link href="/war-room-live" {...navLink("/war-room-live")} onMouseEnter={() => prefetchRoute("/war-room-live")}>
-                  <Zap className="w-4 h-4" style={{ color: isActive("/war-room-live") ? BLUE : "#f59e0b" }} />
+                <Link href={warRoomPath} {...navLink(warRoomPath)} onMouseEnter={() => prefetchRoute("/war-room-live")}>
+                  <Zap className="w-4 h-4" style={{ color: isActive(warRoomPath) ? BLUE : "#f59e0b" }} />
                   <span>War Room ⚡</span>
-                  {isActive("/war-room-live") && (
+                  {isActive(warRoomPath) && (
                     <span className="absolute -bottom-px left-2 right-2 h-0.5 rounded-full" style={{ background: BLUE, opacity: 0.8 }} />
                   )}
                 </Link>
 
+                {nav.showWarReport && (
                 <Link href="/war-report" {...navLink("/war-report")} onMouseEnter={() => prefetchRoute("/war-report")}>
                   <BarChart2 className="w-4 h-4" style={{ color: isActive("/war-report") ? BLUE : "#10b981" }} />
                   <span>War Report 📊</span>
@@ -344,14 +352,16 @@ export function GlobalNav() {
                     <span className="absolute -bottom-px left-2 right-2 h-0.5 rounded-full" style={{ background: BLUE, opacity: 0.8 }} />
                   )}
                 </Link>
+                )}
 
                 {/* Trade Dropdown */}
-                <TradeDropdown isActive={isActive} dropdownItem={dropdownItem} />
+                <TradeDropdown isActive={isActive} dropdownItem={dropdownItem} showH1H2={nav.showH1H2} />
 
                 {/* Tools Dropdown */}
-                <ToolsDropdown isActive={isActive} dropdownItem={dropdownItem} />
+                <ToolsDropdown isActive={isActive} dropdownItem={dropdownItem} showTransfers={nav.showTransfers} />
 
-                {/* Knowledge Dropdown */}
+                {/* Knowledge Dropdown — CEO / full viewers only */}
+                {nav.showKnowledge && (
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setKnowledgeOpen((v) => !v)}
@@ -401,6 +411,7 @@ export function GlobalNav() {
                     </div>
                   )}
                 </div>
+                )}
 
                 {isAdmin && (<>
                 {/* Settings Dropdown */}
@@ -557,14 +568,16 @@ export function GlobalNav() {
 
               {isAuthenticated ? (
                 <>
-                  <MobileLink href="/war-room-live" isActive={isActive("/war-room-live")} icon={<Zap className="w-5 h-5" style={{color:"#f59e0b"}} />} label="War Room LIVE ⚡" />
+                  <MobileLink href={warRoomPath} isActive={isActive(warRoomPath)} icon={<Zap className="w-5 h-5" style={{color:"#f59e0b"}} />} label="War Room LIVE ⚡" />
 
                   {/* ── TRADE section ── */}
                   <div className="mt-3 mb-1 px-2">
                     <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#f59e0b" }}>⚡ Trade</p>
                   </div>
                   <MobileLink href="/trade" isActive={isActive("/trade")} icon={<TrendingUp className="w-5 h-5" />} label="Trade Manager" />
-                  <MobileLink href="/h1h2" isActive={isActive("/h1h2")} icon={<PieChart className="w-5 h-5" />} label="H1H2 Holding" />
+                  {nav.showH1H2 && (
+                    <MobileLink href="/h1h2" isActive={isActive("/h1h2")} icon={<PieChart className="w-5 h-5" />} label="H1H2 Holding" />
+                  )}
 
                   {/* ── TOOLS section ── */}
                   <div className="mt-3 mb-1 px-2">
@@ -575,15 +588,21 @@ export function GlobalNav() {
                   <MobileLink href="/dip-analysis" isActive={isActive("/dip-analysis")} icon={<TrendingDown className="w-5 h-5" />} label="Deep Analysis" />
                   <MobileLink href="/ai-insights" isActive={isActive("/ai-insights")} icon={<Brain className="w-5 h-5" style={{color:"#8b5cf6"}} />} label="AI Insights 🧠" />
                   <MobileLink href="/favorites" isActive={isActive("/favorites")} icon={<Star className="w-5 h-5" style={{color:"#f59e0b"}} />} label="Favorites ⭐" />
-                  <MobileLink href="/money-transfers" isActive={isActive("/money-transfers")} icon={<ArrowLeftRight className="w-5 h-5" style={{color:"#2563EB"}} />} label="Transfer Ledger" />
+                  {nav.showTransfers && (
+                    <MobileLink href="/money-transfers" isActive={isActive("/money-transfers")} icon={<ArrowLeftRight className="w-5 h-5" style={{color:"#2563EB"}} />} label="Transfer Ledger" />
+                  )}
 
                   {/* ── KNOWLEDGE section ── */}
+                  {nav.showKnowledge && (
+                  <>
                   <div className="mt-3 mb-1 px-2">
                     <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#34d399" }}>📚 Knowledge</p>
                   </div>
                   <MobileLink href="/videos" isActive={isActive("/videos")} icon={<Video className="w-5 h-5" style={{color:"#34d399"}} />} label="Videos" />
                   <MobileLink href="/watchlist" isActive={isActive("/watchlist")} icon={<Bookmark className="w-5 h-5" style={{color:"#34d399"}} />} label="Watchlist" />
                   <MobileLink href="/knowledge" isActive={isActive("/knowledge")} icon={<BookOpen className="w-5 h-5" style={{color:"#34d399"}} />} label="Knowledge Base" />
+                  </>
+                  )}
 
                   {/* ── SYSTEM ── */}
                   {isAdmin && (

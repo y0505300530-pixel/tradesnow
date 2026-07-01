@@ -43,6 +43,14 @@ War Engine: runWarEngineAllAccounts() — one cycle per enabled account
 - `/war-room-live` — admin, account switcher (CEO / Dror / …)
 - `/war-room/dror` — Dror scoped view (no global admin controls)
 
+### Scoped viewer nav (linked `tradingAccounts.linkedLocalUserId`, non-admin)
+
+| Surface | Dror |
+|---------|------|
+| Overview | Holding 1 only (IBKR book via `getStatus`) |
+| H1H2 / Transfer Ledger / Knowledge Hub / System Logs | Hidden + route blocked |
+| War Room | `/war-room/dror` |
+
 ## Migration
 
 `drizzle/0146_multi_trading_accounts.sql` — tables, seed, CEO config link, Dror config, drop `userId` unique on `liveEngineConfig`.

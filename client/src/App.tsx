@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { RootLayout } from "./components/RootLayout";
 import { RequireVerified } from "./components/RequireVerified";
 import { RequireAdmin } from "./components/RequireAdmin";
+import { RequireFullViewer } from "./components/RequireFullViewer";
 import { IbkrSessionGuard } from "./components/IbkrSessionGuard";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { useServiceWorkerUpdate } from "./hooks/useServiceWorkerUpdate";
@@ -70,7 +71,9 @@ function Router() {
 
             {/* ── Protected routes ── */}
             <Route path={"/knowledge"}>
-              <RequireVerified><KnowledgeBase /></RequireVerified>
+              <RequireFullViewer>
+                <RequireVerified><KnowledgeBase /></RequireVerified>
+              </RequireFullViewer>
             </Route>
             <Route path={"/master"}><Redirect to="/knowledge?tab=master" /></Route>
             <Route path={"/trade"}>
@@ -85,10 +88,14 @@ function Router() {
               <RequireVerified><Settings /></RequireVerified>
             </Route>
             <Route path={"/videos"}>
-              <RequireVerified><VideoManagement /></RequireVerified>
+              <RequireFullViewer>
+                <RequireVerified><VideoManagement /></RequireVerified>
+              </RequireFullViewer>
             </Route>
             <Route path={"/watchlist"}>
-              <RequireVerified><WatchlistPage /></RequireVerified>
+              <RequireFullViewer>
+                <RequireVerified><WatchlistPage /></RequireVerified>
+              </RequireFullViewer>
             </Route>
             <Route path={"/ai-insights"}>
               <RequireVerified><AIInsightsPage /></RequireVerified>
@@ -107,7 +114,9 @@ function Router() {
               <RequireVerified><DipAnalysis /></RequireVerified>
             </Route>
             <Route path={"/h1h2"}>
-              <RequireVerified><H1H2Dashboard /></RequireVerified>
+              <RequireFullViewer>
+                <RequireVerified><H1H2Dashboard /></RequireVerified>
+              </RequireFullViewer>
             </Route>
 
             <Route path={"/splash"}>
@@ -130,14 +139,23 @@ function Router() {
               <RequireVerified><PortfolioOverview /></RequireVerified>
             </Route>
             <Route path={"/portfolio/:type"}>
-              {(params) => (
-                <RequireVerified>
-                  <PortfolioDetail type={params.type as "h1" | "h2-tase" | "h2-usa" | "h2-crypto"} />
-                </RequireVerified>
-              )}
+              {(params) => {
+                const type = params.type as "h1" | "h2-tase" | "h2-usa" | "h2-crypto";
+                const detail = <PortfolioDetail type={type} />;
+                if (type === "h1") {
+                  return <RequireVerified>{detail}</RequireVerified>;
+                }
+                return (
+                  <RequireFullViewer>
+                    <RequireVerified>{detail}</RequireVerified>
+                  </RequireFullViewer>
+                );
+              }}
             </Route>
             <Route path={"/money-transfers"}>
-              <RequireVerified><MoneyTransfers /></RequireVerified>
+              <RequireFullViewer>
+                <RequireVerified><MoneyTransfers /></RequireVerified>
+              </RequireFullViewer>
             </Route>
             <Route path={"/favorites"}>
               <RequireVerified><Favorites /></RequireVerified>

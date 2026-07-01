@@ -21,6 +21,7 @@ import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { RefreshCw, WifiOff, ChevronRight, PlugZap, Loader2, Clock } from "lucide-react";
 import { LastUpdateRefreshButton } from "@/components/LastUpdateRefreshButton";
 import { useFullPortfolioRefresh } from "@/hooks/useFullPortfolioRefresh";
+import { useTradingViewerContext } from "@/hooks/useTradingViewerContext";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
 import { isTaseClosedToday, isUsMarketClosedNow, isUsWeekendOrHoliday, getUsMarketState, type UsMarketState } from "@/lib/marketStatus";
@@ -115,13 +116,35 @@ function isVisiblePortfolioRow(row: PortfolioRow): boolean {
 export default function PortfolioOverview() {
   const { user } = useAuth();
   const { refreshAll, refreshing, lastUpdated, setLastUpdated } = useFullPortfolioRefresh();
+  const {
+    isScopedViewer,
+    primaryAccountSlug,
+    primaryAccountLabel,
+  } = useTradingViewerContext();
 
   // ── Data fetching ────────────────────────────────────────────────────────────
-  const { data: stateData, isLoading: stateLoading, refetch: refetchH1 } = trpc.portfolio.getState.useQuery(undefined, { staleTime: 60_000 });
-  const { data: h2Raw, isLoading: h2Loading, refetch: refetchH2 } = trpc.holding2.list.useQuery(undefined, { staleTime: 60_000 });
+  const { data: stateData, isLoading: stateLoading, refetch: refetchH1 } = trpc.portfolio.getState.useQuery(undefined, {
+    staleTime: 60_000,
+    enabled: !isScopedViewer,
+  });
+  const { data: h2Raw, isLoading: h2Loading, refetch: refetchH2 } = trpc.holding2.list.useQuery(undefined, {
+    staleTime: 60_000,
+    enabled: !isScopedViewer,
+  });
+  const { data: scopedLiveStatus, isLoading: scopedLoading, refetch: refetchScoped } =
+    trpc.liveEngine.getStatus.useQuery(
+      { accountSlug: primaryAccountSlug ?? "dror" },
+      {
+        enabled: isScopedViewer && !!primaryAccountSlug,
+        refetchInterval: 15_000,
+        staleTime: 0,
+      },
+    );
   const holdingsRaw = stateData?.holdings;
   const account = stateData?.account;
-  const isInitialLoading = stateLoading && !stateData; // true only on first load, not refetch
+  const isInitialLoading = isScopedViewer
+    ? scopedLoading && !scopedLiveStatus
+    : stateLoading && !stateData;
 
   const isAdmin = user?.role === "admin";
 
@@ -263,9 +286,35 @@ export default function PortfolioOverview() {
     });
   }, [h1Holdings, isLive, ibkrPositionsData]);
 
+  const scopedH1Holdings = useMemo(() => {
+    if (!isScopedViewer || !scopedLiveStatus?.positions?.length) return null;
+    return scopedLiveStatus.positions.map((p: {
+      ticker: string;
+      direction?: string;
+      units: number;
+      entryPrice?: number;
+      currentPrice?: number | null;
+      unrealizedPnl?: number | null;
+      pnl?: number | null;
+    }) => ({
+      ticker: p.ticker,
+      units: p.direction === "short" ? -Math.abs(p.units) : Math.abs(p.units),
+      buyPrice: p.entryPrice ?? 0,
+      currentPrice: p.currentPrice ?? null,
+      dailyChangePercent: null,
+      priceUpdatedAt: null,
+      dailyBasePrice: null,
+      dailyBaseTs: null,
+      transactionDate: null,
+      createdAt: null,
+      ibkrUnrealizedPnl: p.unrealizedPnl ?? p.pnl ?? null,
+    }));
+  }, [isScopedViewer, scopedLiveStatus]);
+
+  const h1HoldingsEffective = scopedH1Holdings ?? h1HoldingsLive;
   const h1Tickers = useMemo(
-    () => Array.from(new Set(h1HoldingsLive.map(h => h.ticker))),
-    [h1HoldingsLive],
+    () => Array.from(new Set(h1HoldingsEffective.map(h => h.ticker))),
+    [h1HoldingsEffective],
   );
   const h2Tickers = useMemo(
     () => Array.from(new Set(h2Holdings.map(h => h.ticker))),
@@ -619,20 +668,45 @@ export default function PortfolioOverview() {
   }, [isLive, ibkrH2QuotesArrived, ibkrMarketData.h2PriceMap]);
 
   // Cash balance
-  const cashBalance = ibkrSummaryData?.summary?.totalCash ?? (account?.lastKnownCash ?? account?.cashBalance ?? 0);
+  const scopedCashBalance = useMemo(() => {
+    const s = scopedLiveStatus?.summary as {
+      availableFunds?: number | null;
+      liveNlv?: number;
+      totalHolding?: number;
+      dailyPnlUsd?: number;
+    } | null | undefined;
+    if (!s) return 0;
+    if (typeof s.availableFunds === "number" && Number.isFinite(s.availableFunds)) return s.availableFunds;
+    const nlv = s.liveNlv ?? 0;
+    const holding = s.totalHolding ?? 0;
+    return Math.max(0, nlv - holding);
+  }, [scopedLiveStatus]);
+
+  const cashBalance = isScopedViewer
+    ? scopedCashBalance
+    : (ibkrSummaryData?.summary?.totalCash ?? (account?.lastKnownCash ?? account?.cashBalance ?? 0));
 
   // Portfolio metrics — base "isLive" on the SUMMARY DATA SOURCE (not the raw connection flag) so H1
   // Today P&L matches Trade Manager exactly and avoids header≠footer during the IBKR warm-up window.
-  const summaryIsLive = ibkrSummaryData?.source === "ibeam" || ibkrSummaryData?.source === "ibind";
+  const summaryIsLive = isScopedViewer
+    ? !!scopedLiveStatus?.positions
+    : (ibkrSummaryData?.source === "ibeam" || ibkrSummaryData?.source === "ibind");
+  const scopedDailyPnl = (scopedLiveStatus?.summary as { dailyPnlUsd?: number } | null | undefined)?.dailyPnlUsd ?? null;
   const metrics = usePortfolioMetrics({
-    h1Holdings: h1HoldingsLive,
-    h2Holdings,
+    h1Holdings: h1HoldingsEffective,
+    h2Holdings: isScopedViewer ? [] : h2Holdings,
     h1LivePriceMap,
-    h2LivePriceMap,
+    h2LivePriceMap: isScopedViewer ? {} : h2LivePriceMap,
     ibkr: {
-      grossPositionValue: ibkrSummaryData?.summary?.grossPositionValue ?? null,
-      netLiquidation: ibkrSummaryData?.summary?.netLiquidation ?? null,
-      dailyPnl: overviewPnlData?.dailyPnl ?? ibkrPnlData?.dailyPnl ?? (ibkrSummaryData?.summary as any)?.dailyPnl ?? null,
+      grossPositionValue: isScopedViewer
+        ? ((scopedLiveStatus?.summary as { totalHolding?: number } | null)?.totalHolding ?? null)
+        : (ibkrSummaryData?.summary?.grossPositionValue ?? null),
+      netLiquidation: isScopedViewer
+        ? ((scopedLiveStatus?.summary as { liveNlv?: number } | null)?.liveNlv ?? null)
+        : (ibkrSummaryData?.summary?.netLiquidation ?? null),
+      dailyPnl: isScopedViewer
+        ? scopedDailyPnl
+        : (overviewPnlData?.dailyPnl ?? ibkrPnlData?.dailyPnl ?? (ibkrSummaryData?.summary as any)?.dailyPnl ?? null),
       totalCash: cashBalance,
       isLive: summaryIsLive,
     },
@@ -742,13 +816,13 @@ export default function PortfolioOverview() {
 
   // ── Build rows ───────────────────────────────────────────────────────────────
   const h1ShortLiability = useMemo(() => {
-    const items = h1HoldingsLive.map(h => {
+    const items = h1HoldingsEffective.map(h => {
       const live = h1LivePriceMap[h.ticker];
       const price = live?.price ?? h.currentPrice ?? h.buyPrice;
       return { units: h.units, value: positionValue(price, h.units) };
     });
     return aggregateShortLiability(items);
-  }, [h1HoldingsLive, h1LivePriceMap]);
+  }, [h1HoldingsEffective, h1LivePriceMap]);
 
   const rows: PortfolioRow[] = useMemo(() => {
     const h1Value = metrics.h1TotalValue;
@@ -761,13 +835,16 @@ export default function PortfolioOverview() {
     const usaM    = groupMetrics(h2Usa);
     const cryptoM = groupMetrics(h2Crypto);
 
-    const h1Count = h1HoldingsLive.length;
+    const h1Count = h1HoldingsEffective.length;
+    const h1RowName = isScopedViewer
+      ? (primaryAccountLabel ? `Holding 1 — ${primaryAccountLabel}` : "Holding 1")
+      : "Holding 1";
     const built: PortfolioRow[] = [];
 
     if (h1Count > 0) {
       built.push({
         id: "h1",
-        name: "Holding 1",
+        name: h1RowName,
         count: h1Count,
         value: h1Value,
         cost: h1Cost,
@@ -779,13 +856,13 @@ export default function PortfolioOverview() {
         shortLiability: h1ShortLiability.total,
       });
     }
-    if (h2Tase.length > 0) {
+    if (!isScopedViewer && h2Tase.length > 0) {
       built.push({ id: "h2-tase", name: "H2 TASE", count: h2Tase.length, ...taseM });
     }
-    if (h2Usa.length > 0) {
+    if (!isScopedViewer && h2Usa.length > 0) {
       built.push({ id: "h2-usa", name: "H2 USA", count: h2Usa.length, ...usaM });
     }
-    if (h2Crypto.length > 0) {
+    if (!isScopedViewer && h2Crypto.length > 0) {
       built.push({ id: "h2-crypto", name: "H2 Crypto", count: h2Crypto.length, ...cryptoM });
     }
     built.push({
@@ -802,7 +879,7 @@ export default function PortfolioOverview() {
 
     return built.filter(isVisiblePortfolioRow);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metrics, h2Tase, h2Usa, h2Crypto, cashBalance, h1HoldingsLive.length, h1ShortLiability]);
+  }, [metrics, h2Tase, h2Usa, h2Crypto, cashBalance, h1HoldingsEffective.length, h1ShortLiability, isScopedViewer, primaryAccountLabel]);
 
   // ── Footer totals ─────────────────────────────────────────────────────────────
   const footer = useMemo(() => {
@@ -853,6 +930,10 @@ export default function PortfolioOverview() {
 
   // ── Refresh (all portfolios: H1 + H2 TASE/USA/Crypto + IBKR quotes) ─────────
   async function handleRefresh() {
+    if (isScopedViewer) {
+      await refetchScoped({ bustCache: true });
+      return;
+    }
     if (autoConnectPhase !== "connected" && ibkrStatus !== "connected") {
       isConnectingRef.current = false;
       await tryConnect();

@@ -38,6 +38,27 @@ export const tradingAccountsRouter = router({
       };
     }),
 
+  /** UI + nav capabilities for the logged-in user (scoped trading-book viewers vs admin). */
+  viewerContext: protectedProcedure.query(async ({ ctx }) => {
+    const accounts = await listTradingAccountsForViewer(ctx.user.id, ctx.user.role);
+    const isScopedViewer = ctx.user.role !== "admin" && accounts.length > 0;
+    const primary = accounts[0] ?? null;
+    return {
+      isScopedViewer,
+      primaryAccountSlug: primary?.slug ?? null,
+      primaryAccountLabel: primary?.label ?? null,
+      warRoomPath: isScopedViewer && primary ? `/war-room/${primary.slug}` : "/war-room-live",
+      nav: {
+        showH1H2: !isScopedViewer,
+        showTransfers: !isScopedViewer,
+        showKnowledge: !isScopedViewer,
+        showSystemLogs: ctx.user.role === "admin",
+        showWarReport: ctx.user.role === "admin",
+        overviewOnlyHolding1: isScopedViewer,
+      },
+    };
+  }),
+
   /** Admin: update IBKR account id after gateway login is live. */
   updateIbkrAccountId: adminProcedure
     .input(z.object({ slug: z.string(), ibkrAccountId: z.string().min(1) }))
