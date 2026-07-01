@@ -19,5 +19,6 @@ These SQL files were applied manually on the live DB before journal registration
 | 0143 | `0143_waiter.sql` | applied |
 | 0144 | `0144_selected_team_seed.sql` | applied |
 | 0145 | `0145_entry_churn_guard.sql` | applied (4 columns on liveEngineConfig) |
+| 0146 | `0146_liveposition_hot_indexes.sql` | **apply off-hours** — composite indexes only |
 
-Fresh environments: apply SQL files in order; verify columns exist before starting engine.
+Fresh environments: apply SQL files in order; verify columns/indexes exist before starting engine.

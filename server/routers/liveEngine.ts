@@ -702,8 +702,10 @@ export const liveEngineRouter = {
     }
     if (_fetchedNlv && _fetchedNlv > 0) {
       liveNlv = _fetchedNlv;
-      // Tier-1 #1: only persist NLV when it actually moved (>$50) — this fired on every ~4s poll.
-      if (Math.abs((config.totalNlv ?? 0) - _fetchedNlv) > 50) {
+      // Tier-1 #1: persist NLV on any material change — warEngine sizing (vixRiskSize) reads
+      // liveEngineConfig.totalNlv from DB via getLiveConfig. Do NOT use a $50 gate here
+      // (position rows are dirty-checked above; NLV is at most 1 write per 4s poll).
+      if (Math.abs((config.totalNlv ?? 0) - _fetchedNlv) > 0.01) {
         updateLiveConfig(ctx.user.id, { totalNlv: liveNlv }).catch(() => {});
       }
     }
