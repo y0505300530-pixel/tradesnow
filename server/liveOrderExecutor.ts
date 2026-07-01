@@ -1112,10 +1112,14 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     // flushed:true ⇒ a slot was freed; proceed with this entry.
   }
 
-  // Block duplicate ticker across open + pending (prevents uq_open_ticker violation)
-  const dup = openPos.find(p => p.ticker.toUpperCase() === ticker.toUpperCase());
-  if (dup) {
-    return { entered: false, reason: `${ticker} already active (${dup.status}) — no duplicate entry` };
+  // Block duplicate ticker for AUTOMATED entries only (prevents engine double-entry).
+  // Manual orders (MANUAL_*) may add to an existing IBKR/DB position — owner discretion.
+  const isManualEntry = String(signal ?? "").toUpperCase().startsWith("MANUAL_");
+  if (!isManualEntry) {
+    const dup = openPos.find(p => p.ticker.toUpperCase() === ticker.toUpperCase());
+    if (dup) {
+      return { entered: false, reason: `${ticker} already active (${dup.status}) — no duplicate entry` };
+    }
   }
 
   // Compute capital
