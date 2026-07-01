@@ -817,7 +817,17 @@ function SlotsBreakdownChip({ active, ghost, free }: { active: number; ghost: nu
 }
 
 // Wrapped by error boundary in App.tsx or below
-export default function WarRoomLive() {
+type WarRoomLiveProps = {
+  /** Trading book slug: ceo | dror | … */
+  accountSlug?: string;
+  /** Non-admin scoped view (hide global admin controls). */
+  isAccountScoped?: boolean;
+};
+
+export default function WarRoomLive({
+  accountSlug = "ceo",
+  isAccountScoped = false,
+}: WarRoomLiveProps = {}) {
   const { refreshAll, refreshing: portfolioRefreshing, lastUpdated, setLastUpdated } = useFullPortfolioRefresh();
   const [sortCol, setSortCol] = useState<ColKey>("pnlUsd");
   const [sortDir, setSortDir] = useState<SDir>("desc");
@@ -862,8 +872,16 @@ export default function WarRoomLive() {
   const cfgInitialized = useRef(false);
   const [lastFetch, setLastFetch] = useState<Date|null>(null);
   const [engineOnOptimistic, setEngineOnOptimistic] = useState<boolean|null>(null);
+  const [activeSlug, setActiveSlug] = useState(accountSlug);
+  useEffect(() => { setActiveSlug(accountSlug); }, [accountSlug]);
+  const querySlug = isAccountScoped ? accountSlug : activeSlug;
+  const { data: tradingAccounts } = trpc.tradingAccounts.list.useQuery(undefined, {
+    enabled: !isAccountScoped,
+  });
   // ── Data queries ────────────────────────────────────────────────────────────
-  const { data, refetch, isLoading } = trpc.liveEngine.getStatus.useQuery(undefined, {
+  const { data, refetch, isLoading } = trpc.liveEngine.getStatus.useQuery(
+    { accountSlug: querySlug },
+    {
     refetchInterval: WAR_ROOM_POLL_MS, refetchIntervalInBackground: false,
     staleTime: 0,
   });
@@ -1252,6 +1270,23 @@ export default function WarRoomLive() {
           <div className="flex items-center gap-2 min-w-0">
             <Shield className="w-4 h-4 text-gray-700 shrink-0"/>
             <span className="font-bold text-sm sm:text-base tracking-tight whitespace-nowrap">חדר מלחמה</span>
+            {(data as any)?.account?.label && (
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                {(data as any).account.label}
+              </span>
+            )}
+            {!isAccountScoped && (tradingAccounts?.length ?? 0) > 1 && (
+              <select
+                className="text-xs font-bold border rounded-md px-2 py-1 bg-white"
+                value={activeSlug}
+                onChange={(e) => setActiveSlug(e.target.value)}
+                aria-label="Trading account"
+              >
+                {tradingAccounts!.map((a) => (
+                  <option key={a.slug} value={a.slug}>{a.label}</option>
+                ))}
+              </select>
+            )}
             <span className="hidden md:inline text-[11px] text-gray-500 font-medium">• בקרה בזמן אמת</span>
           </div>
           {/* Sync indicator */}
@@ -1980,7 +2015,8 @@ export default function WarRoomLive() {
 
           <div className="hidden sm:block w-px h-8 bg-gray-200 mx-1"/>
 
-          {/* Emergency Exit */}
+          {/* Emergency Exit — admin global war room only */}
+          {!isAccountScoped && (
           <HoldToConfirmButton
             className="min-h-12 h-12 px-6 text-sm font-bold rounded-full border-2 border-red-400 text-red-700 hover:bg-red-600 hover:text-white hover:border-red-600 bg-white"
             ringClassName="text-red-500"
@@ -1995,6 +2031,7 @@ export default function WarRoomLive() {
             <span className="me-1.5">💥</span>
             Emergency Exit
           </HoldToConfirmButton>
+          )}
         </div>
       </div>
 

@@ -27,6 +27,7 @@ import { ibindCached, stopIbkrHeartbeat, startIbkrHeartbeat } from "../ibkrCache
 import { resolveIbkrSymbol, getKnownConid, getAliasReason, EXCHANGE_VARIANTS } from "../tickerAliases";
 import { normalizeIbindBatch, fetchInBatches, type IbindRawQuote } from "../services/PriceService";
 import { getMonitorState } from "../ibkrSessionMonitor";
+import { getLiveAccountId } from "../tradingAccountContext";
 
 // ── DB helpers ────────────────────────────────────────────────────────────────
 
@@ -2510,7 +2511,7 @@ RULES FOR THE CONVERSATION:
         // Step 1: Cancel old order
         const cancelRes = await ibindRequest(
           "DELETE",
-          `/iserver/account/${LIVE_ACCOUNT_ID}/order/${input.orderId}`
+          `/iserver/account/${getLiveAccountId()}/order/${input.orderId}`
         );
         if (!cancelRes.ok) {
           const errMsg = (cancelRes.body as any)?.error ?? `HTTP ${cancelRes.status}`;

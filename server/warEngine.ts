@@ -406,7 +406,7 @@ export function concentrationCapBlocks(
 
 // ─── Main Entry Point ─────────────────────────────────────────────────────────
 export async function runWarEngineCycle(
-  userId: number,
+  userIdIn: number,
   opts?: {
     manual?: boolean;
     scanOnly?: boolean;
@@ -418,6 +418,10 @@ export async function runWarEngineCycle(
      * effort: any throw from the callback is swallowed so it can't break a cycle.
      */
     onProgress?: (p: { pct: number; phase: string }) => void,
+    /** Scoped IBKR trading book (ceo, dror, …). Default = ceo for userId. */
+    tradingAccountId?: number;
+    /** Multi-account runner: skip inter-cycle cooldown between books. */
+    skipGapCheck?: boolean;
   },
 ): Promise<{
   scanned: number;
@@ -428,13 +432,14 @@ export async function runWarEngineCycle(
   topCandidates: WarEngineScan[];
   liveSignals: any[];
 }> {
+  let userId = userIdIn;
   if (_warRunning) {
     dbLog("info", "SYSTEM", "[WarEngine] Already running — skipping");
     return { scanned: 0, entered: 0, managed: 0, skipped: 0, regimeDecision: "busy", topCandidates: [], liveSignals: [] };
   }
   const minGapMs = opts?.manual ? WAR_MANUAL_GAP_MS : WAR_MIN_GAP_MS;
   const sinceLastMs = Date.now() - _lastWarCycleAt;
-  if (sinceLastMs < minGapMs) {
+  if (!opts?.skipGapCheck && sinceLastMs < minGapMs) {
     // Vuln#1 visibility: WITHOUT this log a stale cooldown silently swallows a confirmed
     // Armed-Watcher breakout — the operator sees entered=0 scanned=0 and cannot tell a
     // cooldown skip from "scanned, found nothing". Log the skip explicitly (mirrors the
@@ -450,6 +455,28 @@ export async function runWarEngineCycle(
       topCandidates: [], liveSignals: [],
     };
   }
+
+  // ── Multi-account: bind IBKR gateway + catalog for this cycle ───────────────
+  const {
+    getTradingAccountById,
+    getDefaultTradingAccountForUser,
+    buildTradingAccountRuntime,
+    getLiveConfigForTradingAccount,
+  } = await import("./tradingAccounts");
+  const { enterTradingAccount } = await import("./tradingAccountContext");
+  const acctRow = opts?.tradingAccountId != null
+    ? await getTradingAccountById(opts.tradingAccountId)
+    : await getDefaultTradingAccountForUser(userId);
+  if (!acctRow || acctRow.isActive !== 1) {
+    return {
+      scanned: 0, entered: 0, managed: 0, skipped: 0,
+      regimeDecision: "no_trading_account",
+      topCandidates: [], liveSignals: [],
+    };
+  }
+  enterTradingAccount(buildTradingAccountRuntime(acctRow));
+  userId = acctRow.catalogUserId;
+  dbLog("info", "SYSTEM", `[WarEngine] account=${acctRow.slug} gateway=${acctRow.gateway.slug} ibkr=${(await import("./tradingAccountContext")).getLiveAccountId() || "env"}`);
 
   // ── ORPHAN-LOCK SWEEP (2026-06-30, post-trauma hardening) ─────────────────
   // The per-ticker liveEntryLock TTL (liveOrderExecutor acquire) is LAZY — a stale lock
@@ -735,13 +762,22 @@ export async function runWarEngineCycle(
     // a sector slot and correlation risk. Including it in the EXPOSURE set stops the
     // engine from over-entering while it (wrongly) thinks it is flat. Management still
     // runs on confirmed `open` only (we never try to manage an unconfirmed zombie).
-    const openPositions = await db
+    let openPositions = await db
       .select()
       .from(livePositions)
       .where(and(
         eq(livePositions.userId, userId),
         inArr(livePositions.status, ["open", "zombie"] as any[]),
       ));
+    const { getTradingAccountId: _getTaId, getLiveAccountId: _getIbkrAcct } = await import("./tradingAccountContext");
+    const _tacctId = _getTaId();
+    const _ibkrAcct = _getIbkrAcct();
+    if (_tacctId != null) {
+      openPositions = openPositions.filter((p) =>
+        p.tradingAccountId === _tacctId
+        || (!p.tradingAccountId && (!_ibkrAcct || p.accountId === _ibkrAcct || !p.accountId)),
+      );
+    }
     // Ziv Phase 3 — aggregate open risk ($ at stake if every current stop hits), for the heat cap.
     // G1-C: a ghosted row (broker-verified BE stop) contributes 0 planned risk. INERT when
     // ghostSlotsEnabled=0 — positionPlannedRiskUsd then returns the legacy |entry−SL|×units
@@ -2461,6 +2497,26 @@ export async function runWarEngineCycle(
   } finally {
     _warRunning = false;
   }
+}
+
+/** Run War Engine for every enabled trading account (separate IBKR login each). */
+export async function runWarEngineAllAccounts(
+  opts?: Parameters<typeof runWarEngineCycle>[1],
+): Promise<Record<string, Awaited<ReturnType<typeof runWarEngineCycle>>>> {
+  const { listTradingAccounts, getLiveConfigForTradingAccount } = await import("./tradingAccounts");
+  const accounts = await listTradingAccounts();
+  const out: Record<string, Awaited<ReturnType<typeof runWarEngineCycle>>> = {};
+  for (let i = 0; i < accounts.length; i++) {
+    const acct = accounts[i];
+    const cfg = await getLiveConfigForTradingAccount(acct.id);
+    if (!cfg?.isEnabled) continue;
+    out[acct.slug] = await runWarEngineCycle(acct.catalogUserId, {
+      ...opts,
+      tradingAccountId: acct.id,
+      skipGapCheck: i > 0,
+    });
+  }
+  return out;
 }
 
 // ─── Position Management ──────────────────────────────────────────────────────

@@ -529,6 +529,41 @@ export const ibkrSettings = mysqlTable("ibkrSettings", {
 export type IbkrSettings = typeof ibkrSettings.$inferSelect;
 export type InsertIbkrSettings = typeof ibkrSettings.$inferInsert;
 
+// ibkrGateways — one IBIND OAuth bridge per IBKR login (CEO, Dror, …)
+export const ibkrGateways = mysqlTable("ibkrGateways", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 32 }).notNull(),
+  label: varchar("label", { length: 64 }).notNull(),
+  baseUrl: varchar("baseUrl", { length: 255 }).notNull().default("http://127.0.0.1:5000"),
+  apiSecretEnvKey: varchar("apiSecretEnvKey", { length: 64 }),
+  hmacSecretEnvKey: varchar("hmacSecretEnvKey", { length: 64 }),
+  isActive: tinyint("isActive").notNull().default(1),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (t) => ({
+  slugIdx: uniqueIndex("ibkrGateways_slug_idx").on(t.slug),
+}));
+export type IbkrGateway = typeof ibkrGateways.$inferSelect;
+
+// tradingAccounts — logical trading book (shared catalog, separate IBKR login)
+export const tradingAccounts = mysqlTable("tradingAccounts", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 32 }).notNull(),
+  label: varchar("label", { length: 64 }).notNull(),
+  gatewayId: int("gatewayId").notNull(),
+  ibkrAccountId: varchar("ibkrAccountId", { length: 32 }).notNull().default(""),
+  ownerUserId: int("ownerUserId").notNull().default(1),
+  catalogUserId: int("catalogUserId").notNull().default(1),
+  linkedLocalUserId: int("linkedLocalUserId"),
+  sortOrder: int("sortOrder").notNull().default(0),
+  isActive: tinyint("isActive").notNull().default(1),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (t) => ({
+  slugIdx: uniqueIndex("tradingAccounts_slug_idx").on(t.slug),
+  gatewayIdx: index("tradingAccounts_gatewayId_idx").on(t.gatewayId),
+}));
+export type TradingAccount = typeof tradingAccounts.$inferSelect;
+
 // tvAlerts: incoming TradingView webhook alerts log
 export const tvAlerts = mysqlTable("tvAlerts", {
   id: int("id").autoincrement().primaryKey(),
@@ -1371,6 +1406,7 @@ export type InsertMentorPattern = typeof mentorPatterns.$inferInsert;
 export const livePositions = mysqlTable("livePositions", {
   id:                  int("id").autoincrement().primaryKey(),
   userId:              int("userId").notNull(),
+  tradingAccountId:    int("tradingAccountId"),
   accountId:           varchar("accountId", { length: 32 }).notNull().default(""),
   ticker:              varchar("ticker", { length: 16 }).notNull(),
   companyName:         varchar("companyName", { length: 128 }),
@@ -1496,7 +1532,8 @@ export type InsertPhoenixLedger = typeof phoenixLedger.$inferInsert;
 // Controls the live engine: on/off, capital allocation %, market hours.
 export const liveEngineConfig = mysqlTable("liveEngineConfig", {
   id:                  int("id").autoincrement().primaryKey(),
-  userId:              int("userId").notNull().unique(),
+  userId:              int("userId").notNull(),
+  tradingAccountId:    int("tradingAccountId"),
   isEnabled:           tinyint("isEnabled").notNull().default(0),      // 0=off, 1=on
   allocatedPct:        double("allocatedPct").notNull().default(10),   // % of NLV to deploy (0-100)
   maxPositions:        int("maxPositions").notNull().default(12),      // legacy — total max
@@ -1512,6 +1549,7 @@ export const liveEngineConfig = mysqlTable("liveEngineConfig", {
   overnightMultiplier: double("overnightMultiplier").notNull().default(1.9),  // x1.9 overnight hard cap
   minPositionUsd:      double("minPositionUsd").notNull().default(1000),      // Minimum position size in USD
   maxPositionUsd:      double("maxPositionUsd").notNull().default(50000),     // Maximum position size in USD
+  minOrderUsd:         double("minOrderUsd").notNull().default(5000),         // Minimum entry order notional (per account)
   maxDailyOrders:      int("maxDailyOrders").notNull().default(50),           // entries-only daily cap (UI-managed)
   deleverageCutoffTime: varchar("deleverageCutoffTime", { length: 5 }).notNull().default("22:45"), // EOD deleverage trigger
   dailyLossEnabled:    tinyint("dailyLossEnabled").notNull().default(1),   // 1=on — Iron Rule 4 circuit breaker
@@ -1627,7 +1665,9 @@ export const liveEngineConfig = mysqlTable("liveEngineConfig", {
   minRValuePctEnabled: tinyint("minRValuePctEnabled").notNull().default(0),
   minRValuePct:        double("minRValuePct").notNull().default(0.015),  // 1.5% min risk-per-share floor
   updatedAt:           timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (t) => ({
+  tradingAccountIdx: uniqueIndex("liveEngineConfig_tradingAccountId_idx").on(t.tradingAccountId),
+}));
 export type LiveEngineConfig = typeof liveEngineConfig.$inferSelect;
 export type InsertLiveEngineConfig = typeof liveEngineConfig.$inferInsert;
 

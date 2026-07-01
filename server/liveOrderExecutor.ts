@@ -16,6 +16,8 @@ import { ibindRequest } from "./routers/ibkrProxy";
 import { ibindCached } from "./ibkrCache";
 import { getBrokerageStealGraceRemainingSec } from "./ibkrSessionMonitor";
 import { resolveConid } from "./conidResolver";
+import { getLiveAccountId, getTradingAccountId } from "./tradingAccountContext";
+import { getLiveConfigForTradingAccount } from "./tradingAccounts";
 import { ENV } from "./_core/env";
 import { getDb, getSystemSetting, setSystemSetting } from "./db";
 import { livePositions, liveEngineConfig, liveTrades, liveEntryLock, userAssets } from "../drizzle/schema";
@@ -52,7 +54,7 @@ import {
 } from "./engine/elzaV45Master";
 import type { Bar as ElzaBar } from "./engine/elzaV45Master";
 
-export const LIVE_ACCOUNT_ID = ENV.ibkrLiveAccountId;
+export const LIVE_ACCOUNT_ID = ENV.ibkrLiveAccountId; // legacy default; prefer getLiveAccountId() from tradingAccountContext
 export { resolveConid };
 const LIVE_ENGINE_VERSION = "1.0";
 
@@ -382,8 +384,8 @@ export async function fetchLiveNlvAndDayPnl(
   let nlvNow: number | undefined;
   if ((acctBody?.summary?.netliquidation?.amount ?? 0) > 0) {
     nlvNow = acctBody.summary.netliquidation.amount;
-  } else if (Array.isArray(acctBody?.[LIVE_ACCOUNT_ID])) {
-    const nlvEntry = (acctBody[LIVE_ACCOUNT_ID] as any[]).find((e: any) =>
+  } else if (Array.isArray(acctBody?.[getLiveAccountId()])) {
+    const nlvEntry = (acctBody[getLiveAccountId()] as any[]).find((e: any) =>
       (e?.key ?? e?.tag ?? "").toLowerCase() === "netliquidation");
     nlvNow = nlvEntry?.amount ?? nlvEntry?.value;
   }
@@ -639,8 +641,8 @@ async function readBrokerBuyingPower(): Promise<number | null> {
   const nested = body?.summary?.buyingpower?.amount ?? body?.summary?.buyingpower;
   if (typeof nested === "number" && Number.isFinite(nested) && nested >= 0) return nested;
   // Shape 2 (legacy): { U16881054: [ { key:"BuyingPower", amount } ] }
-  if (Array.isArray(body?.[LIVE_ACCOUNT_ID])) {
-    const entry = (body[LIVE_ACCOUNT_ID] as any[]).find((e: any) =>
+  if (Array.isArray(body?.[getLiveAccountId()])) {
+    const entry = (body[getLiveAccountId()] as any[]).find((e: any) =>
       String(e?.key ?? e?.tag ?? "").toLowerCase() === "buyingpower");
     const v = entry?.amount ?? entry?.value;
     const vn = typeof v === "number" ? v : Number(v);
@@ -772,6 +774,11 @@ export function isLiveMarketOpen(): boolean {
 export async function getLiveConfig(userId: number): Promise<typeof liveEngineConfig.$inferSelect | null> {
   const db = await getDb();
   if (!db) return null;
+  const tacctId = getTradingAccountId();
+  if (tacctId != null) {
+    const byAcct = await getLiveConfigForTradingAccount(tacctId);
+    if (byAcct) return byAcct;
+  }
   const rows = await db.select().from(liveEngineConfig).where(eq(liveEngineConfig.userId, userId)).limit(1);
   if (rows.length > 0) return rows[0];
   // Init default config
@@ -783,7 +790,7 @@ export async function getLiveConfig(userId: number): Promise<typeof liveEngineCo
     positionSizePct: 10,
     marketOpen: "16:30",
     marketClose: "23:00",
-    accountId: LIVE_ACCOUNT_ID,
+    accountId: getLiveAccountId(),
     totalNlv: 120000,
     dailyLossEnabled: 1,
     dailyLossLimitUsd: 2000,
@@ -1083,7 +1090,10 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   const totalDeployed   = openPos.reduce((sum, p) => sum + (p.allocatedCapital ?? 0), 0);
   const remainingBudget = allocatedCapital - totalDeployed;
   const leverageLabel   = `${isIntraday ? "INTRADAY" : "OVERNIGHT"} x${multiplier} | cap=$${allocatedCapital.toFixed(0)}`;
-  if (remainingBudget < 5000) {
+  const minOrderUsd = Number((config as { minOrderUsd?: number }).minOrderUsd) > 0
+    ? Number((config as { minOrderUsd?: number }).minOrderUsd)
+    : 5000;
+  if (remainingBudget < minOrderUsd) {
     log.block("LIVE_EXEC",
       `Capital cap reached for ${ticker}. Deployed $${totalDeployed.toFixed(0)} / $${allocatedCapital.toFixed(0)} [${leverageLabel}]. Remaining: $${remainingBudget.toFixed(0)}`,
       { ticker, totalDeployed, allocatedCapital, multiplier, isIntraday }
@@ -1097,7 +1107,7 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   const rawSize = Math.min(Math.max(rawSize0, cfgMin), cfgMax);
   const cappedSize = Math.min(rawSize, remainingBudget);
   // $5,000 minimum per position — but never exceed remaining budget or per-position allocation
-  const actualSize = Math.max(cappedSize, 5000);
+  const actualSize = Math.max(cappedSize, minOrderUsd);
   if (actualSize > remainingBudget) {
     return { entered: false, reason: `Insufficient budget: need $${actualSize.toFixed(0)} but only $${remainingBudget.toFixed(0)} remaining` };
   }
@@ -1625,7 +1635,7 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   if (!finalSlOrderId) {
     log.error("LIVE_EXEC", `[BracketOrder] ${ticker} NO IBKR SL after all attempts — aborting entry, cancelling bracket`);
     if (finalEntryOrderId) {
-      await ibindRequest("DELETE", `/iserver/account/${LIVE_ACCOUNT_ID}/order/${finalEntryOrderId}`);
+      await ibindRequest("DELETE", `/iserver/account/${getLiveAccountId()}/order/${finalEntryOrderId}`);
     }
     // ── REQ 1 — NEVER-NAKED verify-or-flatten (INERT unless elzaV45LiveEnabled=1) ──
     // GAP: the DELETE above only un-books an UNFILLED entry. If the entry leg already
@@ -1705,7 +1715,7 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
           }
           // ENDPOINT FIX 2026-06-29: /orders/limit 405s on the gateway; route through /orders/close-position (marketable LMT, never naked MKT).
           await ibindRequest("POST", "/orders/close-position", {
-            account_id: LIVE_ACCOUNT_ID,
+            account_id: getLiveAccountId(),
             conid,
             side: flatSide,
             quantity: nakedQty,
@@ -1764,7 +1774,8 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
   // ── Save to DB with all three IBKR order IDs ─────────────────────────────
   await safeInsertLivePosition(db, {
     userId,
-    accountId: LIVE_ACCOUNT_ID,
+    tradingAccountId: getTradingAccountId() ?? null,
+    accountId: getLiveAccountId(),
     ticker,
     companyName: params.companyName ?? ticker,
     direction,
@@ -1880,13 +1891,13 @@ export async function cancelBracketOrders(params: {
   for (const ordId of orderIds) {
     try {
       // Primary: DELETE /iserver/account/{accountId}/order/{orderId}
-      const r = await ibindRequest("DELETE", `/iserver/account/${LIVE_ACCOUNT_ID}/order/${ordId}`);
+      const r = await ibindRequest("DELETE", `/iserver/account/${getLiveAccountId()}/order/${ordId}`);
       if (r.ok) {
         cancelled++;
         log.info("LIVE_EXEC", `[BracketCancel] ✅ Cancelled order ${ordId} for ${ticker}`);
       } else {
         // Fallback: DELETE /order/{accountId}/{orderId}
-        const r2 = await ibindRequest("DELETE", `/order/${LIVE_ACCOUNT_ID}/${ordId}`);
+        const r2 = await ibindRequest("DELETE", `/order/${getLiveAccountId()}/${ordId}`);
         if (r2.ok) {
           cancelled++;
           log.info("LIVE_EXEC", `[BracketCancel] ✅ Cancelled (fallback) order ${ordId} for ${ticker}`);
@@ -1905,7 +1916,7 @@ export async function cancelBracketOrders(params: {
 }
 
 async function cancelIbkrOrder(orderId: string): Promise<void> {
-  await ibindRequest("DELETE", `/iserver/account/${LIVE_ACCOUNT_ID}/order/${orderId}`);
+  await ibindRequest("DELETE", `/iserver/account/${getLiveAccountId()}/order/${orderId}`);
 }
 
 /** Robustly extract an order_id from a /orders/stop-loss response (object or array result). */
@@ -2304,7 +2315,7 @@ async function _runLiveSlMonitorImpl(userId: number, opts?: SlMonitorTestOpts): 
     // ── HARD SYNC: If IBKR returns a clean 0-position response, force-close DB orphans ──
     // Prevents zombie management: if broker closed a position (margin call / manual),
     // we must honour that and NOT keep managing a ghost position.
-    const ibkrRes = await ibindRequest("GET", `/portfolio/${LIVE_ACCOUNT_ID}/positions/0`);
+    const ibkrRes = await ibindRequest("GET", `/portfolio/${getLiveAccountId()}/positions/0`);
     const ibkrPositions: any[] = ibkrRes.ok ? (ibkrRes.body as any[]) ?? [] : [];
 
     if (!opts?.skipHardSync && ibkrRes.ok) {
@@ -2738,7 +2749,7 @@ export async function executeLiveSell(params: {
   // IBKR OCA should auto-cancel, but we cancel explicitly for safety
   const ordersToCancel = [pos.ibkrSlOrderId, pos.ibkrTpOrderId].filter(Boolean) as string[];
   for (const ordId of ordersToCancel) {
-    const cancelRes = await ibindRequest("DELETE", `/iserver/account/${LIVE_ACCOUNT_ID}/order/${ordId}`);
+    const cancelRes = await ibindRequest("DELETE", `/iserver/account/${getLiveAccountId()}/order/${ordId}`);
     if (cancelRes.ok) {
       log.info("LIVE_EXEC", `[Sell] Cancelled bracket order ${ordId} for ${pos.ticker}`);
     } else {
@@ -2784,7 +2795,7 @@ export async function executeLiveSell(params: {
   }
 
   const sellBody = {
-    account_id: LIVE_ACCOUNT_ID,
+    account_id: getLiveAccountId(),
     conid,
     side: exitSide,
     quantity: Math.abs(pos.units),

@@ -37,6 +37,7 @@ const DeepAnalysisPage = lazy(() => import("./pages/DeepAnalysisPage"));
 const MoneyTransfers   = lazy(() => import("./pages/MoneyTransfers"));
 const SplashScreen     = lazy(() => import("./pages/SplashScreen"));
 const WarRoomLive      = lazy(() => import("./pages/WarRoomLive")); // Elza Live Engine
+const WarRoomDror      = lazy(() => import("./pages/WarRoomDror"));
 const WarReport        = lazy(() => import("./pages/WarReport"));   // Closed-trade ledger / stats
 const Favorites        = lazy(() => import("./pages/Favorites"));
 const MobileTradingPreviewPage = import.meta.env.DEV
@@ -116,6 +117,9 @@ function Router() {
               <RequireAdmin>
                 <RequireVerified><WarRoomLive /></RequireVerified>
               </RequireAdmin>
+            </Route>
+            <Route path={"/war-room/dror"}>
+              <RequireVerified><WarRoomDror /></RequireVerified>
             </Route>
             <Route path={"/war-report"}>
               <RequireAdmin>

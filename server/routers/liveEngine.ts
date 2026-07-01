@@ -16,7 +16,13 @@ import { eq, and, desc, sql, inArray } from "drizzle-orm";
 import { ibindRequest, primeAccountsIfNeeded } from "../routers/ibkrProxy";
 import { ibindCached, invalidateIbkrCache } from "../ibkrCache";
 import { log } from "../logger";
-import { LIVE_ACCOUNT_ID } from "../liveOrderExecutor";
+import { getLiveAccountId } from "../tradingAccountContext";
+import {
+  assertTradingAccountAccess,
+  buildTradingAccountRuntime,
+  getLiveConfigForTradingAccount,
+} from "../tradingAccounts";
+import { enterTradingAccount } from "../tradingAccountContext";
 import { calcEntrySlTp, ema50FromBars } from "../slCalculator";
 import { fetchBarsForTicker, fetchLivePrice } from "../marketData";
 import { claimManualOrder, settleManualOrder, releaseManualOrder, type ManualOrderResult } from "../manualOrderIdempotency";
@@ -104,13 +110,19 @@ export const liveEngineRouter = {
   // places NO live orders (the autonomous cycle still handles real entries). The
   // scanOnly:true path breaks out of the entry-execution loop BEFORE tryLiveEntry,
   // so this endpoint can NEVER place/cancel/modify a live order.
-  refreshCandidates: adminProcedure.mutation(async ({ ctx }) => {
+  refreshCandidates: adminProcedure
+    .input(z.object({ accountSlug: z.string().optional() }).optional())
+    .mutation(async ({ ctx, input }) => {
     const { runWarEngineCycle } = await import("../warEngine");
+    const accountSlug = input?.accountSlug ?? "ceo";
+    const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, accountSlug);
+    enterTradingAccount(buildTradingAccountRuntime(account));
     startProgress(WR_PHASE.START);
     try {
-      const r = await runWarEngineCycle(ctx.user.id, {
+      const r = await runWarEngineCycle(account.catalogUserId, {
         manual: true,
         scanOnly: true,
+        tradingAccountId: account.id,
         onProgress: (p) => setProgress(p),
       });
       const count = Array.isArray(r.topCandidates) ? r.topCandidates.length : 0;
@@ -388,9 +400,16 @@ export const liveEngineRouter = {
 
 
   // ── Get config + status ──────────────────────────────────────────────────
-  getStatus: adminProcedure
-    .input(z.object({ bustCache: z.boolean().optional() }).optional())
+  getStatus: protectedProcedure
+    .input(z.object({
+      bustCache: z.boolean().optional(),
+      accountSlug: z.string().optional(),
+    }).optional())
     .query(async ({ ctx, input }) => {
+    const accountSlug = input?.accountSlug ?? "ceo";
+    const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, accountSlug);
+    enterTradingAccount(buildTradingAccountRuntime(account));
+
     if (input?.bustCache) {
       invalidateIbkrCache("/pnl");
       invalidateIbkrCache("/positions");
@@ -398,8 +417,9 @@ export const liveEngineRouter = {
       invalidateIbkrCache("/orders");
     }
 
-    const config = await getLiveConfig(ctx.user.id);
-    if (!config) return { config: null, positions: [], summary: null };
+    const config = await getLiveConfigForTradingAccount(account.id)
+      ?? await getLiveConfig(account.catalogUserId);
+    if (!config) return { config: null, positions: [], summary: null, account: { slug: account.slug, label: account.label } };
 
     const db = await getDb();
     if (!db) return { config, positions: [], summary: null };
@@ -671,8 +691,8 @@ export const liveEngineRouter = {
     let _fetchedNlv: number | undefined;
     if ((_acctBody?.summary?.netliquidation?.amount ?? 0) > 0) {
       _fetchedNlv = _acctBody.summary.netliquidation.amount;
-    } else if (Array.isArray(_acctBody?.[LIVE_ACCOUNT_ID])) {
-      const _nlvEntry = (_acctBody[LIVE_ACCOUNT_ID] as any[]).find((e: any) =>
+    } else if (Array.isArray(_acctBody?.[getLiveAccountId()])) {
+      const _nlvEntry = (_acctBody[getLiveAccountId()] as any[]).find((e: any) =>
         (e?.key ?? e?.tag ?? "").toLowerCase() === "netliquidation");
       _fetchedNlv = _nlvEntry?.amount ?? _nlvEntry?.value;
     }
@@ -692,9 +712,9 @@ export const liveEngineRouter = {
         const nested = _acctBody?.summary?.[k]?.amount ?? _acctBody?.summary?.[k];
         if (typeof nested === "number" && Number.isFinite(nested)) return nested;
       }
-      if (Array.isArray(_acctBody?.[LIVE_ACCOUNT_ID])) {
+      if (Array.isArray(_acctBody?.[getLiveAccountId()])) {
         const wanted = new Set(keys.map((k) => k.toLowerCase()));
-        const entry = (_acctBody[LIVE_ACCOUNT_ID] as any[]).find((e: any) =>
+        const entry = (_acctBody[getLiveAccountId()] as any[]).find((e: any) =>
           wanted.has(String(e?.key ?? e?.tag ?? "").toLowerCase()));
         const v = entry?.amount ?? entry?.value;
         if (typeof v === "number" && Number.isFinite(v)) return v;
@@ -1023,6 +1043,7 @@ export const liveEngineRouter = {
         // Fallback: systemSettings.monthlyStartNlv
         allTimeRealizedPnl: _allTimeRealizedPnl,
       },
+      account: { slug: account.slug, label: account.label },
     };
   }),
 
@@ -1508,7 +1529,7 @@ export const liveEngineRouter = {
   getLiveAccount: adminProcedure.query(async ({ ctx }) => {
     try {
       const config  = await getLiveConfig(ctx.user.id);
-      const acctId  = (config as any)?.accountId ?? LIVE_ACCOUNT_ID;
+      const acctId  = (config as any)?.accountId ?? getLiveAccountId();
       const res     = await ibindRequest("GET", `/portfolio/${acctId}/summary`);
       if (!res.ok) return null;
       const s = res.body as any;

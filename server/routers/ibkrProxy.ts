@@ -17,6 +17,7 @@ import { Express, Request, Response, NextFunction } from "express";
 import http from "http";
 import { log } from "../logger";
 import { ENV } from "../_core/env";
+import { getTradingAccountRuntime } from "../tradingAccountContext";
 import crypto from "crypto";
 import { sdk } from "../_core/sdk";
 import { autoFillConids } from "../autoFillConids";
@@ -141,17 +142,20 @@ export function ibindRequest(
     return Promise.resolve({ ok: false, status: 503, body: { error: "IBIND manually disconnected" } });
   }
 
-  const bearerSecret = ENV.ibindApiSecret;
+  const runtime = getTradingAccountRuntime();
+  const bearerSecret = runtime?.gateway.apiSecret || ENV.ibindApiSecret;
+  const hmacSecret = runtime?.gateway.hmacSecret || ENV.ibindHmacSecret;
+  const ibindHost = runtime?.gateway.host || IBIND_HOST;
+  const ibindPort = runtime?.gateway.port || IBIND_PORT;
+
   if (!bearerSecret) {
     return Promise.reject(new Error("IBIND_API_SECRET is not configured"));
   }
 
-  const hmacSecret = ENV.ibindHmacSecret;
   if (!hmacSecret) {
     return Promise.reject(new Error(
       `[IBIND] IBIND_HMAC_SECRET is not loaded in this process. ` +
-      `ENV.ibindHmacSecret='${hmacSecret}' (length=${hmacSecret?.length ?? 0}). ` +
-      `Check that the secret is saved in the Secrets UI and the server was restarted after saving.`
+      `Check gateway env keys or default IBIND_HMAC_SECRET.`
     ));
   }
 
@@ -178,8 +182,8 @@ export function ibindRequest(
       }
 
       const options: http.RequestOptions = {
-        hostname: IBIND_HOST,
-        port: IBIND_PORT,
+        hostname: ibindHost,
+        port: ibindPort,
         path,
         method: method.toUpperCase(),
         headers,

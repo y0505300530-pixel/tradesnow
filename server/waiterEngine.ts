@@ -66,7 +66,7 @@ import { tryAcquireEntrySlot, releaseEntrySlot } from "./entrySlotLock";
 import { dbLog } from "./persistentLogger";
 import { log } from "./logger";
 
-export { LIVE_ACCOUNT_ID } from "./liveOrderExecutor";
+import { getLiveAccountId } from "./tradingAccountContext";
 const CONFIRM_HEADERS = { "X-Confirm-Live-Order": "yes" };
 
 // ── Constants (Appendix — pinned, backtestable) ──────────────────────────────────
@@ -384,9 +384,10 @@ export function isNearRtxClose(now: Date = new Date()): boolean {
 
 // ── Cancel a resting order (DELETE — same path liveSlTpEnforcement uses) ────────────
 async function cancelRestingOrder(orderId: string): Promise<boolean> {
+  const acctId = getLiveAccountId();
   const paths = [
-    `/api/proxy/iserver/account/${LIVE_ACCOUNT_ID}/order/${orderId}`,
-    `/iserver/account/${LIVE_ACCOUNT_ID}/order/${orderId}`,
+    `/api/proxy/iserver/account/${acctId}/order/${orderId}`,
+    `/iserver/account/${acctId}/order/${orderId}`,
   ];
   for (const path of paths) {
     try {

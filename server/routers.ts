@@ -28,6 +28,7 @@ import { assetCatalogueRouter } from "./routers/assetCatalogue";
 import { analyzeRouter } from "./routers/analyze";
 import { priceAlertsRouter } from "./routers/priceAlerts";
 import { snoozeRouter } from "./routers/snooze";
+import { tradingAccountsRouter } from "./routers/tradingAccounts";
 import { getUsdIlsRate } from "./marketData";
 import { runDailyBasePriceSnapshot } from "./alertPoller";
 
@@ -78,6 +79,7 @@ export const appRouter = router({
   analyze: analyzeRouter,
   priceAlerts: priceAlertsRouter,
   snooze: snoozeRouter,
+  tradingAccounts: tradingAccountsRouter,
 
   /** USD/ILS exchange rate — cached 5min, fallback 3.60 */
   forex: router({
