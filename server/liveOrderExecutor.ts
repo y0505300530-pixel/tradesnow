@@ -926,6 +926,8 @@ export interface LiveEntryParams {
   //    a normal entry, byte-identical to today. Stamped onto the new livePositions row.
   phoenixGeneration?: number;   // 1 on a phoenix re-entry child
   originPosId?: number;         // the stopped origin's livePositions.id
+  /** Manual UI: exact share count requested (honored through cap gates). */
+  quantityUnits?: number;
 }
 
 // ── Ziv Rotation Flush ────────────────────────────────────────────────────────
@@ -1023,7 +1025,7 @@ async function attemptZivRotationFlush(args: {
 }
 
 export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: boolean; pending?: boolean; reason: string; orderId?: string | null; sl?: number; tp?: number }> {
-  const { userId, ticker, direction, signal, zivScore, currentPrice, slPrice, tpPrice, positionSizeUsd, sizingStop, sizingEntryPrice } = params;
+  const { userId, ticker, direction, signal, zivScore, currentPrice, slPrice, tpPrice, positionSizeUsd, sizingStop, sizingEntryPrice, quantityUnits } = params;
 
   const config = await getLiveConfig(userId);
   if (!config || !config.isEnabled) {
@@ -1447,9 +1449,13 @@ export async function tryLiveEntry(params: LiveEntryParams): Promise<{ entered: 
     } catch { /* non-fatal */ }
   };
 
-  // Aggressive LMT entry (+0.5% for US)
-  const aggressiveEntry = +(effectiveEntry * 1.005).toFixed(2);
-  const rawQty = Math.floor(actualSize / aggressiveEntry);
+  // Aggressive LMT entry — manual uses 1% cross (faster fill); engine 0.5%.
+  const aggressiveEntry = isManualEntry
+    ? +(effectiveEntry * (direction === "long" ? 1.01 : 0.99)).toFixed(2)
+    : +(effectiveEntry * 1.005).toFixed(2);
+  const rawQty = isManualEntry && quantityUnits && quantityUnits > 0
+    ? Math.floor(quantityUnits)
+    : Math.floor(actualSize / aggressiveEntry);
   // ── AUTHORITATIVE PER-TICKER NOTIONAL CAP (2026-06-30 concentration fix) ─────
   // This is the LAST gate every entry path (war-engine CV-B vixRiskSize, legacy
   // conviction, risk-sizing, manual/alert) funnels through, AFTER all multipliers.

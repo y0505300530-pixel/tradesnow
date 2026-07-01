@@ -1206,6 +1206,7 @@ export const liveEngineRouter = {
             slPrice: input.sl ?? fb.stopLoss,
             tpPrice: input.tp ?? fb.takeProfit,
             positionSizeUsd: input.quantity * px,
+            quantityUnits: input.quantity,
             companyName: ticker,
           });
           log.info("LIVE_EXEC", `placeManualOrder ${input.intent} ${ticker} x${input.quantity} → entered=${res.entered} pending=${!!res.pending} sl=${res.sl} tp=${res.tp}`, { userId, reason: res.reason });

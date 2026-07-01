@@ -209,10 +209,47 @@ export async function runIbkrSync(userId: number = 1): Promise<{
     try {
       const ticker = pos.ticker.toUpperCase();
       const ibkrPos = ibkrPosMap.get(ticker);
+      const ibkrQtyAbs = Math.abs(ibkrPos?.position ?? 0);
+
+      // ── CASE 0a: pending_entry filled at broker → promote to open ───────────
+      if (pos.status === "pending_entry" && ibkrPos && ibkrQtyAbs > 0) {
+        const ibkrAvg = Number((ibkrPos as any).avgPrice ?? (ibkrPos as any).avgCost ?? pos.entryPrice ?? 0);
+        const entryPx = ibkrAvg > 0 ? ibkrAvg : pos.entryPrice;
+        await safeUpdateLivePosition(db, pos.id, {
+          status: "open",
+          units: ibkrQtyAbs,
+          filledQty: ibkrQtyAbs,
+          fillStatus: "full",
+          remainingQty: 0,
+          entryPrice: +entryPx.toFixed(4),
+          allocatedCapital: +(entryPx * ibkrQtyAbs).toFixed(2),
+          ibkrUnits: ibkrQtyAbs,
+          ibkrAvgCost: entryPx,
+          currentPrice: entryPx,
+        });
+        log.info("IBKR_SYNC", `[FillDetect] ${ticker} pending_entry → open (${ibkrQtyAbs}u @ $${entryPx.toFixed(2)})`, { ticker, posId: pos.id });
+        result.synced++;
+        continue;
+      }
 
       // ── CASE 1: Position no longer exists in IBKR → closed by SL or TP fill ──
-      if (!ibkrPos || Math.abs(ibkrPos.position ?? 0) === 0) {
+      if (!ibkrPos || ibkrQtyAbs === 0) {
         const isPendingEntry = pos.status === "pending_entry";
+        // Resting LMT bracket still working — do NOT kill the row while order is live.
+        if (isPendingEntry) {
+          const restingEntry = ibkrOrders.some((o: any) => {
+            const sym = String(o.description1 ?? o.ticker ?? o.symbol ?? "").toUpperCase();
+            if (!sym.includes(ticker)) return false;
+            return ["PreSubmitted", "Submitted", "PendingSubmit"].includes(String(o.status ?? ""));
+          });
+          if (restingEntry) {
+            log.info("IBKR_SYNC",
+              `[FillDetect] ${ticker} pending_entry — bracket still resting at IBKR, keeping row`,
+              { ticker, posId: pos.id },
+            );
+            continue;
+          }
+        }
         log.info("IBKR_SYNC",
           `[FillDetect] ${ticker} NOT found / position=0 in IBKR → marking CLOSED (${isPendingEntry ? "entry never filled" : "SL/TP fill or manual"})`,
           { ticker, posId: pos.id }
