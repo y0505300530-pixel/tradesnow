@@ -404,6 +404,20 @@ export const liveEngineRouter = {
     const db = await getDb();
     if (!db) return { config, positions: [], summary: null };
 
+    // Tier-1 #1: snapshot the DB display values (currentPrice/unrealizedPnl) ONCE so the
+    // per-position writes below can dirty-check and skip no-op UPDATEs. getStatus is polled
+    // ~every 4s and these values are usually unchanged; this replaces ~N writes/poll with 1 read.
+    // Best-effort: on snapshot failure the map stays empty → we write exactly as before (fail-safe).
+    const _dbDisplaySnap = new Map<string, { currentPrice: number | null; unrealizedPnl: number | null }>();
+    try {
+      const _snapRows = await db.select({
+        ticker: livePositions.ticker,
+        currentPrice: livePositions.currentPrice,
+        unrealizedPnl: livePositions.unrealizedPnl,
+      }).from(livePositions).where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.status, "open")));
+      for (const _r of _snapRows) _dbDisplaySnap.set((_r.ticker as string).toUpperCase(), { currentPrice: _r.currentPrice as any, unrealizedPnl: _r.unrealizedPnl as any });
+    } catch { /* best-effort snapshot — on failure the writes below fall through unchanged */ }
+
     // ── PRIMARY: Load positions from IBKR live account (source of truth) ──
     let positions: any[] = [];
     try {
@@ -602,16 +616,26 @@ export const liveEngineRouter = {
               // the source of truth for the displayed value. Overwriting it with the
               // feed caused display drift vs Holdings/IBKR. Keep mktPrice as displayed;
               // only sync the broker mktPrice to DB so the row stays populated.
-              await db.update(livePositions)
-                .set({ currentPrice: (pos as any).currentPrice })
-                .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
+              // Tier-1 #1: dirty-check — skip the no-op write when the DB already holds this price.
+              const _snap = _dbDisplaySnap.get(pos.ticker.toUpperCase());
+              const _newCp = (pos as any).currentPrice;
+              if (!_snap || _snap.currentPrice == null || Math.abs((_snap.currentPrice ?? 0) - (_newCp ?? 0)) > 1e-4) {
+                await db.update(livePositions)
+                  .set({ currentPrice: _newCp })
+                  .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
+              }
             } else {
               (pos as any).currentPrice = lp;
               const unreal = (lp - pos.entryPrice) * pos.units * (pos.direction === "short" ? -1 : 1);
               (pos as any).unrealizedPnl = +unreal.toFixed(2);
-              await db.update(livePositions)
-                .set({ currentPrice: lp, unrealizedPnl: +unreal.toFixed(2) })
-                .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
+              // Tier-1 #1: dirty-check — skip the no-op write when price + P&L are both unchanged.
+              const _snap = _dbDisplaySnap.get(pos.ticker.toUpperCase());
+              const _newPnl = +unreal.toFixed(2);
+              if (!_snap || Math.abs((_snap.currentPrice ?? 0) - lp) > 1e-4 || Math.abs((_snap.unrealizedPnl ?? 0) - _newPnl) > 1e-2) {
+                await db.update(livePositions)
+                  .set({ currentPrice: lp, unrealizedPnl: _newPnl })
+                  .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
+              }
             }
           }
           // Daily change from the single feed (current price vs prior close) for ALL positions.
@@ -678,7 +702,12 @@ export const liveEngineRouter = {
     }
     if (_fetchedNlv && _fetchedNlv > 0) {
       liveNlv = _fetchedNlv;
-      updateLiveConfig(ctx.user.id, { totalNlv: liveNlv }).catch(() => {});
+      // Tier-1 #1: persist NLV on any material change — warEngine sizing (vixRiskSize) reads
+      // liveEngineConfig.totalNlv from DB via getLiveConfig. Do NOT use a $50 gate here
+      // (position rows are dirty-checked above; NLV is at most 1 write per 4s poll).
+      if (Math.abs((config.totalNlv ?? 0) - _fetchedNlv) > 0.01) {
+        updateLiveConfig(ctx.user.id, { totalNlv: liveNlv }).catch(() => {});
+      }
     }
 
     // ── BROKER WALLET (read-only) — availableFunds + buyingPower from /account/summary ──

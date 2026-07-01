@@ -955,6 +955,12 @@ export async function runWarEngineCycle(
         if (bars.length < 50) { skipped++; continue; }
         scanned++;
 
+        // Tier-1 #3: compute ticker intelligence at most ONCE per ticker. It was computed
+        // separately in the LONG and SHORT branches with identical (ticker, bars) → double work
+        // on dual-eligible names. Lazy memo: a ticker entering neither branch pays nothing.
+        let _intelMemo: any = null;
+        const _getIntel = async () => (_intelMemo ??= await getTickerIntelligence(ticker, bars));
+
         // ── Participation-breadth tally (§1.2): is THIS name below its EMA-200? ──
         // Reuses the bars just fetched. Aggregated → breadthPctBelow200 at cycle end.
         try {
@@ -1017,7 +1023,7 @@ export async function runWarEngineCycle(
           const longKronosActive = kronosOn && !kAddon.stale;
           const longGateFloor = longKronosActive ? zivStructuralFloor : zivOnlyFloor;
           const final   = combined; // finalScore is an alias of combined (downstream sort/sizing)
-          const intel   = await getTickerIntelligence(ticker, bars);
+          const intel   = await _getIntel();
 
           const longScan: WarEngineScan = {
             ticker, direction: "long",
@@ -1247,7 +1253,7 @@ export async function runWarEngineCycle(
           const shortKronosActive = kronosOn && !kAddonS.stale;
           const shortGateFloor = shortKronosActive ? zivStructuralFloor : zivOnlyFloor;
           const final   = combinedS; // alias of combined
-          const intel   = await getTickerIntelligence(ticker, bars);
+          const intel   = await _getIntel();
 
           const shortScan: WarEngineScan = {
             ticker, direction: "short",

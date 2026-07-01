@@ -1459,6 +1459,13 @@ export const livePositions = mysqlTable("livePositions", {
   userIdx:     index("livePositions_userId_idx").on(t.userId),
   statusIdx:   index("livePositions_status_idx").on(t.status),
   tickerIdx:   index("livePositions_ticker_idx").on(t.ticker),
+  // Tier-1 perf (2026-07-01, migration 0146): composite indexes for the hot engine predicates.
+  // userId+status = every cycle/reconcile/4s-poll; +closedAt = daily-loss breaker; +openedAt =
+  // open-today count; userId+ticker+status = entry dedup + getStatus. Additive; behavior unchanged.
+  userStatusIdx:         index("livePositions_userId_status_idx").on(t.userId, t.status),
+  userStatusClosedAtIdx: index("livePositions_userId_status_closedAt_idx").on(t.userId, t.status, t.closedAt),
+  userOpenedAtIdx:       index("livePositions_userId_openedAt_idx").on(t.userId, t.openedAt),
+  userTickerStatusIdx:   index("livePositions_userId_ticker_status_idx").on(t.userId, t.ticker, t.status),
 }));
 export type LivePosition = typeof livePositions.$inferSelect;
 export type InsertLivePosition = typeof livePositions.$inferInsert;

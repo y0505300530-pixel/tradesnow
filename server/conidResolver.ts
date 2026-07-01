@@ -52,7 +52,23 @@ function pickUsListing<T extends Record<string, any>>(candidates: T[]): T | null
  *           3) Live IBIND /quotes API (live lookup + cache write)
  * Returns null if not found — caller must handle gracefully.
  */
+// Process-level memo: ticker(upper) -> conid. Conids are immutable per listed symbol, so
+// once resolved we skip the DB read / live /quotes lookup on the entry critical path and in
+// the monitor/exit/downsize loops. Only successful (non-null) resolutions are cached; a null
+// (unresolved) falls through and retries next call. TASE-exchange validation stays inside the
+// uncached resolver, so a bad cached DB row is still rejected before a good conid is memoized.
+const _conidMemo = new Map<string, number>();
+
 export async function resolveConid(ticker: string): Promise<number | null> {
+  const _memoKey = ticker.toUpperCase();
+  const _memoHit = _conidMemo.get(_memoKey);
+  if (_memoHit != null) return _memoHit;
+  const _resolved = await _resolveConidUncached(ticker);
+  if (_resolved != null) _conidMemo.set(_memoKey, _resolved);
+  return _resolved;
+}
+
+async function _resolveConidUncached(ticker: string): Promise<number | null> {
   const original = ticker.toUpperCase();
   const stripped = original.replace(/\.TA$/, "");
   const isTase = original.endsWith(".TA");
