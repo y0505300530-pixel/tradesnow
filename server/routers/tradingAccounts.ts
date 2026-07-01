@@ -47,6 +47,9 @@ export const tradingAccountsRouter = router({
       primaryAccountSlug: primary?.slug ?? null,
       primaryAccountLabel: primary?.label ?? null,
       warRoomPath: isScopedViewer && primary ? `/war-room/${primary.slug}` : "/war-room-live",
+      /** Admin Overview = CEO holdings only; Dror is visible only via War Room switcher. */
+      overviewAccountSlug: "ceo",
+      warRoomAccountSwitcher: ctx.user.role === "admin",
       nav: {
         showH1H2: !isScopedViewer,
         showTransfers: !isScopedViewer,
@@ -54,6 +57,7 @@ export const tradingAccountsRouter = router({
         showSystemLogs: ctx.user.role === "admin",
         showWarReport: ctx.user.role === "admin",
         overviewOnlyHolding1: isScopedViewer,
+        mergeTradingBooksInOverview: false,
       },
     };
   }),

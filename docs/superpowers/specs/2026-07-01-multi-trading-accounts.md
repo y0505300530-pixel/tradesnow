@@ -45,11 +45,13 @@ War Engine: runWarEngineAllAccounts() — one cycle per enabled account
 
 ### Scoped viewer nav (linked `tradingAccounts.linkedLocalUserId`, non-admin)
 
-| Surface | Dror |
-|---------|------|
-| Overview | Holding 1 only (IBKR book via `getStatus`) |
-| H1H2 / Transfer Ledger / Knowledge Hub / System Logs | Hidden + route blocked |
-| War Room | `/war-room/dror` |
+| Surface | Dror | Admin (CEO) |
+|---------|------|-------------|
+| Overview | Holding 1 only (IBKR book via `getStatus`) | **CEO holdings only** — never Dror |
+| H1H2 / Transfer Ledger / Knowledge Hub / System Logs | Hidden + route blocked | Full access |
+| War Room | `/war-room/dror` | `/war-room-live` + **account switcher** (CEO / Dror) |
+
+**Rule:** Dror positions never appear in admin Overview. Admin monitors Dror **only** via War Room account switcher.
 
 ## Migration
 

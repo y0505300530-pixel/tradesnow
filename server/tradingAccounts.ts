@@ -1,12 +1,13 @@
 /**
  * Trading accounts + gateways — DB access and runtime context builder.
  */
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, or, isNull, type SQL } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   ibkrGateways,
   tradingAccounts,
   liveEngineConfig,
+  livePositions,
   type TradingAccount,
   type IbkrGateway,
 } from "../drizzle/schema";
@@ -116,4 +117,19 @@ export async function getMinOrderUsd(config: typeof liveEngineConfig.$inferSelec
   const v = Number((config as { minOrderUsd?: number })?.minOrderUsd);
   if (Number.isFinite(v) && v > 0) return v;
   return 5000;
+}
+
+/** Scope livePositions reads/writes to one trading book (CEO legacy rows may lack tradingAccountId). */
+export function livePositionsAccountScope(
+  tradingAccountId: number,
+  accountSlug: string,
+  catalogUserId: number,
+): SQL {
+  if (accountSlug === "ceo") {
+    return or(
+      eq(livePositions.tradingAccountId, tradingAccountId),
+      and(isNull(livePositions.tradingAccountId), eq(livePositions.userId, catalogUserId)),
+    )!;
+  }
+  return eq(livePositions.tradingAccountId, tradingAccountId);
 }

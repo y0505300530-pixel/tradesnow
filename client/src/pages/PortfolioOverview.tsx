@@ -123,6 +123,8 @@ export default function PortfolioOverview() {
   } = useTradingViewerContext();
 
   // ── Data fetching ────────────────────────────────────────────────────────────
+  // Admin Overview = CEO portfolio only (portfolioHoldings + IBKR :5000).
+  // Dror book is NEVER merged here — admin sees Dror only in War Room switcher.
   const { data: stateData, isLoading: stateLoading, refetch: refetchH1 } = trpc.portfolio.getState.useQuery(undefined, {
     staleTime: 60_000,
     enabled: !isScopedViewer,

@@ -21,6 +21,7 @@ import {
   assertTradingAccountAccess,
   buildTradingAccountRuntime,
   getLiveConfigForTradingAccount,
+  livePositionsAccountScope,
 } from "../tradingAccounts";
 import { calcEntrySlTp, ema50FromBars } from "../slCalculator";
 import { fetchBarsForTicker, fetchLivePrice } from "../marketData";
@@ -409,6 +410,7 @@ export const liveEngineRouter = {
     const accountSlug = input?.accountSlug ?? "ceo";
     const account = await assertTradingAccountAccess(ctx.user.id, ctx.user.role, accountSlug);
     return runWithTradingAccount(buildTradingAccountRuntime(account), async () => {
+    const posScope = livePositionsAccountScope(account.id, account.slug, account.catalogUserId);
     if (input?.bustCache) {
       invalidateIbkrCache("/pnl");
       invalidateIbkrCache("/positions");
@@ -506,7 +508,7 @@ export const liveEngineRouter = {
           // ⚠️ IBKR returned 0 positions (market closed / session hiccup)
           // Fall back to DB open positions so War Room isn't empty
           const dbPos = await db.select().from(livePositions)
-            .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.status, "open")))
+            .where(and(posScope, eq(livePositions.status, "open")))
             .orderBy(desc(livePositions.openedAt));
           // Enrich DB positions with SL/TP from live orders if available
           positions = dbPos.map((p: any) => ({
@@ -520,7 +522,7 @@ export const liveEngineRouter = {
     } catch(e) {
       // fallback to DB if IBKR unavailable
       const dbPos = await db.select().from(livePositions)
-        .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.status, "open")))
+        .where(and(posScope, eq(livePositions.status, "open")))
         .orderBy(desc(livePositions.openedAt));
       positions = dbPos;
     }
@@ -539,7 +541,7 @@ export const liveEngineRouter = {
           slMovedToBreakEven: livePositions.slMovedToBreakEven,
         }).from(livePositions)
           .where(and(
-            eq(livePositions.userId, ctx.user.id),
+            posScope,
             eq(livePositions.status, "open"),
           ));
         const ghostByTicker = new Map(dbGhost.map(r => [String(r.ticker).toUpperCase(), r]));
@@ -623,14 +625,14 @@ export const liveEngineRouter = {
               // only sync the broker mktPrice to DB so the row stays populated.
               await db.update(livePositions)
                 .set({ currentPrice: (pos as any).currentPrice })
-                .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
+                .where(and(posScope, eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
             } else {
               (pos as any).currentPrice = lp;
               const unreal = (lp - pos.entryPrice) * pos.units * (pos.direction === "short" ? -1 : 1);
               (pos as any).unrealizedPnl = +unreal.toFixed(2);
               await db.update(livePositions)
                 .set({ currentPrice: lp, unrealizedPnl: +unreal.toFixed(2) })
-                .where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
+                .where(and(posScope, eq(livePositions.ticker, pos.ticker), eq(livePositions.status, "open")));
             }
           }
           // Daily change from the single feed (current price vs prior close) for ALL positions.
@@ -748,7 +750,7 @@ export const liveEngineRouter = {
         try {
           const _todayStr = new Date().toISOString().split("T")[0];
         const _rows = await db.select({ total: sql<number>`COALESCE(SUM(${livePositions.realizedPnl}), 0)` })
-          .from(livePositions).where(and(eq(livePositions.userId, ctx.user.id), eq(livePositions.status, "closed"), sql`DATE(${livePositions.closedAt}) = ${_todayStr}`));
+          .from(livePositions).where(and(posScope, eq(livePositions.status, "closed"), sql`DATE(${livePositions.closedAt}) = ${_todayStr}`));
         _dailyPnlUsd = _rows[0]?.total ?? 0;
       } catch {}
     }
@@ -766,7 +768,7 @@ export const liveEngineRouter = {
     let _allTimeRealizedPnl = 0;
     try {
       const _rr = await db.select({ total: sql<number>`COALESCE(SUM(${livePositions.realizedPnl}), 0)` })
-        .from(livePositions).where(eq(livePositions.userId, ctx.user.id));
+        .from(livePositions).where(posScope);
       _allTimeRealizedPnl = _rr[0]?.total ?? 0;
     } catch {}
 
@@ -810,7 +812,7 @@ export const liveEngineRouter = {
     }
 
     const [etRow] = await db.select({ c: sql<number>`COUNT(*)` }).from(livePositions)
-      .where(and(eq(livePositions.userId, ctx.user.id), sql`DATE(${livePositions.openedAt}) = CURDATE()`));
+      .where(and(posScope, sql`DATE(${livePositions.openedAt}) = CURDATE()`));
     const entriesToday = Number(etRow?.c ?? 0);
 
     // ── Upcoming candidates: persisted by the WarEngine cycle (~every 20 min) ──
@@ -936,7 +938,7 @@ export const liveEngineRouter = {
     try {
       const { freeRetestSlots, retestSleeveUsed } = await import("../waiterEngine");
       const _wRows = await db.select().from(livePositions)
-        .where(and(eq(livePositions.userId, ctx.user.id),
+        .where(and(posScope,
           inArray(livePositions.status, ["open", "pending_entry"] as any)));
       const _waiterRows = (_wRows as any[]).filter((r) => (r.isWaiterEntry ?? 0) === 1);
       const _resting = _waiterRows.filter((r) => r.status === "pending_entry");
