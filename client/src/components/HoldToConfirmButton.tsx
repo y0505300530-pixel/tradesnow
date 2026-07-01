@@ -2,11 +2,20 @@
  * Hold-to-confirm action button (spec: 600ms for War Room liquidate).
  * Min touch target 44×44px; pointer capture prevents accidental cancel on drag.
  * Keyboard: Enter/Space calls onKeyboardConfirm (regular confirm dialog path).
+ *
+ * BUGFIX 2026-07-02: touch-action:none + immediate pointer capture meant a
+ * finger merely scrolling the mobile positions list over this button (or
+ * grazing it while tapping the adjacent ticker) could accidentally trigger
+ * a full liquidate if the touch dwelled >=600ms. Added a movement-cancel
+ * threshold — any pointer movement past MOVE_CANCEL_PX cancels the hold,
+ * exactly like native swipe-action lists behave.
  */
 import { useRef, useState, useCallback, type ReactNode, type KeyboardEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HOLD_TO_LIQUIDATE_MS } from "@/lib/manualOrderContract";
+
+const MOVE_CANCEL_PX = 10;
 
 interface HoldToConfirmButtonProps {
   onConfirm: () => void;
@@ -39,6 +48,7 @@ export function HoldToConfirmButton({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startRef = useRef(0);
   const pointerIdRef = useRef<number | null>(null);
+  const startPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const isDisabled = disabled || loading;
 
   const ariaLabel = onKeyboardConfirm
@@ -97,7 +107,18 @@ export function HoldToConfirmButton({
         e.preventDefault();
         e.currentTarget.setPointerCapture(e.pointerId);
         pointerIdRef.current = e.pointerId;
+        startPosRef.current = { x: e.clientX, y: e.clientY };
         startHold();
+      }}
+      onPointerMove={(e) => {
+        // Any real movement (scroll attempt / finger sliding off) cancels the hold.
+        if (pointerIdRef.current !== e.pointerId) return;
+        const dx = e.clientX - startPosRef.current.x;
+        const dy = e.clientY - startPosRef.current.y;
+        if (Math.hypot(dx, dy) > MOVE_CANCEL_PX) {
+          releasePointer(e.currentTarget, e.pointerId);
+          clearTimer();
+        }
       }}
       onPointerUp={(e) => {
         releasePointer(e.currentTarget, e.pointerId);
